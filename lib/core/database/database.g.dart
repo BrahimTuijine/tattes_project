@@ -256,12 +256,11 @@ class TodosCompanion extends UpdateCompanion<Todo> {
   }
 }
 
-class $CategoriesTable extends Categories
-    with TableInfo<$CategoriesTable, Category> {
+class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CategoriesTable(this.attachedDatabase, [this._alias]);
+  $ClientsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -271,33 +270,62 @@ class $CategoriesTable extends Categories
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 6, maxTextLength: 20),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
   @override
-  List<GeneratedColumn> get $columns => [id, description];
+  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+      'phone', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 8, maxTextLength: 8),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+  static const VerificationMeta _creationTimeMeta =
+      const VerificationMeta('creationTime');
   @override
-  String get aliasedName => _alias ?? 'categories';
+  late final GeneratedColumn<DateTime> creationTime = GeneratedColumn<DateTime>(
+      'creation_time', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
-  String get actualTableName => 'categories';
+  List<GeneratedColumn> get $columns => [id, name, phone, creationTime];
   @override
-  VerificationContext validateIntegrity(Insertable<Category> instance,
+  String get aliasedName => _alias ?? 'clients';
+  @override
+  String get actualTableName => 'clients';
+  @override
+  VerificationContext validateIntegrity(Insertable<Client> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('description')) {
+    if (data.containsKey('name')) {
       context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
-      context.missing(_descriptionMeta);
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('phone')) {
+      context.handle(
+          _phoneMeta, phone.isAcceptableOrUnknown(data['phone']!, _phoneMeta));
+    } else if (isInserting) {
+      context.missing(_phoneMeta);
+    }
+    if (data.containsKey('creation_time')) {
+      context.handle(
+          _creationTimeMeta,
+          creationTime.isAcceptableOrUnknown(
+              data['creation_time']!, _creationTimeMeta));
     }
     return context;
   }
@@ -305,47 +333,63 @@ class $CategoriesTable extends Categories
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Client map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Category(
+    return Client(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      phone: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}phone'])!,
+      creationTime: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}creation_time'])!,
     );
   }
 
   @override
-  $CategoriesTable createAlias(String alias) {
-    return $CategoriesTable(attachedDatabase, alias);
+  $ClientsTable createAlias(String alias) {
+    return $ClientsTable(attachedDatabase, alias);
   }
 }
 
-class Category extends DataClass implements Insertable<Category> {
+class Client extends DataClass implements Insertable<Client> {
   final int id;
-  final String description;
-  const Category({required this.id, required this.description});
+  final String name;
+  final String phone;
+  final DateTime creationTime;
+  const Client(
+      {required this.id,
+      required this.name,
+      required this.phone,
+      required this.creationTime});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['description'] = Variable<String>(description);
+    map['name'] = Variable<String>(name);
+    map['phone'] = Variable<String>(phone);
+    map['creation_time'] = Variable<DateTime>(creationTime);
     return map;
   }
 
-  CategoriesCompanion toCompanion(bool nullToAbsent) {
-    return CategoriesCompanion(
+  ClientsCompanion toCompanion(bool nullToAbsent) {
+    return ClientsCompanion(
       id: Value(id),
-      description: Value(description),
+      name: Value(name),
+      phone: Value(phone),
+      creationTime: Value(creationTime),
     );
   }
 
-  factory Category.fromJson(Map<String, dynamic> json,
+  factory Client.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Category(
+    return Client(
       id: serializer.fromJson<int>(json['id']),
-      description: serializer.fromJson<String>(json['description']),
+      name: serializer.fromJson<String>(json['name']),
+      phone: serializer.fromJson<String>(json['phone']),
+      creationTime: serializer.fromJson<DateTime>(json['creationTime']),
     );
   }
   @override
@@ -353,58 +397,85 @@ class Category extends DataClass implements Insertable<Category> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'description': serializer.toJson<String>(description),
+      'name': serializer.toJson<String>(name),
+      'phone': serializer.toJson<String>(phone),
+      'creationTime': serializer.toJson<DateTime>(creationTime),
     };
   }
 
-  Category copyWith({int? id, String? description}) => Category(
+  Client copyWith(
+          {int? id, String? name, String? phone, DateTime? creationTime}) =>
+      Client(
         id: id ?? this.id,
-        description: description ?? this.description,
+        name: name ?? this.name,
+        phone: phone ?? this.phone,
+        creationTime: creationTime ?? this.creationTime,
       );
   @override
   String toString() {
-    return (StringBuffer('Category(')
+    return (StringBuffer('Client(')
           ..write('id: $id, ')
-          ..write('description: $description')
+          ..write('name: $name, ')
+          ..write('phone: $phone, ')
+          ..write('creationTime: $creationTime')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, description);
+  int get hashCode => Object.hash(id, name, phone, creationTime);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Category &&
+      (other is Client &&
           other.id == this.id &&
-          other.description == this.description);
+          other.name == this.name &&
+          other.phone == this.phone &&
+          other.creationTime == this.creationTime);
 }
 
-class CategoriesCompanion extends UpdateCompanion<Category> {
+class ClientsCompanion extends UpdateCompanion<Client> {
   final Value<int> id;
-  final Value<String> description;
-  const CategoriesCompanion({
+  final Value<String> name;
+  final Value<String> phone;
+  final Value<DateTime> creationTime;
+  const ClientsCompanion({
     this.id = const Value.absent(),
-    this.description = const Value.absent(),
+    this.name = const Value.absent(),
+    this.phone = const Value.absent(),
+    this.creationTime = const Value.absent(),
   });
-  CategoriesCompanion.insert({
+  ClientsCompanion.insert({
     this.id = const Value.absent(),
-    required String description,
-  }) : description = Value(description);
-  static Insertable<Category> custom({
+    required String name,
+    required String phone,
+    this.creationTime = const Value.absent(),
+  })  : name = Value(name),
+        phone = Value(phone);
+  static Insertable<Client> custom({
     Expression<int>? id,
-    Expression<String>? description,
+    Expression<String>? name,
+    Expression<String>? phone,
+    Expression<DateTime>? creationTime,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (description != null) 'description': description,
+      if (name != null) 'name': name,
+      if (phone != null) 'phone': phone,
+      if (creationTime != null) 'creation_time': creationTime,
     });
   }
 
-  CategoriesCompanion copyWith({Value<int>? id, Value<String>? description}) {
-    return CategoriesCompanion(
+  ClientsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? phone,
+      Value<DateTime>? creationTime}) {
+    return ClientsCompanion(
       id: id ?? this.id,
-      description: description ?? this.description,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      creationTime: creationTime ?? this.creationTime,
     );
   }
 
@@ -414,17 +485,25 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (phone.present) {
+      map['phone'] = Variable<String>(phone.value);
+    }
+    if (creationTime.present) {
+      map['creation_time'] = Variable<DateTime>(creationTime.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('CategoriesCompanion(')
+    return (StringBuffer('ClientsCompanion(')
           ..write('id: $id, ')
-          ..write('description: $description')
+          ..write('name: $name, ')
+          ..write('phone: $phone, ')
+          ..write('creationTime: $creationTime')
           ..write(')'))
         .toString();
   }
@@ -433,10 +512,10 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
 abstract class _$MyDatabase extends GeneratedDatabase {
   _$MyDatabase(QueryExecutor e) : super(e);
   late final $TodosTable todos = $TodosTable(this);
-  late final $CategoriesTable categories = $CategoriesTable(this);
+  late final $ClientsTable clients = $ClientsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [todos, categories];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [todos, clients];
 }

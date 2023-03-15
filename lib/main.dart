@@ -3,8 +3,9 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/core/widgets/data_table.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 
   doWhenWindowReady(() {
@@ -16,6 +17,8 @@ void main() async {
     win.title = "tattes project";
     win.show();
   });
+
+  // await getIt<MyDatabase>().into(getIt<MyDatabase>().categories).insert(  CategoriesCompanion.insert(description: 'hhello'));
 }
 
 class MyApp extends HookWidget {
