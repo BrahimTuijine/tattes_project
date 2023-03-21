@@ -595,9 +595,9 @@ class $FournissersTable extends Fournissers
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _phoneMeta = const VerificationMeta('phone');
   @override
-  late final GeneratedColumn<String> phone = GeneratedColumn<String>(
+  late final GeneratedColumn<int> phone = GeneratedColumn<int>(
       'phone', aliasedName, false,
-      type: DriftSqlType.string,
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
   static const VerificationMeta _createdAtMeta =
@@ -669,7 +669,7 @@ class $FournissersTable extends Fournissers
       rue: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}rue'])!,
       phone: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}phone'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}phone'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -686,7 +686,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
   final String name;
   final String ville;
   final String rue;
-  final String phone;
+  final int phone;
   final DateTime createdAt;
   const Fournisser(
       {required this.id,
@@ -702,7 +702,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
     map['name'] = Variable<String>(name);
     map['ville'] = Variable<String>(ville);
     map['rue'] = Variable<String>(rue);
-    map['phone'] = Variable<String>(phone);
+    map['phone'] = Variable<int>(phone);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -726,7 +726,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       name: serializer.fromJson<String>(json['name']),
       ville: serializer.fromJson<String>(json['ville']),
       rue: serializer.fromJson<String>(json['rue']),
-      phone: serializer.fromJson<String>(json['phone']),
+      phone: serializer.fromJson<int>(json['phone']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -738,7 +738,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       'name': serializer.toJson<String>(name),
       'ville': serializer.toJson<String>(ville),
       'rue': serializer.toJson<String>(rue),
-      'phone': serializer.toJson<String>(phone),
+      'phone': serializer.toJson<int>(phone),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -748,7 +748,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           String? name,
           String? ville,
           String? rue,
-          String? phone,
+          int? phone,
           DateTime? createdAt}) =>
       Fournisser(
         id: id ?? this.id,
@@ -790,7 +790,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
   final Value<String> name;
   final Value<String> ville;
   final Value<String> rue;
-  final Value<String> phone;
+  final Value<int> phone;
   final Value<DateTime> createdAt;
   const FournissersCompanion({
     this.id = const Value.absent(),
@@ -805,7 +805,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     required String name,
     required String ville,
     required String rue,
-    required String phone,
+    required int phone,
     this.createdAt = const Value.absent(),
   })  : name = Value(name),
         ville = Value(ville),
@@ -816,7 +816,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     Expression<String>? name,
     Expression<String>? ville,
     Expression<String>? rue,
-    Expression<String>? phone,
+    Expression<int>? phone,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -834,7 +834,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       Value<String>? name,
       Value<String>? ville,
       Value<String>? rue,
-      Value<String>? phone,
+      Value<int>? phone,
       Value<DateTime>? createdAt}) {
     return FournissersCompanion(
       id: id ?? this.id,
@@ -862,7 +862,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       map['rue'] = Variable<String>(rue.value);
     }
     if (phone.present) {
-      map['phone'] = Variable<String>(phone.value);
+      map['phone'] = Variable<int>(phone.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);

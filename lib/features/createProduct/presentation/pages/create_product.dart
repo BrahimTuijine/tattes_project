@@ -10,6 +10,8 @@ class CreateProduct extends HookWidget {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
+  
+
   final Map<String, dynamic> productData = {
     "name": '',
     "prix": '',

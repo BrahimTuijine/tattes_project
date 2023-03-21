@@ -29,7 +29,7 @@ class Fournissers extends Table {
   TextColumn get name => text()();
   TextColumn get ville => text()();
   TextColumn get rue => text()();
-  TextColumn get phone => text().unique()();
+  IntColumn get phone => integer().unique()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 

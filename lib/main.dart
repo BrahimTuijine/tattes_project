@@ -2,10 +2,12 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/features/home_page.dart';
+import 'package:products_management/injection.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
+  // setup();
+  configureDependencies();
   runApp(const MyApp());
 
   doWhenWindowReady(() {
@@ -18,7 +20,7 @@ void main() {
     win.show();
   });
 
-  // await getIt<MyDatabase>().into(getIt<MyDatabase>().categories).insert(  CategoriesCompanion.insert(description: 'hhello'));
+  // await getIt<MyDatabase>().into(getIt<MyDatabase>().categories).insert(CategoriesCompanion.insert(description: 'hhello'));
 }
 
 class MyApp extends HookWidget {
@@ -32,7 +34,6 @@ class MyApp extends HookWidget {
     );
   }
 }
-
 
 class SecondPage extends HookWidget {
   final PageController controller;
