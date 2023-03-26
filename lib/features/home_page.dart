@@ -2,8 +2,8 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/features/createClient/presentation/pages/client_list.dart';
-import 'package:products_management/features/createProduct/presentation/pages/create_product.dart';
-import 'package:products_management/features/createSupplier/presentation/pages/create_supplier.dart';
+import 'package:products_management/features/createProduct/presentation/pages/product_list.dart';
+import 'package:products_management/features/createSupplier/presentation/pages/supplier_list.dart';
 
 class HomePage extends HookWidget {
   HomePage({Key? key}) : super(key: key);
@@ -101,7 +101,7 @@ class HomePage extends HookWidget {
           PaneItem(
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            body: CreateProduct(),
+            body: ProductList(),
             icon: const Icon(
               FluentIcons.product_variant,
             ),
@@ -110,7 +110,7 @@ class HomePage extends HookWidget {
           PaneItem(
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            body: CreateSuppler(),
+            body: const SupplierList(),
             icon: const Icon(FluentIcons.production_floor_management),
             title: const Text('fournisseur'),
           ),

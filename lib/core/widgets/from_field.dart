@@ -11,6 +11,7 @@ class InputField extends StatelessWidget {
     required this.texthint,
     this.minLines,
     required this.label,
+    this.initvalue,
   }) : super(key: key);
 
   final FormFieldSetter<String>? onsaved;
@@ -18,6 +19,7 @@ class InputField extends StatelessWidget {
   final String texthint;
   final int? minLines;
   final String label;
+  final String? initvalue;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class InputField extends StatelessWidget {
           style: const TextStyle(color: blueGreen, fontWeight: FontWeight.bold),
         ),
         TextFormField(
+          initialValue: initvalue,
           minLines: minLines,
           onSaved: onsaved,
           validator: validator,

@@ -2,17 +2,24 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/core/database/database.dart';
-
 import 'package:products_management/core/strings/colors.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/core/widgets/dialog.dart';
-import 'package:products_management/features/createClient/presentation/pages/create_update_client.dart';
+import 'package:products_management/features/createProduct/presentation/pages/create_update_product.dart';
 import 'package:products_management/injection.dart';
 
-class ClientList extends HookWidget {
-  const ClientList({
+class ProductList extends HookWidget {
+  ProductList({
     super.key,
   });
+
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  final Map<String, dynamic> productData = {
+    "name": '',
+    "prix": '',
+    "tva": '',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +51,7 @@ class ClientList extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const CustomText(
-                    text: 'List des clients',
+                    text: 'List des produits',
                     color: Colors.grey,
                     size: 20,
                     weight: FontWeight.w600,
@@ -58,12 +65,12 @@ class ClientList extends HookWidget {
                       onPressed: () {
                         MyAlertDialog.showAlertDialog(
                             context: context,
-                            child: CreateUpdateClient(
+                            child: CreateUpdateProduct(
                               refresh: refresh,
                             ));
                       },
                       child: const Text(
-                        "Creation de client",
+                        "Creation de produit",
                       ),
                     ),
                   ),
@@ -72,14 +79,14 @@ class ClientList extends HookWidget {
               const SizedBox(
                 height: 30,
               ),
-              FutureBuilder<List<Client>>(
-                future: getIt<MyDatabase>().getClients(),
+              FutureBuilder<List<Product>>(
+                future: getIt<MyDatabase>().getProducts(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<Client>> snapshot) {
+                    AsyncSnapshot<List<Product>> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return const Center(
-                        child: Text('there is no client'),
+                        child: Text('there is no product'),
                       );
                     } else {
                       return Expanded(
@@ -95,15 +102,6 @@ class ClientList extends HookWidget {
                             DataColumn2(
                               label: Text("Name"),
                               size: ColumnSize.L,
-                            ),
-                            DataColumn(
-                              label: Text('Phone'),
-                            ),
-                            DataColumn(
-                              label: Text('Ville'),
-                            ),
-                            DataColumn(
-                              label: Text('Rue'),
                             ),
                             DataColumn(
                               label: Text('Created At'),
@@ -123,29 +121,8 @@ class ClientList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].name,
+                                    text: snapshot.data![index].libelle,
                                   ),
-                                ),
-                                DataCell(CustomText(
-                                    text: snapshot.data![index].phone)),
-                                DataCell(Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.deepOrange,
-                                      size: 18,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    CustomText(
-                                      text: snapshot.data![index].ville,
-                                    )
-                                  ],
-                                )),
-                                DataCell(
-                                  CustomText(text: snapshot.data![index].rue),
                                 ),
                                 DataCell(
                                   CustomText(
@@ -159,14 +136,13 @@ class ClientList extends HookWidget {
                                       onPressed: () {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
-                                          child: CreateUpdateClient(
+                                          child: CreateUpdateProduct(
                                             createdAt:
                                                 snapshot.data![index].createdAt,
                                             id: snapshot.data![index].id,
-                                            name: snapshot.data![index].name,
-                                            rue: snapshot.data![index].rue,
-                                            phone: snapshot.data![index].phone,
-                                            ville: snapshot.data![index].ville,
+                                            name: snapshot.data![index].libelle,
+                                            prix: snapshot.data![index].prix,
+                                            tva: snapshot.data![index].tva,
                                             refresh: refresh,
                                           ),
                                         );
@@ -178,7 +154,7 @@ class ClientList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        getIt<MyDatabase>().deleteClient(
+                                        getIt<MyDatabase>().deleteProduct(
                                             snapshot.data![index].id);
                                         refresh.value = !refresh.value;
                                       },

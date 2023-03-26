@@ -2,17 +2,14 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/core/database/database.dart';
-
 import 'package:products_management/core/strings/colors.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/core/widgets/dialog.dart';
-import 'package:products_management/features/createClient/presentation/pages/create_update_client.dart';
+import 'package:products_management/features/createSupplier/presentation/pages/create_update_supplier.dart';
 import 'package:products_management/injection.dart';
 
-class ClientList extends HookWidget {
-  const ClientList({
-    super.key,
-  });
+class SupplierList extends HookWidget {
+  const SupplierList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +41,7 @@ class ClientList extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const CustomText(
-                    text: 'List des clients',
+                    text: 'List des fournisseurs',
                     color: Colors.grey,
                     size: 20,
                     weight: FontWeight.w600,
@@ -58,12 +55,12 @@ class ClientList extends HookWidget {
                       onPressed: () {
                         MyAlertDialog.showAlertDialog(
                             context: context,
-                            child: CreateUpdateClient(
+                            child: CreateUpdateSupplier(
                               refresh: refresh,
                             ));
                       },
                       child: const Text(
-                        "Creation de client",
+                        "Creation de fournisseur",
                       ),
                     ),
                   ),
@@ -72,14 +69,14 @@ class ClientList extends HookWidget {
               const SizedBox(
                 height: 30,
               ),
-              FutureBuilder<List<Client>>(
-                future: getIt<MyDatabase>().getClients(),
+              FutureBuilder<List<Fournisser>>(
+                future: getIt<MyDatabase>().getSuppliers(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<Client>> snapshot) {
+                    AsyncSnapshot<List<Fournisser>> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return const Center(
-                        child: Text('there is no client'),
+                        child: Text('there is no fournissuer'),
                       );
                     } else {
                       return Expanded(
@@ -90,7 +87,6 @@ class ClientList extends HookWidget {
                           columns: const [
                             DataColumn2(
                               label: Text("Id"),
-                              // size: ColumnSize.,
                             ),
                             DataColumn2(
                               label: Text("Name"),
@@ -159,7 +155,7 @@ class ClientList extends HookWidget {
                                       onPressed: () {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
-                                          child: CreateUpdateClient(
+                                          child: CreateUpdateSupplier(
                                             createdAt:
                                                 snapshot.data![index].createdAt,
                                             id: snapshot.data![index].id,
@@ -178,7 +174,7 @@ class ClientList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        getIt<MyDatabase>().deleteClient(
+                                        getIt<MyDatabase>().deleteSuppliers(
                                             snapshot.data![index].id);
                                         refresh.value = !refresh.value;
                                       },
