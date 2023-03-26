@@ -19,8 +19,6 @@ void main() {
     win.title = "tattes project";
     win.show();
   });
-
-  // await getIt<MyDatabase>().into(getIt<MyDatabase>().categories).insert(CategoriesCompanion.insert(description: 'hhello'));
 }
 
 class MyApp extends HookWidget {
@@ -31,49 +29,6 @@ class MyApp extends HookWidget {
     return FluentApp(
       debugShowCheckedModeBanner: false,
       home: HomePage(),
-    );
-  }
-}
-
-class SecondPage extends HookWidget {
-  final PageController controller;
-  const SecondPage({
-    super.key,
-    required this.controller,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaffoldPage(
-      content: Center(
-        child: Button(
-          onPressed: () {
-            controller.nextPage(
-                duration: const Duration(milliseconds: 400),
-                curve: Curves.easeIn);
-          },
-          child: const Text(
-            "Elevated Button",
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ThirdPage extends HookWidget {
-  final int number;
-  const ThirdPage({
-    required this.number,
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ScaffoldPage(
-      content: Center(
-        child: Text('ThirdPage $number'),
-      ),
     );
   }
 }

@@ -100,8 +100,22 @@ class ProductList extends HookWidget {
                               // size: ColumnSize.,
                             ),
                             DataColumn2(
-                              label: Text("Name"),
-                              size: ColumnSize.L,
+                              label: Text("Libelle"),
+                            ),
+                            DataColumn2(
+                              label: Text("Description"),
+                            ),
+                            DataColumn2(
+                              label: Text("TVA"),
+                            ),
+                            DataColumn2(
+                              label: Text("Categorie"),
+                            ),
+                            DataColumn2(
+                              label: Text("refrence"),
+                            ),
+                            DataColumn2(
+                              label: Text("image"),
                             ),
                             DataColumn(
                               label: Text('Created At'),
@@ -126,6 +140,32 @@ class ProductList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
+                                    text: snapshot.data![index].description ??
+                                        'NoN',
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: snapshot.data![index].tva,
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: snapshot.data![index].categorie,
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: snapshot.data![index].refrence,
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: snapshot.data![index].image ?? 'NoN',
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
                                     text:
                                         '${snapshot.data![index].createdAt.day}-${snapshot.data![index].createdAt.month}-${snapshot.data![index].createdAt.year} ${snapshot.data![index].createdAt.hour}:${snapshot.data![index].createdAt.minute}',
                                   ),
@@ -137,8 +177,14 @@ class ProductList extends HookWidget {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
                                           child: CreateUpdateProduct(
-                                            createdAt:
-                                                snapshot.data![index].createdAt,
+                                            categorie:
+                                                snapshot.data![index].categorie,
+                                            description: snapshot
+                                                .data![index].description,
+                                            libelle:
+                                                snapshot.data![index].libelle,
+                                            refrence:
+                                                snapshot.data![index].refrence,
                                             id: snapshot.data![index].id,
                                             name: snapshot.data![index].libelle,
                                             prix: snapshot.data![index].prix,
