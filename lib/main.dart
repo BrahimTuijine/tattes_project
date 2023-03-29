@@ -27,6 +27,14 @@ class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return FluentApp(
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: () {
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
+          child: child,
+        );
+      },
       debugShowCheckedModeBanner: false,
       home: HomePage(),
     );

@@ -112,10 +112,7 @@ class ProductList extends HookWidget {
                               label: Text("Categorie"),
                             ),
                             DataColumn2(
-                              label: Text("refrence"),
-                            ),
-                            DataColumn2(
-                              label: Text("image"),
+                              label: Text("Nombre de piece"),
                             ),
                             DataColumn(
                               label: Text('Created At'),
@@ -156,12 +153,7 @@ class ProductList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].refrence,
-                                  ),
-                                ),
-                                DataCell(
-                                  CustomText(
-                                    text: snapshot.data![index].image ?? 'NoN',
+                                    text: snapshot.data![index].nbrePiece,
                                   ),
                                 ),
                                 DataCell(
@@ -177,14 +169,13 @@ class ProductList extends HookWidget {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
                                           child: CreateUpdateProduct(
+                                            
                                             categorie:
                                                 snapshot.data![index].categorie,
                                             description: snapshot
                                                 .data![index].description,
                                             libelle:
                                                 snapshot.data![index].libelle,
-                                            refrence:
-                                                snapshot.data![index].refrence,
                                             id: snapshot.data![index].id,
                                             name: snapshot.data![index].libelle,
                                             prix: snapshot.data![index].prix,

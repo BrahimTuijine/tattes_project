@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -16,7 +15,7 @@ class CreateUpdateProduct extends HookWidget {
     this.libelle,
     this.id,
     this.name,
-    this.refrence,
+    this.nbPiece,
     this.categorie,
     this.prix,
     this.tva,
@@ -28,7 +27,7 @@ class CreateUpdateProduct extends HookWidget {
   final String? libelle;
   final int? id;
   final String? name;
-  final String? refrence;
+  final String? nbPiece;
   final String? categorie;
   final String? prix;
   final String? tva;
@@ -37,17 +36,20 @@ class CreateUpdateProduct extends HookWidget {
   final Map<String, dynamic> productData = {
     "libelle": '',
     "tva": '',
-    "prix": '',
+    "prix": 0,
     "categorie": '',
-    "refrence": '',
-    "image": '',
-    "description": ''
+    "description": '',
+    "nbPiece": '',
+    'fournisser': '',
+    'prixOrTax': ''
   };
 
   final ValueNotifier<bool> refresh;
 
   @override
   Widget build(BuildContext context) {
+    final selectedTva = useState<double>(0);
+    final prixTtc = useState<int>(0);
     return Form(
       key: formKey,
       child: Column(
@@ -76,7 +78,17 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: prix,
+                      // controller: prixController,
+                      onChanged: (prix) {
+                        print(prix);
+                        try {
+                          int.parse(prix);
+                          prixTtc.value = int.parse(prix);
+                        } catch (e) {
+                          print(e);
+                        }
+                      },
+                      initvalue: prix ?? "0",
                       label: 'Prix',
                       texthint: 'prix',
                       onsaved: (newValue) {
@@ -104,6 +116,43 @@ class CreateUpdateProduct extends HookWidget {
                       },
                     ),
                   ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'TVA',
+                        style: TextStyle(
+                            color: blueGreen, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        width: 300,
+                        child: DropdownButton<double>(
+                          dropdownColor: Colors.white,
+                          value: selectedTva.value,
+                          items: const [
+                            DropdownMenuItem(
+                              value: 0,
+                              child: Text('0'),
+                            ),
+                            DropdownMenuItem(
+                              value: .07,
+                              child: Text('7'),
+                            ),
+                            DropdownMenuItem(
+                              value: .19,
+                              child: Text('19'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            selectedTva.value = value!;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(
@@ -111,19 +160,110 @@ class CreateUpdateProduct extends HookWidget {
               ),
               Column(
                 children: [
-                  SizedBox(
-                    width: 300,
-                    child: InputField(
-                      initvalue: tva,
-                      label: 'Tva',
-                      texthint: 'tva',
-                      onsaved: (newValue) {
-                        productData['tva'] = newValue;
-                      },
-                      validator: (value) {
-                        return null;
-                      },
-                    ),
+                  FutureBuilder(
+                    future: getIt<MyDatabase>().getSuppliers(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Fournisser>> snapshot) {
+                      if (snapshot.hasData) {
+                        return SizedBox(
+                          width: 300,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'les fournissers',
+                                style: TextStyle(
+                                    color: blueGreen,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Autocomplete<Fournisser>(
+                                optionsBuilder:
+                                    (TextEditingValue textEditingValue) {
+                                  return snapshot.data!
+                                      .where((Fournisser county) => county.name
+                                          .toLowerCase()
+                                          .contains(textEditingValue.text
+                                              .toLowerCase()))
+                                      .toList();
+                                },
+                                displayStringForOption: (Fournisser option) =>
+                                    option.name,
+                                fieldViewBuilder: (BuildContext context,
+                                    TextEditingController
+                                        fieldTextEditingController,
+                                    FocusNode fieldFocusNode,
+                                    VoidCallback onFieldSubmitted) {
+                                  return TextField(
+                                    decoration: const InputDecoration(
+                                      border: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: grey),
+                                      ),
+                                      disabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(color: grey),
+                                      ),
+                                      focusedBorder: UnderlineInputBorder(
+                                        borderSide:
+                                            BorderSide(color: blueGreen),
+                                      ),
+                                      filled: false,
+                                      hintText: 'liste des fournissers',
+                                      hintStyle:
+                                          TextStyle(color: grey, fontSize: 13),
+                                    ),
+                                    controller: fieldTextEditingController,
+                                    focusNode: fieldFocusNode,
+                                    style: const TextStyle(),
+                                  );
+                                },
+                                onSelected: (Fournisser selection) {
+                                  productData['fournisser'] = selection.name;
+                                },
+                                optionsViewBuilder: (BuildContext context,
+                                    AutocompleteOnSelected<Fournisser>
+                                        onSelected,
+                                    Iterable<Fournisser> options) {
+                                  return Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        boxShadow: [kDefaultShadow],
+                                        color: Colors.white,
+                                        // border: Border.all(),
+                                      ),
+                                      width: 250,
+                                      height: 200,
+                                      child: Material(
+                                        child: ListView.builder(
+                                          padding: const EdgeInsets.all(10.0),
+                                          itemCount: options.length,
+                                          itemBuilder: (BuildContext context,
+                                              int index) {
+                                            final Fournisser option =
+                                                options.elementAt(index);
+
+                                            return GestureDetector(
+                                              onTap: () {
+                                                onSelected(option);
+                                              },
+                                              child: ListTile(
+                                                title: Text(option.name,
+                                                    style: const TextStyle(
+                                                        color: Colors.black)),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const CircularProgressIndicator();
+                    },
                   ),
                   const SizedBox(
                     height: 30,
@@ -131,11 +271,11 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: refrence,
-                      label: 'refrence',
-                      texthint: 'refrence',
+                      initvalue: nbPiece,
+                      label: 'nombre de piece',
+                      texthint: '10',
                       onsaved: (newValue) {
-                        productData['refrence'] = newValue;
+                        productData['nbPiece'] = newValue;
                       },
                       validator: (value) {
                         return null;
@@ -149,7 +289,7 @@ class CreateUpdateProduct extends HookWidget {
                     width: 300,
                     child: InputField(
                       initvalue: description,
-                      label: 'description',
+                      label: 'Description',
                       texthint: 'description',
                       onsaved: (newValue) {
                         productData['description'] = newValue;
@@ -159,6 +299,35 @@ class CreateUpdateProduct extends HookWidget {
                       },
                     ),
                   ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Prix or tax',
+                      style: TextStyle(
+                          color: blueGreen, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text(
+                      '${prixTtc.value - (prixTtc.value * selectedTva.value)}'),
+                  // SizedBox(
+                  //   width: 300,
+                  //   child: InputField(
+                  //     enabled: false,
+                  //     texthint: '',
+                  //     initvalue:
+                  //         '${prixTtc.value - (prixTtc.value * selectedTva.value)}',
+                  //     label: 'Prix or tax',
+                  //     onsaved: (newValue) {
+                  //       productData['prixOrTax'] = newValue;
+                  //     },
+                  //     validator: (value) {
+                  //       return null;
+                  //     },
+                  //   ),
+                  // ),
                 ],
               )
             ],
@@ -175,13 +344,13 @@ class CreateUpdateProduct extends HookWidget {
                 if (id != null) {
                   try {
                     final entity = ProductsCompanion(
+                      fournisser: drift.Value(productData['nbPiece']),
                       id: drift.Value(id!),
+                      nbrePiece: drift.Value(productData['nbPiece']),
                       prix: drift.Value(productData['prix']),
                       tva: drift.Value(productData['tva']),
                       categorie: drift.Value(productData['categorie']),
                       libelle: drift.Value(productData['libelle']),
-                      refrence: drift.Value(productData['refrence']),
-                      image: drift.Value(productData['image']),
                       description: drift.Value(productData['description']),
                     );
 
@@ -203,10 +372,10 @@ class CreateUpdateProduct extends HookWidget {
                 } else {
                   try {
                     final entity = ProductsCompanion(
+                      fournisser: drift.Value(productData['nbPiece']),
                       categorie: drift.Value(productData['categorie']),
                       libelle: drift.Value(productData['libelle']),
-                      refrence: drift.Value(productData['refrence']),
-                      image: drift.Value(productData['image']),
+                      nbrePiece: drift.Value(productData['nbPiece']),
                       description: drift.Value(productData['description']),
                       prix: drift.Value(productData['prix']),
                       tva: drift.Value(productData['tva']),

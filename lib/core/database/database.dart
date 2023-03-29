@@ -13,7 +13,9 @@ class Clients extends Table {
   TextColumn get name => text()();
   TextColumn get ville => text()();
   TextColumn get rue => text()();
-  TextColumn get phone => text().unique()();
+  TextColumn get phone => text()();
+  TextColumn get cin => text()();
+  TextColumn get numTva => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
@@ -23,10 +25,13 @@ class Products extends Table {
   TextColumn get libelle => text()();
   TextColumn get categorie => text()();
   TextColumn get description => text().nullable()();
-  TextColumn get image => text().nullable()();
   TextColumn get tva => text()();
-  TextColumn get refrence => text()();
+  TextColumn get nbrePiece => text()();
+  TextColumn get fournisser => text()();
+  TextColumn get prixOrTax => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  // add nbre piece
+  // prix or tax => prixx ttc - tva (0, 7 , 19)
 }
 
 class Fournissers extends Table {
@@ -34,7 +39,8 @@ class Fournissers extends Table {
   TextColumn get name => text()();
   TextColumn get ville => text()();
   TextColumn get rue => text()();
-  TextColumn get phone => text().unique()();
+  TextColumn get phone => text()();
+  TextColumn get tva => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 

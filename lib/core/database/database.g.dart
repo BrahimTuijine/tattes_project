@@ -36,9 +36,17 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
   @override
   late final GeneratedColumn<String> phone = GeneratedColumn<String>(
       'phone', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _cinMeta = const VerificationMeta('cin');
+  @override
+  late final GeneratedColumn<String> cin = GeneratedColumn<String>(
+      'cin', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _numTvaMeta = const VerificationMeta('numTva');
+  @override
+  late final GeneratedColumn<String> numTva = GeneratedColumn<String>(
+      'num_tva', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -49,7 +57,7 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
       defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, ville, rue, phone, createdAt];
+      [id, name, ville, rue, phone, cin, numTva, createdAt];
   @override
   String get aliasedName => _alias ?? 'clients';
   @override
@@ -86,6 +94,18 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
     } else if (isInserting) {
       context.missing(_phoneMeta);
     }
+    if (data.containsKey('cin')) {
+      context.handle(
+          _cinMeta, cin.isAcceptableOrUnknown(data['cin']!, _cinMeta));
+    } else if (isInserting) {
+      context.missing(_cinMeta);
+    }
+    if (data.containsKey('num_tva')) {
+      context.handle(_numTvaMeta,
+          numTva.isAcceptableOrUnknown(data['num_tva']!, _numTvaMeta));
+    } else if (isInserting) {
+      context.missing(_numTvaMeta);
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -109,6 +129,10 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
           .read(DriftSqlType.string, data['${effectivePrefix}rue'])!,
       phone: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}phone'])!,
+      cin: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}cin'])!,
+      numTva: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}num_tva'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -126,6 +150,8 @@ class Client extends DataClass implements Insertable<Client> {
   final String ville;
   final String rue;
   final String phone;
+  final String cin;
+  final String numTva;
   final DateTime createdAt;
   const Client(
       {required this.id,
@@ -133,6 +159,8 @@ class Client extends DataClass implements Insertable<Client> {
       required this.ville,
       required this.rue,
       required this.phone,
+      required this.cin,
+      required this.numTva,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -142,6 +170,8 @@ class Client extends DataClass implements Insertable<Client> {
     map['ville'] = Variable<String>(ville);
     map['rue'] = Variable<String>(rue);
     map['phone'] = Variable<String>(phone);
+    map['cin'] = Variable<String>(cin);
+    map['num_tva'] = Variable<String>(numTva);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -153,6 +183,8 @@ class Client extends DataClass implements Insertable<Client> {
       ville: Value(ville),
       rue: Value(rue),
       phone: Value(phone),
+      cin: Value(cin),
+      numTva: Value(numTva),
       createdAt: Value(createdAt),
     );
   }
@@ -166,6 +198,8 @@ class Client extends DataClass implements Insertable<Client> {
       ville: serializer.fromJson<String>(json['ville']),
       rue: serializer.fromJson<String>(json['rue']),
       phone: serializer.fromJson<String>(json['phone']),
+      cin: serializer.fromJson<String>(json['cin']),
+      numTva: serializer.fromJson<String>(json['numTva']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -178,6 +212,8 @@ class Client extends DataClass implements Insertable<Client> {
       'ville': serializer.toJson<String>(ville),
       'rue': serializer.toJson<String>(rue),
       'phone': serializer.toJson<String>(phone),
+      'cin': serializer.toJson<String>(cin),
+      'numTva': serializer.toJson<String>(numTva),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -188,6 +224,8 @@ class Client extends DataClass implements Insertable<Client> {
           String? ville,
           String? rue,
           String? phone,
+          String? cin,
+          String? numTva,
           DateTime? createdAt}) =>
       Client(
         id: id ?? this.id,
@@ -195,6 +233,8 @@ class Client extends DataClass implements Insertable<Client> {
         ville: ville ?? this.ville,
         rue: rue ?? this.rue,
         phone: phone ?? this.phone,
+        cin: cin ?? this.cin,
+        numTva: numTva ?? this.numTva,
         createdAt: createdAt ?? this.createdAt,
       );
   @override
@@ -205,13 +245,16 @@ class Client extends DataClass implements Insertable<Client> {
           ..write('ville: $ville, ')
           ..write('rue: $rue, ')
           ..write('phone: $phone, ')
+          ..write('cin: $cin, ')
+          ..write('numTva: $numTva, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, ville, rue, phone, createdAt);
+  int get hashCode =>
+      Object.hash(id, name, ville, rue, phone, cin, numTva, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -221,6 +264,8 @@ class Client extends DataClass implements Insertable<Client> {
           other.ville == this.ville &&
           other.rue == this.rue &&
           other.phone == this.phone &&
+          other.cin == this.cin &&
+          other.numTva == this.numTva &&
           other.createdAt == this.createdAt);
 }
 
@@ -230,6 +275,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
   final Value<String> ville;
   final Value<String> rue;
   final Value<String> phone;
+  final Value<String> cin;
+  final Value<String> numTva;
   final Value<DateTime> createdAt;
   const ClientsCompanion({
     this.id = const Value.absent(),
@@ -237,6 +284,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     this.ville = const Value.absent(),
     this.rue = const Value.absent(),
     this.phone = const Value.absent(),
+    this.cin = const Value.absent(),
+    this.numTva = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   ClientsCompanion.insert({
@@ -245,17 +294,23 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     required String ville,
     required String rue,
     required String phone,
+    required String cin,
+    required String numTva,
     this.createdAt = const Value.absent(),
   })  : name = Value(name),
         ville = Value(ville),
         rue = Value(rue),
-        phone = Value(phone);
+        phone = Value(phone),
+        cin = Value(cin),
+        numTva = Value(numTva);
   static Insertable<Client> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? ville,
     Expression<String>? rue,
     Expression<String>? phone,
+    Expression<String>? cin,
+    Expression<String>? numTva,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -264,6 +319,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
       if (ville != null) 'ville': ville,
       if (rue != null) 'rue': rue,
       if (phone != null) 'phone': phone,
+      if (cin != null) 'cin': cin,
+      if (numTva != null) 'num_tva': numTva,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -274,6 +331,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
       Value<String>? ville,
       Value<String>? rue,
       Value<String>? phone,
+      Value<String>? cin,
+      Value<String>? numTva,
       Value<DateTime>? createdAt}) {
     return ClientsCompanion(
       id: id ?? this.id,
@@ -281,6 +340,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
       ville: ville ?? this.ville,
       rue: rue ?? this.rue,
       phone: phone ?? this.phone,
+      cin: cin ?? this.cin,
+      numTva: numTva ?? this.numTva,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -303,6 +364,12 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     if (phone.present) {
       map['phone'] = Variable<String>(phone.value);
     }
+    if (cin.present) {
+      map['cin'] = Variable<String>(cin.value);
+    }
+    if (numTva.present) {
+      map['num_tva'] = Variable<String>(numTva.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -317,6 +384,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
           ..write('ville: $ville, ')
           ..write('rue: $rue, ')
           ..write('phone: $phone, ')
+          ..write('cin: $cin, ')
+          ..write('numTva: $numTva, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -360,21 +429,28 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, true,
       type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _imageMeta = const VerificationMeta('image');
-  @override
-  late final GeneratedColumn<String> image = GeneratedColumn<String>(
-      'image', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _tvaMeta = const VerificationMeta('tva');
   @override
   late final GeneratedColumn<String> tva = GeneratedColumn<String>(
       'tva', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _refrenceMeta =
-      const VerificationMeta('refrence');
+  static const VerificationMeta _nbrePieceMeta =
+      const VerificationMeta('nbrePiece');
   @override
-  late final GeneratedColumn<String> refrence = GeneratedColumn<String>(
-      'refrence', aliasedName, false,
+  late final GeneratedColumn<String> nbrePiece = GeneratedColumn<String>(
+      'nbre_piece', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _fournisserMeta =
+      const VerificationMeta('fournisser');
+  @override
+  late final GeneratedColumn<String> fournisser = GeneratedColumn<String>(
+      'fournisser', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _prixOrTaxMeta =
+      const VerificationMeta('prixOrTax');
+  @override
+  late final GeneratedColumn<String> prixOrTax = GeneratedColumn<String>(
+      'prix_or_tax', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
@@ -391,9 +467,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         libelle,
         categorie,
         description,
-        image,
         tva,
-        refrence,
+        nbrePiece,
+        fournisser,
+        prixOrTax,
         createdAt
       ];
   @override
@@ -432,21 +509,33 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
           description.isAcceptableOrUnknown(
               data['description']!, _descriptionMeta));
     }
-    if (data.containsKey('image')) {
-      context.handle(
-          _imageMeta, image.isAcceptableOrUnknown(data['image']!, _imageMeta));
-    }
     if (data.containsKey('tva')) {
       context.handle(
           _tvaMeta, tva.isAcceptableOrUnknown(data['tva']!, _tvaMeta));
     } else if (isInserting) {
       context.missing(_tvaMeta);
     }
-    if (data.containsKey('refrence')) {
-      context.handle(_refrenceMeta,
-          refrence.isAcceptableOrUnknown(data['refrence']!, _refrenceMeta));
+    if (data.containsKey('nbre_piece')) {
+      context.handle(_nbrePieceMeta,
+          nbrePiece.isAcceptableOrUnknown(data['nbre_piece']!, _nbrePieceMeta));
     } else if (isInserting) {
-      context.missing(_refrenceMeta);
+      context.missing(_nbrePieceMeta);
+    }
+    if (data.containsKey('fournisser')) {
+      context.handle(
+          _fournisserMeta,
+          fournisser.isAcceptableOrUnknown(
+              data['fournisser']!, _fournisserMeta));
+    } else if (isInserting) {
+      context.missing(_fournisserMeta);
+    }
+    if (data.containsKey('prix_or_tax')) {
+      context.handle(
+          _prixOrTaxMeta,
+          prixOrTax.isAcceptableOrUnknown(
+              data['prix_or_tax']!, _prixOrTaxMeta));
+    } else if (isInserting) {
+      context.missing(_prixOrTaxMeta);
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -471,12 +560,14 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
           .read(DriftSqlType.string, data['${effectivePrefix}categorie'])!,
       description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description']),
-      image: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image']),
       tva: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}tva'])!,
-      refrence: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}refrence'])!,
+      nbrePiece: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}nbre_piece'])!,
+      fournisser: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}fournisser'])!,
+      prixOrTax: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}prix_or_tax'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -494,9 +585,10 @@ class Product extends DataClass implements Insertable<Product> {
   final String libelle;
   final String categorie;
   final String? description;
-  final String? image;
   final String tva;
-  final String refrence;
+  final String nbrePiece;
+  final String fournisser;
+  final String prixOrTax;
   final DateTime createdAt;
   const Product(
       {required this.id,
@@ -504,9 +596,10 @@ class Product extends DataClass implements Insertable<Product> {
       required this.libelle,
       required this.categorie,
       this.description,
-      this.image,
       required this.tva,
-      required this.refrence,
+      required this.nbrePiece,
+      required this.fournisser,
+      required this.prixOrTax,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -518,11 +611,10 @@ class Product extends DataClass implements Insertable<Product> {
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
     }
-    if (!nullToAbsent || image != null) {
-      map['image'] = Variable<String>(image);
-    }
     map['tva'] = Variable<String>(tva);
-    map['refrence'] = Variable<String>(refrence);
+    map['nbre_piece'] = Variable<String>(nbrePiece);
+    map['fournisser'] = Variable<String>(fournisser);
+    map['prix_or_tax'] = Variable<String>(prixOrTax);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -536,10 +628,10 @@ class Product extends DataClass implements Insertable<Product> {
       description: description == null && nullToAbsent
           ? const Value.absent()
           : Value(description),
-      image:
-          image == null && nullToAbsent ? const Value.absent() : Value(image),
       tva: Value(tva),
-      refrence: Value(refrence),
+      nbrePiece: Value(nbrePiece),
+      fournisser: Value(fournisser),
+      prixOrTax: Value(prixOrTax),
       createdAt: Value(createdAt),
     );
   }
@@ -553,9 +645,10 @@ class Product extends DataClass implements Insertable<Product> {
       libelle: serializer.fromJson<String>(json['libelle']),
       categorie: serializer.fromJson<String>(json['categorie']),
       description: serializer.fromJson<String?>(json['description']),
-      image: serializer.fromJson<String?>(json['image']),
       tva: serializer.fromJson<String>(json['tva']),
-      refrence: serializer.fromJson<String>(json['refrence']),
+      nbrePiece: serializer.fromJson<String>(json['nbrePiece']),
+      fournisser: serializer.fromJson<String>(json['fournisser']),
+      prixOrTax: serializer.fromJson<String>(json['prixOrTax']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -568,9 +661,10 @@ class Product extends DataClass implements Insertable<Product> {
       'libelle': serializer.toJson<String>(libelle),
       'categorie': serializer.toJson<String>(categorie),
       'description': serializer.toJson<String?>(description),
-      'image': serializer.toJson<String?>(image),
       'tva': serializer.toJson<String>(tva),
-      'refrence': serializer.toJson<String>(refrence),
+      'nbrePiece': serializer.toJson<String>(nbrePiece),
+      'fournisser': serializer.toJson<String>(fournisser),
+      'prixOrTax': serializer.toJson<String>(prixOrTax),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -581,9 +675,10 @@ class Product extends DataClass implements Insertable<Product> {
           String? libelle,
           String? categorie,
           Value<String?> description = const Value.absent(),
-          Value<String?> image = const Value.absent(),
           String? tva,
-          String? refrence,
+          String? nbrePiece,
+          String? fournisser,
+          String? prixOrTax,
           DateTime? createdAt}) =>
       Product(
         id: id ?? this.id,
@@ -591,9 +686,10 @@ class Product extends DataClass implements Insertable<Product> {
         libelle: libelle ?? this.libelle,
         categorie: categorie ?? this.categorie,
         description: description.present ? description.value : this.description,
-        image: image.present ? image.value : this.image,
         tva: tva ?? this.tva,
-        refrence: refrence ?? this.refrence,
+        nbrePiece: nbrePiece ?? this.nbrePiece,
+        fournisser: fournisser ?? this.fournisser,
+        prixOrTax: prixOrTax ?? this.prixOrTax,
         createdAt: createdAt ?? this.createdAt,
       );
   @override
@@ -604,9 +700,10 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('libelle: $libelle, ')
           ..write('categorie: $categorie, ')
           ..write('description: $description, ')
-          ..write('image: $image, ')
           ..write('tva: $tva, ')
-          ..write('refrence: $refrence, ')
+          ..write('nbrePiece: $nbrePiece, ')
+          ..write('fournisser: $fournisser, ')
+          ..write('prixOrTax: $prixOrTax, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -614,7 +711,7 @@ class Product extends DataClass implements Insertable<Product> {
 
   @override
   int get hashCode => Object.hash(id, prix, libelle, categorie, description,
-      image, tva, refrence, createdAt);
+      tva, nbrePiece, fournisser, prixOrTax, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -624,9 +721,10 @@ class Product extends DataClass implements Insertable<Product> {
           other.libelle == this.libelle &&
           other.categorie == this.categorie &&
           other.description == this.description &&
-          other.image == this.image &&
           other.tva == this.tva &&
-          other.refrence == this.refrence &&
+          other.nbrePiece == this.nbrePiece &&
+          other.fournisser == this.fournisser &&
+          other.prixOrTax == this.prixOrTax &&
           other.createdAt == this.createdAt);
 }
 
@@ -636,9 +734,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<String> libelle;
   final Value<String> categorie;
   final Value<String?> description;
-  final Value<String?> image;
   final Value<String> tva;
-  final Value<String> refrence;
+  final Value<String> nbrePiece;
+  final Value<String> fournisser;
+  final Value<String> prixOrTax;
   final Value<DateTime> createdAt;
   const ProductsCompanion({
     this.id = const Value.absent(),
@@ -646,9 +745,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.libelle = const Value.absent(),
     this.categorie = const Value.absent(),
     this.description = const Value.absent(),
-    this.image = const Value.absent(),
     this.tva = const Value.absent(),
-    this.refrence = const Value.absent(),
+    this.nbrePiece = const Value.absent(),
+    this.fournisser = const Value.absent(),
+    this.prixOrTax = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   ProductsCompanion.insert({
@@ -657,24 +757,28 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     required String libelle,
     required String categorie,
     this.description = const Value.absent(),
-    this.image = const Value.absent(),
     required String tva,
-    required String refrence,
+    required String nbrePiece,
+    required String fournisser,
+    required String prixOrTax,
     this.createdAt = const Value.absent(),
   })  : prix = Value(prix),
         libelle = Value(libelle),
         categorie = Value(categorie),
         tva = Value(tva),
-        refrence = Value(refrence);
+        nbrePiece = Value(nbrePiece),
+        fournisser = Value(fournisser),
+        prixOrTax = Value(prixOrTax);
   static Insertable<Product> custom({
     Expression<int>? id,
     Expression<String>? prix,
     Expression<String>? libelle,
     Expression<String>? categorie,
     Expression<String>? description,
-    Expression<String>? image,
     Expression<String>? tva,
-    Expression<String>? refrence,
+    Expression<String>? nbrePiece,
+    Expression<String>? fournisser,
+    Expression<String>? prixOrTax,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -683,9 +787,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (libelle != null) 'libelle': libelle,
       if (categorie != null) 'categorie': categorie,
       if (description != null) 'description': description,
-      if (image != null) 'image': image,
       if (tva != null) 'tva': tva,
-      if (refrence != null) 'refrence': refrence,
+      if (nbrePiece != null) 'nbre_piece': nbrePiece,
+      if (fournisser != null) 'fournisser': fournisser,
+      if (prixOrTax != null) 'prix_or_tax': prixOrTax,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -696,9 +801,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       Value<String>? libelle,
       Value<String>? categorie,
       Value<String?>? description,
-      Value<String?>? image,
       Value<String>? tva,
-      Value<String>? refrence,
+      Value<String>? nbrePiece,
+      Value<String>? fournisser,
+      Value<String>? prixOrTax,
       Value<DateTime>? createdAt}) {
     return ProductsCompanion(
       id: id ?? this.id,
@@ -706,9 +812,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       libelle: libelle ?? this.libelle,
       categorie: categorie ?? this.categorie,
       description: description ?? this.description,
-      image: image ?? this.image,
       tva: tva ?? this.tva,
-      refrence: refrence ?? this.refrence,
+      nbrePiece: nbrePiece ?? this.nbrePiece,
+      fournisser: fournisser ?? this.fournisser,
+      prixOrTax: prixOrTax ?? this.prixOrTax,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -731,14 +838,17 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
-    if (image.present) {
-      map['image'] = Variable<String>(image.value);
-    }
     if (tva.present) {
       map['tva'] = Variable<String>(tva.value);
     }
-    if (refrence.present) {
-      map['refrence'] = Variable<String>(refrence.value);
+    if (nbrePiece.present) {
+      map['nbre_piece'] = Variable<String>(nbrePiece.value);
+    }
+    if (fournisser.present) {
+      map['fournisser'] = Variable<String>(fournisser.value);
+    }
+    if (prixOrTax.present) {
+      map['prix_or_tax'] = Variable<String>(prixOrTax.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -754,9 +864,10 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('libelle: $libelle, ')
           ..write('categorie: $categorie, ')
           ..write('description: $description, ')
-          ..write('image: $image, ')
           ..write('tva: $tva, ')
-          ..write('refrence: $refrence, ')
+          ..write('nbrePiece: $nbrePiece, ')
+          ..write('fournisser: $fournisser, ')
+          ..write('prixOrTax: $prixOrTax, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -797,9 +908,12 @@ class $FournissersTable extends Fournissers
   @override
   late final GeneratedColumn<String> phone = GeneratedColumn<String>(
       'phone', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'));
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _tvaMeta = const VerificationMeta('tva');
+  @override
+  late final GeneratedColumn<String> tva = GeneratedColumn<String>(
+      'tva', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -810,7 +924,7 @@ class $FournissersTable extends Fournissers
       defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, ville, rue, phone, createdAt];
+      [id, name, ville, rue, phone, tva, createdAt];
   @override
   String get aliasedName => _alias ?? 'fournissers';
   @override
@@ -847,6 +961,12 @@ class $FournissersTable extends Fournissers
     } else if (isInserting) {
       context.missing(_phoneMeta);
     }
+    if (data.containsKey('tva')) {
+      context.handle(
+          _tvaMeta, tva.isAcceptableOrUnknown(data['tva']!, _tvaMeta));
+    } else if (isInserting) {
+      context.missing(_tvaMeta);
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -870,6 +990,8 @@ class $FournissersTable extends Fournissers
           .read(DriftSqlType.string, data['${effectivePrefix}rue'])!,
       phone: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}phone'])!,
+      tva: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tva'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -887,6 +1009,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
   final String ville;
   final String rue;
   final String phone;
+  final String tva;
   final DateTime createdAt;
   const Fournisser(
       {required this.id,
@@ -894,6 +1017,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       required this.ville,
       required this.rue,
       required this.phone,
+      required this.tva,
       required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -903,6 +1027,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
     map['ville'] = Variable<String>(ville);
     map['rue'] = Variable<String>(rue);
     map['phone'] = Variable<String>(phone);
+    map['tva'] = Variable<String>(tva);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -914,6 +1039,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       ville: Value(ville),
       rue: Value(rue),
       phone: Value(phone),
+      tva: Value(tva),
       createdAt: Value(createdAt),
     );
   }
@@ -927,6 +1053,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       ville: serializer.fromJson<String>(json['ville']),
       rue: serializer.fromJson<String>(json['rue']),
       phone: serializer.fromJson<String>(json['phone']),
+      tva: serializer.fromJson<String>(json['tva']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -939,6 +1066,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       'ville': serializer.toJson<String>(ville),
       'rue': serializer.toJson<String>(rue),
       'phone': serializer.toJson<String>(phone),
+      'tva': serializer.toJson<String>(tva),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -949,6 +1077,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           String? ville,
           String? rue,
           String? phone,
+          String? tva,
           DateTime? createdAt}) =>
       Fournisser(
         id: id ?? this.id,
@@ -956,6 +1085,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
         ville: ville ?? this.ville,
         rue: rue ?? this.rue,
         phone: phone ?? this.phone,
+        tva: tva ?? this.tva,
         createdAt: createdAt ?? this.createdAt,
       );
   @override
@@ -966,13 +1096,14 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           ..write('ville: $ville, ')
           ..write('rue: $rue, ')
           ..write('phone: $phone, ')
+          ..write('tva: $tva, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, ville, rue, phone, createdAt);
+  int get hashCode => Object.hash(id, name, ville, rue, phone, tva, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -982,6 +1113,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           other.ville == this.ville &&
           other.rue == this.rue &&
           other.phone == this.phone &&
+          other.tva == this.tva &&
           other.createdAt == this.createdAt);
 }
 
@@ -991,6 +1123,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
   final Value<String> ville;
   final Value<String> rue;
   final Value<String> phone;
+  final Value<String> tva;
   final Value<DateTime> createdAt;
   const FournissersCompanion({
     this.id = const Value.absent(),
@@ -998,6 +1131,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     this.ville = const Value.absent(),
     this.rue = const Value.absent(),
     this.phone = const Value.absent(),
+    this.tva = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   FournissersCompanion.insert({
@@ -1006,17 +1140,20 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     required String ville,
     required String rue,
     required String phone,
+    required String tva,
     this.createdAt = const Value.absent(),
   })  : name = Value(name),
         ville = Value(ville),
         rue = Value(rue),
-        phone = Value(phone);
+        phone = Value(phone),
+        tva = Value(tva);
   static Insertable<Fournisser> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? ville,
     Expression<String>? rue,
     Expression<String>? phone,
+    Expression<String>? tva,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -1025,6 +1162,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       if (ville != null) 'ville': ville,
       if (rue != null) 'rue': rue,
       if (phone != null) 'phone': phone,
+      if (tva != null) 'tva': tva,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -1035,6 +1173,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       Value<String>? ville,
       Value<String>? rue,
       Value<String>? phone,
+      Value<String>? tva,
       Value<DateTime>? createdAt}) {
     return FournissersCompanion(
       id: id ?? this.id,
@@ -1042,6 +1181,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       ville: ville ?? this.ville,
       rue: rue ?? this.rue,
       phone: phone ?? this.phone,
+      tva: tva ?? this.tva,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -1064,6 +1204,9 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     if (phone.present) {
       map['phone'] = Variable<String>(phone.value);
     }
+    if (tva.present) {
+      map['tva'] = Variable<String>(tva.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1078,6 +1221,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
           ..write('ville: $ville, ')
           ..write('rue: $rue, ')
           ..write('phone: $phone, ')
+          ..write('tva: $tva, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();

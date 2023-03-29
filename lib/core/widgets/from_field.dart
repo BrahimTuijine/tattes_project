@@ -1,18 +1,20 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 import 'package:products_management/core/strings/colors.dart';
 
 class InputField extends StatelessWidget {
-  const InputField({
-    Key? key,
-    required this.onsaved,
-    required this.validator,
-    required this.texthint,
-    this.minLines,
-    required this.label,
-    this.initvalue,
-  }) : super(key: key);
+  const InputField(
+      {Key? key,
+      this.controller,
+      required this.onsaved,
+      required this.validator,
+      required this.texthint,
+      this.minLines,
+      required this.label,
+      this.initvalue,
+      this.enabled,
+      this.onChanged})
+      : super(key: key);
 
   final FormFieldSetter<String>? onsaved;
   final String? Function(String?)? validator;
@@ -20,6 +22,9 @@ class InputField extends StatelessWidget {
   final int? minLines;
   final String label;
   final String? initvalue;
+  final bool? enabled;
+  final TextEditingController? controller;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +36,9 @@ class InputField extends StatelessWidget {
           style: const TextStyle(color: blueGreen, fontWeight: FontWeight.bold),
         ),
         TextFormField(
+          onChanged: onChanged,
+          controller: controller,
+          enabled: enabled,
           initialValue: initvalue,
           minLines: minLines,
           onSaved: onsaved,

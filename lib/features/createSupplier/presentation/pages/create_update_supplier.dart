@@ -34,6 +34,7 @@ class CreateUpdateSupplier extends HookWidget {
     "ville": '',
     "name": '',
     "phone": 0,
+    "tva": ''
   };
 
   final ValueNotifier<bool> refresh;
@@ -134,6 +135,23 @@ class CreateUpdateSupplier extends HookWidget {
           const SizedBox(
             height: 30,
           ),
+          SizedBox(
+            width: 300,
+            child: InputField(
+              initvalue: rue,
+              label: 'Tva',
+              texthint: 'Tva',
+              onsaved: (newValue) {
+                clientData['tva'] = newValue;
+              },
+              validator: (value) {
+                return null;
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
           ElevButton(
             bgColor: blueGreen,
             onpressed: () async {
@@ -145,6 +163,7 @@ class CreateUpdateSupplier extends HookWidget {
                     final entity = FournissersCompanion(
                       createdAt: drift.Value(createdAt!),
                       id: drift.Value(id!),
+                      tva: drift.Value(clientData['tva']),
                       rue: drift.Value(clientData['rue']),
                       ville: drift.Value(clientData['ville']),
                       name: drift.Value(clientData['name']),
@@ -169,6 +188,7 @@ class CreateUpdateSupplier extends HookWidget {
                   try {
                     getIt<MyDatabase>().insertSupplier(
                       FournissersCompanion.insert(
+                        tva: clientData['tva'],
                         rue: clientData['rue'],
                         ville: clientData['ville'],
                         name: clientData['name'],

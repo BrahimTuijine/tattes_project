@@ -106,6 +106,12 @@ class ClientList extends HookWidget {
                               label: Text('Rue'),
                             ),
                             DataColumn(
+                              label: Text('cin'),
+                            ),
+                            DataColumn(
+                              label: Text('num TVA'),
+                            ),
+                            DataColumn(
                               label: Text('Created At'),
                             ),
                             DataColumn(
@@ -128,24 +134,19 @@ class ClientList extends HookWidget {
                                 ),
                                 DataCell(CustomText(
                                     text: snapshot.data![index].phone)),
-                                DataCell(Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.deepOrange,
-                                      size: 18,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    CustomText(
-                                      text: snapshot.data![index].ville,
-                                    )
-                                  ],
+                                DataCell(CustomText(
+                                  text: snapshot.data![index].ville,
                                 )),
                                 DataCell(
                                   CustomText(text: snapshot.data![index].rue),
+                                ),
+                                DataCell(
+                                  CustomText(text: snapshot.data![index].cin),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: snapshot.data![index].numTva,
+                                  ),
                                 ),
                                 DataCell(
                                   CustomText(
