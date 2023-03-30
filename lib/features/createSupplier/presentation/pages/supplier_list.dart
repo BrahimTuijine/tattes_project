@@ -79,11 +79,12 @@ class SupplierList extends HookWidget {
                         child: Text('there is no fournissuer'),
                       );
                     } else {
+                      List<Fournisser> reversed =
+                          snapshot.data!.reversed.toList();
                       return Expanded(
                         child: DataTable2(
                           columnSpacing: 12,
                           horizontalMargin: 12,
-                          minWidth: 600,
                           columns: const [
                             DataColumn2(
                               label: Text("Id"),
@@ -109,44 +110,31 @@ class SupplierList extends HookWidget {
                             ),
                           ],
                           rows: List<DataRow>.generate(
-                            snapshot.data!.length,
+                            reversed.length,
                             (index) => DataRow(
                               cells: [
                                 DataCell(
                                   CustomText(
-                                    text: '${snapshot.data![index].id}',
+                                    text: '${reversed[index].id}',
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].name,
+                                    text: reversed[index].name,
                                   ),
                                 ),
+                                DataCell(
+                                    CustomText(text: reversed[index].phone)),
                                 DataCell(CustomText(
-                                    text: snapshot.data![index].phone)),
-                                DataCell(Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    const Icon(
-                                      Icons.star,
-                                      color: Colors.deepOrange,
-                                      size: 18,
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    CustomText(
-                                      text: snapshot.data![index].ville,
-                                    )
-                                  ],
+                                  text: reversed[index].ville,
                                 )),
                                 DataCell(
-                                  CustomText(text: snapshot.data![index].rue),
+                                  CustomText(text: reversed[index].rue),
                                 ),
                                 DataCell(
                                   CustomText(
                                     text:
-                                        '${snapshot.data![index].createdAt.day}-${snapshot.data![index].createdAt.month}-${snapshot.data![index].createdAt.year} ${snapshot.data![index].createdAt.hour}:${snapshot.data![index].createdAt.minute}',
+                                        '${reversed[index].createdAt.day}-${reversed[index].createdAt.month}-${reversed[index].createdAt.year} ${reversed[index].createdAt.hour}:${reversed[index].createdAt.minute}',
                                   ),
                                 ),
                                 DataCell(Row(
@@ -157,12 +145,12 @@ class SupplierList extends HookWidget {
                                           context: context,
                                           child: CreateUpdateSupplier(
                                             createdAt:
-                                                snapshot.data![index].createdAt,
-                                            id: snapshot.data![index].id,
-                                            name: snapshot.data![index].name,
-                                            rue: snapshot.data![index].rue,
-                                            phone: snapshot.data![index].phone,
-                                            ville: snapshot.data![index].ville,
+                                                reversed[index].createdAt,
+                                            id: reversed[index].id,
+                                            name: reversed[index].name,
+                                            rue: reversed[index].rue,
+                                            phone: reversed[index].phone,
+                                            ville: reversed[index].ville,
                                             refresh: refresh,
                                           ),
                                         );
@@ -175,7 +163,7 @@ class SupplierList extends HookWidget {
                                     IconButton(
                                       onPressed: () {
                                         getIt<MyDatabase>().deleteSuppliers(
-                                            snapshot.data![index].id);
+                                            reversed[index].id);
                                         refresh.value = !refresh.value;
                                       },
                                       icon: const Icon(

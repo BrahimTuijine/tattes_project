@@ -94,7 +94,6 @@ class ProductList extends HookWidget {
                         child: DataTable2(
                           columnSpacing: 12,
                           horizontalMargin: 12,
-                          // minWidth: 600,
                           columns: const [
                             DataColumn2(
                               label: Text("Id"),
@@ -133,7 +132,7 @@ class ProductList extends HookWidget {
                             ),
                           ],
                           rows: List<DataRow>.generate(
-                            snapshot.data!.length,
+                            reversed.length,
                             (index) => DataRow(
                               cells: [
                                 DataCell(
@@ -189,7 +188,7 @@ class ProductList extends HookWidget {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
                                           child: CreateUpdateProduct(
-                                            product: snapshot.data![index],
+                                            product: reversed[index],
                                             refresh: refresh,
                                           ),
                                         );
@@ -201,8 +200,8 @@ class ProductList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        getIt<MyDatabase>().deleteProduct(
-                                            snapshot.data![index].id);
+                                        getIt<MyDatabase>()
+                                            .deleteProduct(reversed[index].id);
                                         refresh.value = !refresh.value;
                                       },
                                       icon: const Icon(

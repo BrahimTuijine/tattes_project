@@ -82,10 +82,9 @@ class ClientList extends HookWidget {
                         child: Text('there is no client'),
                       );
                     } else {
-                      
+                      List<Client> reversed = snapshot.data!.reversed.toList();
                       return Expanded(
                         child: DataTable2(
-
                           columnSpacing: 12,
                           horizontalMargin: 12,
                           // minWidth: 600,
@@ -121,39 +120,39 @@ class ClientList extends HookWidget {
                             ),
                           ],
                           rows: List<DataRow>.generate(
-                            snapshot.data!.length,
+                            reversed.length,
                             (index) => DataRow(
                               cells: [
                                 DataCell(
                                   CustomText(
-                                    text: '${snapshot.data![index].id}',
+                                    text: '${reversed[index].id}',
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].name,
+                                    text: reversed[index].name,
                                   ),
                                 ),
+                                DataCell(
+                                    CustomText(text: reversed[index].phone)),
                                 DataCell(CustomText(
-                                    text: snapshot.data![index].phone)),
-                                DataCell(CustomText(
-                                  text: snapshot.data![index].ville,
+                                  text: reversed[index].ville,
                                 )),
                                 DataCell(
-                                  CustomText(text: snapshot.data![index].rue),
+                                  CustomText(text: reversed[index].rue),
                                 ),
                                 DataCell(
-                                  CustomText(text: snapshot.data![index].cin),
+                                  CustomText(text: reversed[index].cin),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].numTva,
+                                    text: reversed[index].numTva,
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
                                     text:
-                                        '${snapshot.data![index].createdAt.day}-${snapshot.data![index].createdAt.month}-${snapshot.data![index].createdAt.year} ${snapshot.data![index].createdAt.hour}:${snapshot.data![index].createdAt.minute}',
+                                        '${reversed[index].createdAt.day}-${reversed[index].createdAt.month}-${reversed[index].createdAt.year} ${reversed[index].createdAt.hour}:${reversed[index].createdAt.minute}',
                                   ),
                                 ),
                                 DataCell(Row(
@@ -164,12 +163,12 @@ class ClientList extends HookWidget {
                                           context: context,
                                           child: CreateUpdateClient(
                                             createdAt:
-                                                snapshot.data![index].createdAt,
-                                            id: snapshot.data![index].id,
-                                            name: snapshot.data![index].name,
-                                            rue: snapshot.data![index].rue,
-                                            phone: snapshot.data![index].phone,
-                                            ville: snapshot.data![index].ville,
+                                                reversed[index].createdAt,
+                                            id: reversed[index].id,
+                                            name: reversed[index].name,
+                                            rue: reversed[index].rue,
+                                            phone: reversed[index].phone,
+                                            ville: reversed[index].ville,
                                             refresh: refresh,
                                           ),
                                         );
@@ -181,8 +180,8 @@ class ClientList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        getIt<MyDatabase>().deleteClient(
-                                            snapshot.data![index].id);
+                                        getIt<MyDatabase>()
+                                            .deleteClient(reversed[index].id);
                                         refresh.value = !refresh.value;
                                       },
                                       icon: const Icon(
