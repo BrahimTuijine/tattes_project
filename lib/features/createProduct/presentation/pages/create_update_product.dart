@@ -38,8 +38,11 @@ class CreateUpdateProduct extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedTva = useState<double>(0);
-    final prixTtc = useState<int>(0);
+    final selectedTva =
+        useState<double>(product?.tva == null ? 0 : double.parse(product!.tva));
+    final prixTtc =
+        useState<int>(product?.prix == null ? 0 : int.parse(product!.prix));
+
     return Form(
       key: formKey,
       child: Column(
@@ -74,7 +77,7 @@ class CreateUpdateProduct extends HookWidget {
                           int.tryParse(prix);
                           prixTtc.value = int.parse(prix);
                         } catch (e) {
-                          debugPrint(e.toString());
+                          prixTtc.value = 0;
                         }
                       },
                       initvalue: product?.prix ?? "0",
@@ -165,7 +168,7 @@ class CreateUpdateProduct extends HookWidget {
                                     color: blueGreen,
                                     fontWeight: FontWeight.bold),
                               ),
-                              Autocomplete<Fournisser>(
+                              RawAutocomplete<Fournisser>(
                                 initialValue: TextEditingValue(
                                   text: product?.fournisser ?? '',
                                 ),
@@ -220,7 +223,6 @@ class CreateUpdateProduct extends HookWidget {
                                       decoration: BoxDecoration(
                                         boxShadow: [kDefaultShadow],
                                         color: Colors.white,
-                                        // border: Border.all(),
                                       ),
                                       width: 250,
                                       height: 200,
@@ -307,10 +309,8 @@ class CreateUpdateProduct extends HookWidget {
                           const SizedBox(
                             height: 25,
                           ),
-                          Text(
-                            prixOrTax(
-                                prixTtc: prixTtc.value, tva: selectedTva.value),
-                          ),
+                          Text(prixOrTax(
+                              prixTtc: prixTtc.value, tva: selectedTva.value)),
                         ],
                       )),
                 ],
@@ -333,7 +333,9 @@ class CreateUpdateProduct extends HookWidget {
                         prixOrTax(
                             prixTtc: prixTtc.value, tva: selectedTva.value),
                       ),
-                      fournisser: drift.Value(productData['fournisser']),
+                      fournisser: drift.Value(productData['fournisser'] == ''
+                          ? product!.fournisser
+                          : productData['fournisser']),
                       id: drift.Value(product!.id),
                       nbrePiece: drift.Value(productData['nbPiece']),
                       prix: drift.Value(productData['prix']),

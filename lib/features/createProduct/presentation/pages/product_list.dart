@@ -105,7 +105,7 @@ class ProductList extends HookWidget {
                               ),
                             ),
                             DataColumn2(
-                              label: Text("Description"),
+                              label: Text("Fournisser"),
                             ),
                             DataColumn2(
                               label: Text("Categorie"),
@@ -147,7 +147,7 @@ class ProductList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: reversed[index].description ?? 'NoN',
+                                    text: reversed[index].fournisser,
                                   ),
                                 ),
                                 DataCell(
@@ -167,7 +167,11 @@ class ProductList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: reversed[index].tva,
+                                    text: reversed[index].tva == '0.0'
+                                        ? '0 %'
+                                        : reversed[index].tva == '0.07'
+                                            ? '7 %'
+                                            : '19 %',
                                   ),
                                 ),
                                 DataCell(
