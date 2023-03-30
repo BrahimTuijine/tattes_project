@@ -89,35 +89,46 @@ class ProductList extends HookWidget {
                         child: Text('there is no product'),
                       );
                     } else {
+                      List<Product> reversed = snapshot.data!.reversed.toList();
                       return Expanded(
                         child: DataTable2(
                           columnSpacing: 12,
                           horizontalMargin: 12,
-                          minWidth: 600,
+                          // minWidth: 600,
                           columns: const [
                             DataColumn2(
                               label: Text("Id"),
-                              // size: ColumnSize.,
+                              size: ColumnSize.M,
                             ),
                             DataColumn2(
-                              label: Text("Libelle"),
+                              label: Text(
+                                "Libelle",
+                              ),
                             ),
                             DataColumn2(
                               label: Text("Description"),
                             ),
                             DataColumn2(
-                              label: Text("TVA"),
-                            ),
-                            DataColumn2(
                               label: Text("Categorie"),
                             ),
                             DataColumn2(
-                              label: Text("Nombre de piece"),
+                              size: ColumnSize.S,
+                              label: Text("Nb piece"),
                             ),
-                            DataColumn(
+                            DataColumn2(
+                              label: Text("Prix"),
+                            ),
+                            DataColumn2(
+                              label: Text("TVA"),
+                            ),
+                            DataColumn2(
+                              label: Text("Prix or tax"),
+                            ),
+                            DataColumn2(
+                              size: ColumnSize.L,
                               label: Text('Created At'),
                             ),
-                            DataColumn(
+                            DataColumn2(
                               label: Text('Actions'),
                             ),
                           ],
@@ -127,39 +138,48 @@ class ProductList extends HookWidget {
                               cells: [
                                 DataCell(
                                   CustomText(
-                                    text: '${snapshot.data![index].id}',
+                                    text: '${reversed[index].id}',
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].libelle,
+                                    text: reversed[index].libelle,
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].description ??
-                                        'NoN',
+                                    text: reversed[index].description ?? 'NoN',
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].tva,
+                                    text: reversed[index].categorie,
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].categorie,
+                                    text: reversed[index].nbrePiece,
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: snapshot.data![index].nbrePiece,
+                                    text: reversed[index].prix,
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: reversed[index].tva,
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text: reversed[index].prixOrTax,
                                   ),
                                 ),
                                 DataCell(
                                   CustomText(
                                     text:
-                                        '${snapshot.data![index].createdAt.day}-${snapshot.data![index].createdAt.month}-${snapshot.data![index].createdAt.year} ${snapshot.data![index].createdAt.hour}:${snapshot.data![index].createdAt.minute}',
+                                        '${reversed[index].createdAt.day}-${reversed[index].createdAt.month}-${reversed[index].createdAt.year} ${reversed[index].createdAt.hour}:${reversed[index].createdAt.minute}',
                                   ),
                                 ),
                                 DataCell(Row(
@@ -169,17 +189,7 @@ class ProductList extends HookWidget {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
                                           child: CreateUpdateProduct(
-                                            
-                                            categorie:
-                                                snapshot.data![index].categorie,
-                                            description: snapshot
-                                                .data![index].description,
-                                            libelle:
-                                                snapshot.data![index].libelle,
-                                            id: snapshot.data![index].id,
-                                            name: snapshot.data![index].libelle,
-                                            prix: snapshot.data![index].prix,
-                                            tva: snapshot.data![index].tva,
+                                            product: snapshot.data![index],
                                             refresh: refresh,
                                           ),
                                         );

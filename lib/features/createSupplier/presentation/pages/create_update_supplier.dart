@@ -211,7 +211,7 @@ class CreateUpdateSupplier extends HookWidget {
                 }
               }
             },
-            text: id != null ? 'update' : 'create',
+            text: id != null ? 'mise à jour' : 'créer',
           ),
         ],
       ),

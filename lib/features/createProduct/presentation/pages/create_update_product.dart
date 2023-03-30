@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -12,30 +13,15 @@ import 'package:products_management/injection.dart';
 class CreateUpdateProduct extends HookWidget {
   CreateUpdateProduct({
     super.key,
-    this.libelle,
-    this.id,
-    this.name,
-    this.nbPiece,
-    this.categorie,
-    this.prix,
-    this.tva,
-    this.description,
+    this.product,
     required this.refresh,
   });
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final String? libelle;
-  final int? id;
-  final String? name;
-  final String? nbPiece;
-  final String? categorie;
-  final String? prix;
-  final String? tva;
-  final String? description;
+  final Product? product;
 
   final Map<String, dynamic> productData = {
     "libelle": '',
-    "tva": '',
     "prix": 0,
     "categorie": '',
     "description": '',
@@ -43,6 +29,10 @@ class CreateUpdateProduct extends HookWidget {
     'fournisser': '',
     'prixOrTax': ''
   };
+
+  String prixOrTax({required int prixTtc, required double tva}) {
+    return (prixTtc - (prixTtc * tva)).toString();
+  }
 
   final ValueNotifier<bool> refresh;
 
@@ -61,7 +51,7 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: libelle,
+                      initvalue: product?.libelle,
                       label: 'Libellé',
                       texthint: 'libellé',
                       onsaved: (newValue) {
@@ -80,15 +70,14 @@ class CreateUpdateProduct extends HookWidget {
                     child: InputField(
                       // controller: prixController,
                       onChanged: (prix) {
-                        print(prix);
                         try {
-                          int.parse(prix);
+                          int.tryParse(prix);
                           prixTtc.value = int.parse(prix);
                         } catch (e) {
-                          print(e);
+                          debugPrint(e.toString());
                         }
                       },
-                      initvalue: prix ?? "0",
+                      initvalue: product?.prix ?? "0",
                       label: 'Prix',
                       texthint: 'prix',
                       onsaved: (newValue) {
@@ -105,7 +94,7 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: categorie,
+                      initvalue: product?.categorie,
                       label: 'categorie',
                       texthint: 'categorie',
                       onsaved: (newValue) {
@@ -135,15 +124,15 @@ class CreateUpdateProduct extends HookWidget {
                           items: const [
                             DropdownMenuItem(
                               value: 0,
-                              child: Text('0'),
+                              child: Text('0 %'),
                             ),
                             DropdownMenuItem(
                               value: .07,
-                              child: Text('7'),
+                              child: Text('7 %'),
                             ),
                             DropdownMenuItem(
                               value: .19,
-                              child: Text('19'),
+                              child: Text('19 %'),
                             ),
                           ],
                           onChanged: (value) {
@@ -177,6 +166,9 @@ class CreateUpdateProduct extends HookWidget {
                                     fontWeight: FontWeight.bold),
                               ),
                               Autocomplete<Fournisser>(
+                                initialValue: TextEditingValue(
+                                  text: product?.fournisser ?? '',
+                                ),
                                 optionsBuilder:
                                     (TextEditingValue textEditingValue) {
                                   return snapshot.data!
@@ -271,7 +263,7 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: nbPiece,
+                      initvalue: product?.nbrePiece,
                       label: 'nombre de piece',
                       texthint: '10',
                       onsaved: (newValue) {
@@ -288,7 +280,7 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: description,
+                      initvalue: product?.description,
                       label: 'Description',
                       texthint: 'description',
                       onsaved: (newValue) {
@@ -302,32 +294,25 @@ class CreateUpdateProduct extends HookWidget {
                   const SizedBox(
                     height: 30,
                   ),
-                  const Align(
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      'Prix or tax',
-                      style: TextStyle(
-                          color: blueGreen, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  Text(
-                      '${prixTtc.value - (prixTtc.value * selectedTva.value)}'),
-                  // SizedBox(
-                  //   width: 300,
-                  //   child: InputField(
-                  //     enabled: false,
-                  //     texthint: '',
-                  //     initvalue:
-                  //         '${prixTtc.value - (prixTtc.value * selectedTva.value)}',
-                  //     label: 'Prix or tax',
-                  //     onsaved: (newValue) {
-                  //       productData['prixOrTax'] = newValue;
-                  //     },
-                  //     validator: (value) {
-                  //       return null;
-                  //     },
-                  //   ),
-                  // ),
+                  SizedBox(
+                      width: 300,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Prix or tax',
+                            style: TextStyle(
+                                color: blueGreen, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 25,
+                          ),
+                          Text(
+                            prixOrTax(
+                                prixTtc: prixTtc.value, tva: selectedTva.value),
+                          ),
+                        ],
+                      )),
                 ],
               )
             ],
@@ -341,14 +326,18 @@ class CreateUpdateProduct extends HookWidget {
               if (formKey.currentState!.validate()) {
                 formKey.currentState!.save();
 
-                if (id != null) {
+                if (product?.id != null) {
                   try {
                     final entity = ProductsCompanion(
-                      fournisser: drift.Value(productData['nbPiece']),
-                      id: drift.Value(id!),
+                      prixOrTax: drift.Value(
+                        prixOrTax(
+                            prixTtc: prixTtc.value, tva: selectedTva.value),
+                      ),
+                      fournisser: drift.Value(productData['fournisser']),
+                      id: drift.Value(product!.id),
                       nbrePiece: drift.Value(productData['nbPiece']),
                       prix: drift.Value(productData['prix']),
-                      tva: drift.Value(productData['tva']),
+                      tva: drift.Value(selectedTva.value.toString()),
                       categorie: drift.Value(productData['categorie']),
                       libelle: drift.Value(productData['libelle']),
                       description: drift.Value(productData['description']),
@@ -372,13 +361,17 @@ class CreateUpdateProduct extends HookWidget {
                 } else {
                   try {
                     final entity = ProductsCompanion(
-                      fournisser: drift.Value(productData['nbPiece']),
+                      prixOrTax: drift.Value(
+                        prixOrTax(
+                            prixTtc: prixTtc.value, tva: selectedTva.value),
+                      ),
+                      fournisser: drift.Value(productData['fournisser']),
                       categorie: drift.Value(productData['categorie']),
                       libelle: drift.Value(productData['libelle']),
                       nbrePiece: drift.Value(productData['nbPiece']),
                       description: drift.Value(productData['description']),
                       prix: drift.Value(productData['prix']),
-                      tva: drift.Value(productData['tva']),
+                      tva: drift.Value(selectedTva.value.toString()),
                     );
 
                     getIt<MyDatabase>().insertProduct(entity);
@@ -399,7 +392,7 @@ class CreateUpdateProduct extends HookWidget {
                 }
               }
             },
-            text: id != null ? 'update' : 'create',
+            text: product?.id != null ? 'mise à jour' : 'créer',
           ),
         ],
       ),

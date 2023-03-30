@@ -82,11 +82,13 @@ class ClientList extends HookWidget {
                         child: Text('there is no client'),
                       );
                     } else {
+                      
                       return Expanded(
                         child: DataTable2(
+
                           columnSpacing: 12,
                           horizontalMargin: 12,
-                          minWidth: 600,
+                          // minWidth: 600,
                           columns: const [
                             DataColumn2(
                               label: Text("Id"),
