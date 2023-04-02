@@ -1,6 +1,7 @@
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:intl/intl.dart';
 import 'package:products_management/core/database/database.dart';
 
 import 'package:products_management/core/strings/colors.dart';
@@ -151,8 +152,8 @@ class ClientList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text:
-                                        '${reversed[index].createdAt.day}-${reversed[index].createdAt.month}-${reversed[index].createdAt.year} ${reversed[index].createdAt.hour}:${reversed[index].createdAt.minute}',
+                                    text: DateFormat('yyyy-MM-dd kk:mm')
+                                        .format(reversed[index].createdAt),
                                   ),
                                 ),
                                 DataCell(Row(
