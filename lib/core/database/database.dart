@@ -44,7 +44,13 @@ class Fournissers extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-@DriftDatabase(tables: [Clients, Products, Fournissers])
+class BonLivraisons extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get clientName => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
+
+@DriftDatabase(tables: [Clients, Products, Fournissers, BonLivraisons])
 class MyDatabase extends _$MyDatabase {
   // we tell the database where to store the data with this constructor
   MyDatabase() : super(_openConnection());
@@ -115,6 +121,30 @@ class MyDatabase extends _$MyDatabase {
 
   Future<int> deleteSuppliers(int id) async {
     return await (delete(fournissers)..where((tbl) => tbl.id.equals(id))).go();
+  }
+
+  //! CRUD bonLisvraison
+  Future<int> insertBonLisvraison(
+      BonLivraisonsCompanion bonLivraisonsCompanion) async {
+    return await into(bonLivraisons).insert(bonLivraisonsCompanion);
+  }
+
+  Future<List<BonLivraison>> getBonLisvraison() async {
+    return await select(bonLivraisons).get();
+  }
+
+  Future<int> updateBonLisvraison(
+      BonLivraisonsCompanion bonLivraisonsCompanion) async {
+    return (update(bonLivraisons)
+          ..where(
+            (t) => t.id.equals(bonLivraisonsCompanion.id.value),
+          ))
+        .write(bonLivraisonsCompanion);
+  }
+
+  Future<int> deleteBonLisvraison(int id) async {
+    return await (delete(bonLivraisons)..where((tbl) => tbl.id.equals(id)))
+        .go();
   }
 }
 

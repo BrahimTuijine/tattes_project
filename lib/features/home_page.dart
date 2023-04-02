@@ -1,6 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:products_management/features/createBonLivraison/screens/bon_livraison_list.dart';
 import 'package:products_management/features/createClient/presentation/pages/client_list.dart';
 import 'package:products_management/features/createProduct/presentation/pages/product_list.dart';
 import 'package:products_management/features/createSupplier/presentation/pages/supplier_list.dart';
@@ -18,6 +19,7 @@ class HomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final currentIndex = useState<int>(0);
+
     return NavigationView(
       appBar: NavigationAppBar(
         automaticallyImplyLeading: false,
@@ -122,21 +124,14 @@ class HomePage extends HookWidget {
           //   title: const Text('second screen'),
           //   body: const DataTable2SimpleDemo(),
           // ),
-          // PaneItem(
-          //   selectedTileColor:
-          //       ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-          //   icon: const Icon(FluentIcons.screen),
-          //   title: const Text('second screen'),
-          //   body: PageView(
-          //     controller: controller,
-          //     children: [
-          //       SecondPage(
-          //         controller: controller,
-          //       ),
-          //       const ThirdPage(number: 3)
-          //     ],
-          //   ),
-          // ),
+          PaneItem(
+            selectedTileColor:
+                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+            icon: const Icon(FluentIcons.pdf),
+            title: const Text('bon de livraison'),
+            body: const BonLivraisonList(),
+            // const ThirdPage(number: 3)
+          ),
         ],
         selected: currentIndex.value,
         onChanged: (value) {

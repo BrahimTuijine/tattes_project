@@ -40,7 +40,12 @@ dependencies:
   injectable: ^2.1.0
   path: ^1.8.2
   path_provider: ^2.0.13
+  pdf: ^3.10.1
   sqlite3_flutter_libs: ^0.5.13
+  # open pdf document
+  # format dates for invoice
+  intl: ^0.17.0
+  open_document: ^1.0.6+2
 
 dev_dependencies:
   build_runner: ^2.3.3

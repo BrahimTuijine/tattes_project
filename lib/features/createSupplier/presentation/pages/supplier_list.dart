@@ -114,6 +114,7 @@ class SupplierList extends HookWidget {
                             (index) => DataRow(
                               cells: [
                                 DataCell(
+                                  
                                   CustomText(
                                     text: '${reversed[index].id}',
                                   ),

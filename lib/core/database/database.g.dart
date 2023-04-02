@@ -1228,15 +1228,225 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
   }
 }
 
+class $BonLivraisonsTable extends BonLivraisons
+    with TableInfo<$BonLivraisonsTable, BonLivraison> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BonLivraisonsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _clientNameMeta =
+      const VerificationMeta('clientName');
+  @override
+  late final GeneratedColumn<String> clientName = GeneratedColumn<String>(
+      'client_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [id, clientName, createdAt];
+  @override
+  String get aliasedName => _alias ?? 'bon_livraisons';
+  @override
+  String get actualTableName => 'bon_livraisons';
+  @override
+  VerificationContext validateIntegrity(Insertable<BonLivraison> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('client_name')) {
+      context.handle(
+          _clientNameMeta,
+          clientName.isAcceptableOrUnknown(
+              data['client_name']!, _clientNameMeta));
+    } else if (isInserting) {
+      context.missing(_clientNameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BonLivraison map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BonLivraison(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      clientName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}client_name'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $BonLivraisonsTable createAlias(String alias) {
+    return $BonLivraisonsTable(attachedDatabase, alias);
+  }
+}
+
+class BonLivraison extends DataClass implements Insertable<BonLivraison> {
+  final int id;
+  final String clientName;
+  final DateTime createdAt;
+  const BonLivraison(
+      {required this.id, required this.clientName, required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['client_name'] = Variable<String>(clientName);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  BonLivraisonsCompanion toCompanion(bool nullToAbsent) {
+    return BonLivraisonsCompanion(
+      id: Value(id),
+      clientName: Value(clientName),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory BonLivraison.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BonLivraison(
+      id: serializer.fromJson<int>(json['id']),
+      clientName: serializer.fromJson<String>(json['clientName']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'clientName': serializer.toJson<String>(clientName),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  BonLivraison copyWith({int? id, String? clientName, DateTime? createdAt}) =>
+      BonLivraison(
+        id: id ?? this.id,
+        clientName: clientName ?? this.clientName,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('BonLivraison(')
+          ..write('id: $id, ')
+          ..write('clientName: $clientName, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, clientName, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BonLivraison &&
+          other.id == this.id &&
+          other.clientName == this.clientName &&
+          other.createdAt == this.createdAt);
+}
+
+class BonLivraisonsCompanion extends UpdateCompanion<BonLivraison> {
+  final Value<int> id;
+  final Value<String> clientName;
+  final Value<DateTime> createdAt;
+  const BonLivraisonsCompanion({
+    this.id = const Value.absent(),
+    this.clientName = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  BonLivraisonsCompanion.insert({
+    this.id = const Value.absent(),
+    required String clientName,
+    this.createdAt = const Value.absent(),
+  }) : clientName = Value(clientName);
+  static Insertable<BonLivraison> custom({
+    Expression<int>? id,
+    Expression<String>? clientName,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (clientName != null) 'client_name': clientName,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  BonLivraisonsCompanion copyWith(
+      {Value<int>? id, Value<String>? clientName, Value<DateTime>? createdAt}) {
+    return BonLivraisonsCompanion(
+      id: id ?? this.id,
+      clientName: clientName ?? this.clientName,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (clientName.present) {
+      map['client_name'] = Variable<String>(clientName.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BonLivraisonsCompanion(')
+          ..write('id: $id, ')
+          ..write('clientName: $clientName, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$MyDatabase extends GeneratedDatabase {
   _$MyDatabase(QueryExecutor e) : super(e);
   late final $ClientsTable clients = $ClientsTable(this);
   late final $ProductsTable products = $ProductsTable(this);
   late final $FournissersTable fournissers = $FournissersTable(this);
+  late final $BonLivraisonsTable bonLivraisons = $BonLivraisonsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [clients, products, fournissers];
+      [clients, products, fournissers, bonLivraisons];
 }
