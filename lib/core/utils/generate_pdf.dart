@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
 import 'package:products_management/core/models/invoice.dart';
@@ -12,15 +13,79 @@ class PdfInvoiceApi {
     pdf.addPage(
       MultiPage(
         build: ((context) => [
+              buildHeader(invoice),
+              SizedBox(height: 2 * PdfPageFormat.cm),
               buildTitle(invoice),
               buildTable(invoice),
               Divider(),
-              buildTotal(invoice)
+              buildTotal(invoice),
+              buildFooter(invoice)
             ]),
       ),
     );
 
     return PdfApi.saveDocument(name: 'bon_de_livraison.pdf', pdf: pdf);
+  }
+
+  static Widget buildHeader(Invoice invoice) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(height: 1 * PdfPageFormat.cm),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildSupplierAddress(invoice),
+              SizedBox(
+                height: 50,
+                width: 50,
+                child: FlutterLogo(),
+              ),
+            ],
+          ),
+          SizedBox(height: 1 * PdfPageFormat.cm),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              buildCustomerAddress(invoice),
+              buildInvoiceInfo(invoice)
+            ],
+          )
+        ],
+      );
+  static buildSupplierAddress(Invoice invoice) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(invoice.supplier.name,
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(height: 1 * PdfPageFormat.mm),
+          Text(invoice.supplier.address),
+        ],
+      );
+
+  static Widget buildFooter(Invoice invoice) => Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Divider(),
+          SizedBox(height: 2 * PdfPageFormat.mm),
+          buildSimpleText(title: 'Address', value: invoice.supplier.address),
+          SizedBox(height: 1 * PdfPageFormat.mm),
+          buildSimpleText(title: 'Email', value: invoice.supplier.email),
+        ],
+      );
+
+  static Widget buildSimpleText(
+      {required String title, required String value}) {
+    final style = TextStyle(fontWeight: FontWeight.bold);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text(title, style: style),
+        SizedBox(width: 2 * PdfPageFormat.mm),
+        Text(value),
+      ],
+    );
   }
 
   static Widget buildTotal(Invoice invoice) {
@@ -39,9 +104,30 @@ class PdfInvoiceApi {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildText(
-                    title: 'Total TTC',
-                    value: totalTTC.toString(),
-                    unite: true),
+                  title: 'Total HT',
+                  value: totalTTC.toString(),
+                  unite: true,
+                ),
+                buildText(
+                  title: 'Total TVA',
+                  value: 80.20.toString(),
+                  unite: true,
+                ),
+                buildText(
+                  title: 'Timbre fiscal',
+                  value: 1000.toString(),
+                  unite: true,
+                ),
+                Divider(),
+                buildText(
+                  title: 'Total TTC',
+                  value: 1000.toString(),
+                  unite: true,
+                ),
+                SizedBox(height: 2 * PdfPageFormat.mm),
+                Container(height: 1, color: PdfColors.grey400),
+                SizedBox(height: .5 * PdfPageFormat.mm),
+                Container(height: 1, color: PdfColors.grey400),
               ],
             ),
           )
@@ -115,4 +201,45 @@ class PdfInvoiceApi {
           SizedBox(height: 0.8 * PdfPageFormat.cm),
         ],
       );
+
+  static Widget buildCustomerAddress(Invoice invoice) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            invoice.customer.name,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          Text(invoice.customer.address),
+        ],
+      );
+
+  static Widget buildInvoiceInfo(Invoice invoice) {
+    final List<String> title = <String>[
+      'invoice Number',
+      'invoice Date',
+      'invoice Terms',
+      'Date échéance',
+    ];
+    final List<String> data = <String>[
+      invoice.info.number,
+      DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
+      invoice.info.description,
+      DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.dueDate),
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+        title.length,
+        (index) => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title[index], style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(width: 3 * PdfPageFormat.cm),
+            Text(data[index]),
+          ],
+        ),
+      ),
+    );
+  }
 }
