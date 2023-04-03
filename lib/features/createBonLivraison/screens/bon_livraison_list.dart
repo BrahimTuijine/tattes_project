@@ -54,7 +54,7 @@ class BonLivraisonList extends HookWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const CustomText(
-                        text: 'List des Bon de Livraison ',
+                        text: 'List des Bon de Livraison',
                         color: Colors.grey,
                         size: 20,
                         weight: FontWeight.w600,
@@ -251,10 +251,103 @@ class BonLivraisonList extends HookWidget {
                                                 await PdfInvoiceApi.generate(
                                                     invoice);
                                             PdfApi.openFile(pdfFile);
+
+                                            
                                           },
                                           icon: const Icon(
                                             Icons.remove_red_eye,
                                             color: Colors.green,
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () async {
+                                            final invoice = Invoice(
+                                                customer: Customer(
+                                                  address: "test",
+                                                  cin: "test",
+                                                  name: "test",
+                                                  numTva: "test",
+                                                ),
+                                                supplier: Supplier(
+                                                  name:
+                                                      "STE MARMOURI GENERAL COMMERCE & DISTRIBUTION",
+                                                  address:
+                                                      "RUE DE L'ENVIRONNEMENT",
+                                                  mf: "MF: 1228271P/P/M 000 EL ALIA",
+                                                  phone:
+                                                      "54 673 296 - 52 673 299 - 56 452 383- 56 452 015",
+                                                  email:
+                                                      "ste.marmouri@gmail.com",
+                                                ),
+                                                info: InvoiceInfo(
+                                                  description:
+                                                      "description ...",
+                                                  number:
+                                                      "${DateTime.now().year}-9999",
+                                                  date: DateTime.now(),
+                                                  dueDate: DateTime.now().add(
+                                                      const Duration(days: 7)),
+                                                ),
+                                                items: [
+                                                  InvoiceItem(
+                                                    description: 'Coffee',
+                                                    date: DateTime.now(),
+                                                    quantity: 3,
+                                                    vat: 0.19,
+                                                    unitPrice: 5.99,
+                                                  ),
+                                                  InvoiceItem(
+                                                    description: 'Water',
+                                                    date: DateTime.now(),
+                                                    quantity: 8,
+                                                    vat: 0.19,
+                                                    unitPrice: 0.99,
+                                                  ),
+                                                  InvoiceItem(
+                                                    description: 'Orange',
+                                                    date: DateTime.now(),
+                                                    quantity: 3,
+                                                    vat: 0.19,
+                                                    unitPrice: 2.99,
+                                                  ),
+                                                  InvoiceItem(
+                                                    description: 'Apple',
+                                                    date: DateTime.now(),
+                                                    quantity: 8,
+                                                    vat: 0.19,
+                                                    unitPrice: 3.99,
+                                                  ),
+                                                  InvoiceItem(
+                                                    description: 'Mango',
+                                                    date: DateTime.now(),
+                                                    quantity: 1,
+                                                    vat: 0.19,
+                                                    unitPrice: 1.59,
+                                                  ),
+                                                  InvoiceItem(
+                                                    description: 'Blue Berries',
+                                                    date: DateTime.now(),
+                                                    quantity: 5,
+                                                    vat: 0.19,
+                                                    unitPrice: 0.99,
+                                                  ),
+                                                  InvoiceItem(
+                                                    description: 'Lemon',
+                                                    date: DateTime.now(),
+                                                    quantity: 4,
+                                                    vat: 0.19,
+                                                    unitPrice: 1.29,
+                                                  ),
+                                                ]);
+                                            final pdfFile =
+                                                await PdfInvoiceApi.generate(
+                                                    invoice);
+                                            // ? print pdf
+                                            PdfApi.printPdf(pdfFile);
+                                          },
+                                          icon: const Icon(
+                                            Icons.print,
+                                            color: Colors.black,
                                           ),
                                         ),
                                       ],

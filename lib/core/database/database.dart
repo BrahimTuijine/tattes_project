@@ -30,7 +30,6 @@ class Products extends Table {
   TextColumn get fournisser => text()();
   TextColumn get prixOrTax => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
-  // add nbre piece
   // prix or tax => prixx ttc - tva (0, 7 , 19)
 }
 
