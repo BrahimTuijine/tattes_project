@@ -52,34 +52,33 @@ class BonLivraisonList extends HookWidget {
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const CustomText(
+                    children: const [
+                      CustomText(
                         text: 'List des Bon de Livraison',
                         color: Colors.grey,
                         size: 20,
                         weight: FontWeight.w600,
                       ),
-                      SizedBox(
-                        width: 200,
-                        height: 40,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: blueGreen),
-                          onPressed: () {
-                            MyAlertDialog.showAlertDialog(
-                                context: context,
-                                child: CreateUpdateBonLivraison(
-                                  refresh: refresh,
-                                ));
-                          },
-                          child: const Center(
-                            child: Text(
-                              textAlign: TextAlign.center,
-                              "Creation de Bon de Livraison",
-                            ),
-                          ),
-                        ),
-                      ),
+                      // SizedBox(
+                      //   width: 200,
+                      //   height: 40,
+                      //   child: ElevatedButton(
+                      //     style: ElevatedButton.styleFrom(
+                      //         backgroundColor: blueGreen),
+                      //     onPressed: () {
+                      //       MyAlertDialog.showAlertDialog(
+                      //         context: context,
+                      //         child: CreateUpdateBonLivraison(),
+                      //       );
+                      //     },
+                      //     child: const Center(
+                      //       child: Text(
+                      //         textAlign: TextAlign.center,
+                      //         "Creation de Bon de Livraison",
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                   const SizedBox(
@@ -134,27 +133,26 @@ class BonLivraisonList extends HookWidget {
                                     ),
                                     DataCell(
                                       CustomText(
-                                          text: DateFormat('yyyy-MM-dd kk:mm')
-                                              .format(
-                                                  reversed[index].createdAt)),
+                                        text: DateFormat('yyyy-MM-dd kk:mm')
+                                            .format(reversed[index].createdAt),
+                                      ),
                                     ),
                                     DataCell(Row(
                                       children: [
-                                        IconButton(
-                                          onPressed: () {
-                                            MyAlertDialog.showAlertDialog(
-                                              context: context,
-                                              child: CreateUpdateBonLivraison(
-                                                refresh: refresh,
-                                                bonLivraison: reversed[index],
-                                              ),
-                                            );
-                                          },
-                                          icon: const Icon(
-                                            Icons.edit,
-                                            color: Colors.blue,
-                                          ),
-                                        ),
+                                        // IconButton(
+                                        //   onPressed: () {
+                                        //     MyAlertDialog.showAlertDialog(
+                                        //       context: context,
+                                        //       child: CreateUpdateBonLivraison(
+                                        //         bonLivraison: reversed[index],
+                                        //       ),
+                                        //     );
+                                        //   },
+                                        //   icon: const Icon(
+                                        //     Icons.edit,
+                                        //     color: Colors.blue,
+                                        //   ),
+                                        // ),
                                         IconButton(
                                           onPressed: () {
                                             getIt<MyDatabase>()

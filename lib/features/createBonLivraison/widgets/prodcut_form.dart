@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -91,7 +90,6 @@ class ProductForm extends HookWidget {
                               color: Colors.white,
                             ),
                             width: 250,
-                            height: 200,
                             child: Material(
                               child: ListView.builder(
                                 padding: const EdgeInsets.all(10.0),
@@ -125,7 +123,7 @@ class ProductForm extends HookWidget {
           },
         ),
         const SizedBox(
-          width: 30,
+          width: 20,
         ),
         SizedBox(
           width: 80,

@@ -2,6 +2,7 @@ import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/features/createBonLivraison/screens/bon_livraison_list.dart';
+import 'package:products_management/features/createBonLivraison/screens/create_update_bon_livraison.dart';
 import 'package:products_management/features/createClient/presentation/pages/client_list.dart';
 import 'package:products_management/features/createProduct/presentation/pages/product_list.dart';
 import 'package:products_management/features/createSupplier/presentation/pages/supplier_list.dart';
@@ -116,7 +117,14 @@ class HomePage extends HookWidget {
             icon: const Icon(FluentIcons.production_floor_management),
             title: const Text('fournisseur'),
           ),
-          // PaneItemHeader(header: const Text('List')),
+          PaneItem(
+            selectedTileColor:
+                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+            body: CreateUpdateBonLivraison(),
+            icon: const Icon(FluentIcons.production_floor_management),
+            title: const Text('bon de livraison'),
+          ),
+          PaneItemHeader(header: const Text('List')),
           // PaneItem(
           //   selectedTileColor:
           //       ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
