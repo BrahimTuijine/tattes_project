@@ -171,10 +171,10 @@ class BonLivraisonList extends HookWidget {
                                           onPressed: () async {
                                             final invoice = Invoice(
                                                 customer: Customer(
-                                                  address: "test",
-                                                  cin: "test",
-                                                  name: "test",
-                                                  numTva: "test",
+                                                  address: "OUSSAMA BEN ZAID",
+                                                  cin: "11432777",
+                                                  name: "BRAHIM TUIJINE",
+                                                  numTva: "FDJLFJD16516",
                                                 ),
                                                 supplier: Supplier(
                                                   name:
@@ -251,8 +251,6 @@ class BonLivraisonList extends HookWidget {
                                                 await PdfInvoiceApi.generate(
                                                     invoice);
                                             PdfApi.openFile(pdfFile);
-
-                                            
                                           },
                                           icon: const Icon(
                                             Icons.remove_red_eye,
@@ -263,10 +261,10 @@ class BonLivraisonList extends HookWidget {
                                           onPressed: () async {
                                             final invoice = Invoice(
                                                 customer: Customer(
-                                                  address: "test",
-                                                  cin: "test",
-                                                  name: "test",
-                                                  numTva: "test",
+                                                  address: "OUSSAMA BEN ZAID",
+                                                  cin: "11432777",
+                                                  name: "BRAHIM TUIJINE",
+                                                  numTva: "FDJLFJD16516",
                                                 ),
                                                 supplier: Supplier(
                                                   name:

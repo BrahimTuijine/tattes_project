@@ -30,7 +30,7 @@ class PdfInvoiceApi {
   static Widget buildHeader(Invoice invoice) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 1 * PdfPageFormat.cm),
+          // SizedBox(height: 1 * PdfPageFormat.cm),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -227,19 +227,25 @@ class PdfInvoiceApi {
       DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.dueDate),
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: List.generate(
-        title.length,
-        (index) => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(title[index], style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(width: 3 * PdfPageFormat.cm),
-            Text(data[index]),
-          ],
+    return Row(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(
+            title.length,
+            (index) => Text(title[index],
+                style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
         ),
-      ),
+        SizedBox(width: 3 * PdfPageFormat.cm),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: List.generate(
+            title.length,
+            (index) => Text(data[index]),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -168,7 +168,7 @@ class CreateUpdateProduct extends HookWidget {
                                     color: blueGreen,
                                     fontWeight: FontWeight.bold),
                               ),
-                              RawAutocomplete<Fournisser>(
+                              Autocomplete<Fournisser>(
                                 initialValue: TextEditingValue(
                                   text: product?.fournisser ?? '',
                                 ),
