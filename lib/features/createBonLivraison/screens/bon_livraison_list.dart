@@ -11,8 +11,6 @@ import 'package:products_management/core/strings/colors.dart';
 import 'package:products_management/core/utils/generate_pdf.dart';
 import 'package:products_management/core/utils/pdf_api.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
-import 'package:products_management/core/widgets/dialog.dart';
-import 'package:products_management/features/createBonLivraison/screens/create_update_bon_livraison.dart';
 import 'package:products_management/injection.dart';
 
 class BonLivraisonList extends HookWidget {
@@ -169,6 +167,7 @@ class BonLivraisonList extends HookWidget {
                                           onPressed: () async {
                                             final invoice = Invoice(
                                                 customer: Customer(
+                                                  phone: '50611513',
                                                   address: "OUSSAMA BEN ZAID",
                                                   cin: "11432777",
                                                   name: "BRAHIM TUIJINE",
@@ -244,7 +243,8 @@ class BonLivraisonList extends HookWidget {
                                                     vat: 0.19,
                                                     unitPrice: 1.29,
                                                   ),
-                                                ]);
+                                                ],
+                                                id: '10');
                                             final pdfFile =
                                                 await PdfInvoiceApi.generate(
                                                     invoice);
@@ -258,7 +258,9 @@ class BonLivraisonList extends HookWidget {
                                         IconButton(
                                           onPressed: () async {
                                             final invoice = Invoice(
+                                                id: '30',
                                                 customer: Customer(
+                                                  phone: '50611513',
                                                   address: "OUSSAMA BEN ZAID",
                                                   cin: "11432777",
                                                   name: "BRAHIM TUIJINE",

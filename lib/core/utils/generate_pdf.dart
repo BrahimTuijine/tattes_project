@@ -14,8 +14,9 @@ class PdfInvoiceApi {
       MultiPage(
         build: ((context) => [
               buildHeader(invoice),
-              SizedBox(height: 2 * PdfPageFormat.cm),
+              SizedBox(height: 1 * PdfPageFormat.cm),
               buildTitle(invoice),
+              SizedBox(height: 1 * PdfPageFormat.cm),
               buildTable(invoice),
               Divider(),
               buildTotal(invoice),
@@ -43,24 +44,12 @@ class PdfInvoiceApi {
             ],
           ),
           SizedBox(height: 1 * PdfPageFormat.cm),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              buildCustomerAddress(invoice),
-              buildInvoiceInfo(invoice)
-            ],
-          )
+          buildInvoiceInfo(invoice)
         ],
       );
-  static buildSupplierAddress(Invoice invoice) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(invoice.supplier.name,
-              style: TextStyle(fontWeight: FontWeight.bold)),
-          SizedBox(height: 1 * PdfPageFormat.mm),
-          Text(invoice.supplier.address),
-        ],
+  static buildSupplierAddress(Invoice invoice) => Text(
+        ' BON DE LIVRAISON N°${invoice.id}',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
       );
 
   static Widget buildFooter(Invoice invoice) => Column(
@@ -189,27 +178,39 @@ class PdfInvoiceApi {
     );
   }
 
-  static Widget buildTitle(Invoice invoice) => Column(
+  static Widget buildTitle(Invoice invoice) => Row(
+        mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Invoice',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 0.8 * PdfPageFormat.cm),
-          Text(invoice.info.description),
-          SizedBox(height: 0.8 * PdfPageFormat.cm),
-        ],
-      );
-
-  static Widget buildCustomerAddress(Invoice invoice) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            invoice.customer.name,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          Text(invoice.customer.address),
+          Container(
+              constraints: const BoxConstraints(
+                minHeight: 120,
+              ),
+              decoration: BoxDecoration(border: Border.all(width: 1)),
+              padding: const EdgeInsets.all(8),
+              child: Text('''
+STE MARMOURI GENERAL COMMERCE
+& DISTRIBUTION
+RUE DE L'ENVIRONNEMENT
+MF: 1228271P/P/M 000 EL ALIA
+Téléphone: 54 673 296 - 52 673 299
+- 56 452 015
+Email: ste.marmouri@gmail.com
+''')),
+          Container(
+              constraints: const BoxConstraints(
+                minHeight: 120,
+                minWidth: 235,
+                maxWidth: 235,
+              ),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(border: Border.all(width: 1)),
+              child: Text('''
+Nom : ${invoice.customer.name}
+Rue : ${invoice.customer.address} 
+MF: 1228271P/P/M 000 EL ALIA 
+Téléphone: ${invoice.customer.phone}
+''')),
         ],
       );
 
@@ -234,7 +235,7 @@ class PdfInvoiceApi {
           children: List.generate(
             title.length,
             (index) => Text(title[index],
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
         ),
         SizedBox(width: 3 * PdfPageFormat.cm),
@@ -242,7 +243,10 @@ class PdfInvoiceApi {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: List.generate(
             title.length,
-            (index) => Text(data[index]),
+            (index) => Text(
+              data[index],
+              style: const TextStyle(fontSize: 12),
+            ),
           ),
         ),
       ],

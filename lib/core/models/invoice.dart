@@ -1,13 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:products_management/core/models/customer.dart';
 import 'package:products_management/core/models/supplier.dart';
 
 class Invoice {
+  final String id;
   final InvoiceInfo info;
   final Supplier supplier;
   final Customer customer;
   final List<InvoiceItem> items;
 
   const Invoice({
+    required this.id,
     required this.info,
     required this.supplier,
     required this.customer,
