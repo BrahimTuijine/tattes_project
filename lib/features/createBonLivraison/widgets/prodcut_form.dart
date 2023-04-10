@@ -77,7 +77,7 @@ class ProductForm extends HookWidget {
                         );
                       },
                       onSelected: (Product product) {
-                        productModel.productName = product.libelle;
+                        productModel.productId = product.id;
                       },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<Product> onSelected,
@@ -90,6 +90,7 @@ class ProductForm extends HookWidget {
                               color: Colors.white,
                             ),
                             width: 250,
+                            constraints: const BoxConstraints(maxHeight: 200),
                             child: Material(
                               child: ListView.builder(
                                 padding: const EdgeInsets.all(10.0),
@@ -151,6 +152,32 @@ class ProductForm extends HookWidget {
                 return "ma yelzmouch ykoun fara4";
               }
               return null;
+            },
+          ),
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        SizedBox(
+          width: 80,
+          child: TextFormField(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              hintText: 'prix',
+            ),
+            onSaved: (String? newValue) {
+              productModel.prix = newValue!;
             },
           ),
         ),

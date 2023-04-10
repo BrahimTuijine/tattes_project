@@ -94,6 +94,7 @@ class BonLivraisonList extends HookWidget {
                         } else {
                           List<BonLivraison> reversed =
                               snapshot.data!.reversed.toList();
+                          // print(snapshot.data);
                           return Expanded(
                             child: DataTable2(
                               columnSpacing: 12,
@@ -126,7 +127,7 @@ class BonLivraisonList extends HookWidget {
                                     ),
                                     DataCell(
                                       CustomText(
-                                        text: reversed[index].clientName,
+                                        text: reversed[index].factureId,
                                       ),
                                     ),
                                     DataCell(
@@ -152,10 +153,13 @@ class BonLivraisonList extends HookWidget {
                                         //   ),
                                         // ),
                                         IconButton(
-                                          onPressed: () {
-                                            getIt<MyDatabase>()
-                                                .deleteBonLisvraison(
-                                                    reversed[index].id);
+                                          onPressed: () async {
+                                            int result =
+                                                await getIt<MyDatabase>()
+                                                    .deleteBonLisvraison(
+                                                        reversed[index].id);
+                                            print(result);
+
                                             refresh.value = !refresh.value;
                                           },
                                           icon: const Icon(

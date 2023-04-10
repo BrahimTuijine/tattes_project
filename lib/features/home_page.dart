@@ -121,7 +121,7 @@ class HomePage extends HookWidget {
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
             body: CreateUpdateBonLivraison(),
-            icon: const Icon(FluentIcons.production_floor_management),
+            icon: const Icon(FluentIcons.generate),
             title: const Text('bon de livraison'),
           ),
           PaneItemHeader(header: const Text('List')),

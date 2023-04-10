@@ -5,6 +5,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:products_management/core/models/bon_livraison.dart';
 
 part 'database.g.dart';
 
@@ -45,11 +46,59 @@ class Fournissers extends Table {
 
 class BonLivraisons extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get clientName => text()();
+  TextColumn get factureId => text()();
+  IntColumn get clientId => integer().references(
+        Clients,
+        #id,
+      )();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-@DriftDatabase(tables: [Clients, Products, Fournissers, BonLivraisons])
+class BonLivraisonsProd extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get productId => integer().references(Products, #id)();
+  IntColumn get bonLivraisonId => integer().references(
+        BonLivraisons,
+        #id,
+        onDelete: KeyAction.cascade,
+      )();
+
+  TextColumn get nbrCol => text()();
+  TextColumn get prix => text()();
+  TextColumn get remise => text()();
+}
+
+// abstract class BonDeLivraisonView extends View {
+//   BonLivraisons get bonLivraisons;
+//   Clients get clients;
+//   Products get products;
+
+//   @override
+//   Query as() => select([bonLivraisons.id, products.libelle, clients.name])
+//           .from(bonLivraisons)
+//           .join([
+//         innerJoin(
+//           clients,
+//           clients.id.equalsExp(bonLivraisons.id),
+//         ),
+//         innerJoin(
+//           products,
+//           products.id.equalsExp(bonLivraisons.id),
+//         ),
+//       ]);
+// }
+
+@DriftDatabase(tables: [
+  Clients,
+  Products,
+  Fournissers,
+  BonLivraisons,
+  BonLivraisonsProd
+], queries: {
+//       SELECT DISTINCT * from
+// bon_livraisons b, clients c, bon_livraisons_prod bp, products pp
+// where c.id = b.client_id and b.id = bp.bon_livraison_id and pp.id = bp.product_id
+})
 class MyDatabase extends _$MyDatabase {
   // we tell the database where to store the data with this constructor
   MyDatabase() : super(_openConnection());
@@ -145,6 +194,56 @@ class MyDatabase extends _$MyDatabase {
     return await (delete(bonLivraisons)..where((tbl) => tbl.id.equals(id)))
         .go();
   }
+
+  //! bonLisvraisonProd
+
+  Future<int> insertBonLisvraisonProduct(
+      BonLivraisonsProdCompanion bonLivraisonsProdCompanion) async {
+    return await into(bonLivraisonsProd).insert(bonLivraisonsProdCompanion);
+  }
+
+  Future getBonLivrasonData() async {
+    return await bonLivraisonData().get();
+  }
+
+  // Future<List<BonLivraisonWithProduct>> selectData() async {
+  //   // Select all the data from the BonLivraisons and BonLivraisonsProd tables
+  //   final query = select(bonLivraisons).join([
+  //     leftOuterJoin(
+  //       bonLivraisonsProd,
+  //       bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
+  //     ),
+  //     leftOuterJoin(
+  //       clients,
+  //       clients.id.equalsExp(bonLivraisons.clientId),
+  //     ),
+  //   ]);
+
+  //   // Map the result set to a list of BonLivraisonWithProduct objects
+  //   return await query.map((row) {
+  //     final bonLivraison = row.readTable(bonLivraisons);
+  //     final product = row.readTable(bonLivraisonsProd);
+  //     final client = row.readTable(clients);
+
+  //     return BonLivraisonWithProduct(
+  //       bonLivraisonId: bonLivraison.id,
+  //       factureId: bonLivraison.factureId,
+  //       clientId: bonLivraison.clientId,
+  //       createdAt: bonLivraison.createdAt,
+  //       productId: product.productId,
+  //       nbrCol: product.nbrCol,
+  //       prix: product.prix,
+  //       remise: product.remise,
+  //       clientName: client.name,
+  //       clientRue: client.rue,
+  //     );
+  //   }).get();
+  // }
+
+  // Future<int> deleteBonLisvraisonProduct(int id) async {
+  //   return await (delete(bonLivraisonsProd)..where((tbl) => tbl.id.equals(id)))
+  //       .go();
+  // }
 }
 
 LazyDatabase _openConnection() {

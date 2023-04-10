@@ -15,10 +15,12 @@ class CreateUpdateBonLivraison extends HookWidget {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  final Map<String, dynamic> bonLivraisonData = {'clientName': ''};
+  final Map<String, dynamic> bonLivraisonData = {
+    'clientId': '',
+  };
 
   final List<ProductModel> productList = [
-    ProductModel(nbrCol: '', productName: '')
+    ProductModel(nbrCol: '', prix: '', productId: 0, remise: '')
   ];
 
   @override
@@ -112,7 +114,9 @@ class CreateUpdateBonLivraison extends HookWidget {
                                     style: const TextStyle(),
                                   );
                                 },
-                                onSelected: (Client selection) {},
+                                onSelected: (Client selection) {
+                                  bonLivraisonData['clientId'] = selection.id;
+                                },
                                 optionsViewBuilder: (BuildContext context,
                                     AutocompleteOnSelected<Client> onSelected,
                                     Iterable<Client> options) {
@@ -173,13 +177,18 @@ class CreateUpdateBonLivraison extends HookWidget {
                       itemBuilder: (BuildContext context, int index) {
                         return ProductForm(
                           onDelete: () {
-                            productList.removeAt(index);
-                            refresh.value = !refresh.value;
+                            if (productList.length > 1) {
+                              productList.removeAt(index);
+                              refresh.value = !refresh.value;
+                            }
                           },
                           productModel: productList[index],
                           onAdd: () {
-                            productList
-                                .add(ProductModel(nbrCol: '', productName: ''));
+                            productList.add(ProductModel(
+                                nbrCol: '',
+                                prix: '',
+                                productId: 0,
+                                remise: ''));
                             refresh.value = !refresh.value;
                           },
                         );
@@ -192,8 +201,28 @@ class CreateUpdateBonLivraison extends HookWidget {
                   Center(
                     child: ElevButton(
                       bgColor: blueGreen,
-                      onpressed: () {
-                        formKey.currentState!.validate();
+                      onpressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          formKey.currentState!.save();
+                          final int bonLivraisonId =
+                              await getIt<MyDatabase>().insertBonLisvraison(
+                            BonLivraisonsCompanion.insert(
+                              factureId: 'lazem yetbadel',
+                              clientId: bonLivraisonData['clientId'],
+                            ),
+                          );
+
+                          for (var i = 0; i < productList.length; i++) {
+                            getIt<MyDatabase>().insertBonLisvraisonProduct(
+                                BonLivraisonsProdCompanion.insert(
+                              productId: productList[i].productId,
+                              bonLivraisonId: bonLivraisonId,
+                              nbrCol: productList[i].nbrCol,
+                              prix: productList[i].prix,
+                              remise: productList[i].remise,
+                            ));
+                          }
+                        }
                       },
                       text: 'créer',
                     ),

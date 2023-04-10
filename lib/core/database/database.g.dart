@@ -1243,12 +1243,21 @@ class $BonLivraisonsTable extends BonLivraisons
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _clientNameMeta =
-      const VerificationMeta('clientName');
+  static const VerificationMeta _factureIdMeta =
+      const VerificationMeta('factureId');
   @override
-  late final GeneratedColumn<String> clientName = GeneratedColumn<String>(
-      'client_name', aliasedName, false,
+  late final GeneratedColumn<String> factureId = GeneratedColumn<String>(
+      'facture_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _clientIdMeta =
+      const VerificationMeta('clientId');
+  @override
+  late final GeneratedColumn<int> clientId = GeneratedColumn<int>(
+      'client_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES clients (id)'));
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -1258,7 +1267,7 @@ class $BonLivraisonsTable extends BonLivraisons
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns => [id, clientName, createdAt];
+  List<GeneratedColumn> get $columns => [id, factureId, clientId, createdAt];
   @override
   String get aliasedName => _alias ?? 'bon_livraisons';
   @override
@@ -1271,13 +1280,17 @@ class $BonLivraisonsTable extends BonLivraisons
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('client_name')) {
-      context.handle(
-          _clientNameMeta,
-          clientName.isAcceptableOrUnknown(
-              data['client_name']!, _clientNameMeta));
+    if (data.containsKey('facture_id')) {
+      context.handle(_factureIdMeta,
+          factureId.isAcceptableOrUnknown(data['facture_id']!, _factureIdMeta));
     } else if (isInserting) {
-      context.missing(_clientNameMeta);
+      context.missing(_factureIdMeta);
+    }
+    if (data.containsKey('client_id')) {
+      context.handle(_clientIdMeta,
+          clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta));
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -1294,8 +1307,10 @@ class $BonLivraisonsTable extends BonLivraisons
     return BonLivraison(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      clientName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}client_name'])!,
+      factureId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}facture_id'])!,
+      clientId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}client_id'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -1309,15 +1324,20 @@ class $BonLivraisonsTable extends BonLivraisons
 
 class BonLivraison extends DataClass implements Insertable<BonLivraison> {
   final int id;
-  final String clientName;
+  final String factureId;
+  final int clientId;
   final DateTime createdAt;
   const BonLivraison(
-      {required this.id, required this.clientName, required this.createdAt});
+      {required this.id,
+      required this.factureId,
+      required this.clientId,
+      required this.createdAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['client_name'] = Variable<String>(clientName);
+    map['facture_id'] = Variable<String>(factureId);
+    map['client_id'] = Variable<int>(clientId);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -1325,7 +1345,8 @@ class BonLivraison extends DataClass implements Insertable<BonLivraison> {
   BonLivraisonsCompanion toCompanion(bool nullToAbsent) {
     return BonLivraisonsCompanion(
       id: Value(id),
-      clientName: Value(clientName),
+      factureId: Value(factureId),
+      clientId: Value(clientId),
       createdAt: Value(createdAt),
     );
   }
@@ -1335,7 +1356,8 @@ class BonLivraison extends DataClass implements Insertable<BonLivraison> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return BonLivraison(
       id: serializer.fromJson<int>(json['id']),
-      clientName: serializer.fromJson<String>(json['clientName']),
+      factureId: serializer.fromJson<String>(json['factureId']),
+      clientId: serializer.fromJson<int>(json['clientId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -1344,69 +1366,84 @@ class BonLivraison extends DataClass implements Insertable<BonLivraison> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'clientName': serializer.toJson<String>(clientName),
+      'factureId': serializer.toJson<String>(factureId),
+      'clientId': serializer.toJson<int>(clientId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
-  BonLivraison copyWith({int? id, String? clientName, DateTime? createdAt}) =>
+  BonLivraison copyWith(
+          {int? id, String? factureId, int? clientId, DateTime? createdAt}) =>
       BonLivraison(
         id: id ?? this.id,
-        clientName: clientName ?? this.clientName,
+        factureId: factureId ?? this.factureId,
+        clientId: clientId ?? this.clientId,
         createdAt: createdAt ?? this.createdAt,
       );
   @override
   String toString() {
     return (StringBuffer('BonLivraison(')
           ..write('id: $id, ')
-          ..write('clientName: $clientName, ')
+          ..write('factureId: $factureId, ')
+          ..write('clientId: $clientId, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, clientName, createdAt);
+  int get hashCode => Object.hash(id, factureId, clientId, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is BonLivraison &&
           other.id == this.id &&
-          other.clientName == this.clientName &&
+          other.factureId == this.factureId &&
+          other.clientId == this.clientId &&
           other.createdAt == this.createdAt);
 }
 
 class BonLivraisonsCompanion extends UpdateCompanion<BonLivraison> {
   final Value<int> id;
-  final Value<String> clientName;
+  final Value<String> factureId;
+  final Value<int> clientId;
   final Value<DateTime> createdAt;
   const BonLivraisonsCompanion({
     this.id = const Value.absent(),
-    this.clientName = const Value.absent(),
+    this.factureId = const Value.absent(),
+    this.clientId = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   BonLivraisonsCompanion.insert({
     this.id = const Value.absent(),
-    required String clientName,
+    required String factureId,
+    required int clientId,
     this.createdAt = const Value.absent(),
-  }) : clientName = Value(clientName);
+  })  : factureId = Value(factureId),
+        clientId = Value(clientId);
   static Insertable<BonLivraison> custom({
     Expression<int>? id,
-    Expression<String>? clientName,
+    Expression<String>? factureId,
+    Expression<int>? clientId,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (clientName != null) 'client_name': clientName,
+      if (factureId != null) 'facture_id': factureId,
+      if (clientId != null) 'client_id': clientId,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
 
   BonLivraisonsCompanion copyWith(
-      {Value<int>? id, Value<String>? clientName, Value<DateTime>? createdAt}) {
+      {Value<int>? id,
+      Value<String>? factureId,
+      Value<int>? clientId,
+      Value<DateTime>? createdAt}) {
     return BonLivraisonsCompanion(
       id: id ?? this.id,
-      clientName: clientName ?? this.clientName,
+      factureId: factureId ?? this.factureId,
+      clientId: clientId ?? this.clientId,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -1417,8 +1454,11 @@ class BonLivraisonsCompanion extends UpdateCompanion<BonLivraison> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (clientName.present) {
-      map['client_name'] = Variable<String>(clientName.value);
+    if (factureId.present) {
+      map['facture_id'] = Variable<String>(factureId.value);
+    }
+    if (clientId.present) {
+      map['client_id'] = Variable<int>(clientId.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -1430,8 +1470,342 @@ class BonLivraisonsCompanion extends UpdateCompanion<BonLivraison> {
   String toString() {
     return (StringBuffer('BonLivraisonsCompanion(')
           ..write('id: $id, ')
-          ..write('clientName: $clientName, ')
+          ..write('factureId: $factureId, ')
+          ..write('clientId: $clientId, ')
           ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BonLivraisonsProdTable extends BonLivraisonsProd
+    with TableInfo<$BonLivraisonsProdTable, BonLivraisonsProdData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BonLivraisonsProdTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _productIdMeta =
+      const VerificationMeta('productId');
+  @override
+  late final GeneratedColumn<int> productId = GeneratedColumn<int>(
+      'product_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES products (id)'));
+  static const VerificationMeta _bonLivraisonIdMeta =
+      const VerificationMeta('bonLivraisonId');
+  @override
+  late final GeneratedColumn<int> bonLivraisonId = GeneratedColumn<int>(
+      'bon_livraison_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES bon_livraisons (id) ON DELETE CASCADE'));
+  static const VerificationMeta _nbrColMeta = const VerificationMeta('nbrCol');
+  @override
+  late final GeneratedColumn<String> nbrCol = GeneratedColumn<String>(
+      'nbr_col', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _prixMeta = const VerificationMeta('prix');
+  @override
+  late final GeneratedColumn<String> prix = GeneratedColumn<String>(
+      'prix', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _remiseMeta = const VerificationMeta('remise');
+  @override
+  late final GeneratedColumn<String> remise = GeneratedColumn<String>(
+      'remise', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, productId, bonLivraisonId, nbrCol, prix, remise];
+  @override
+  String get aliasedName => _alias ?? 'bon_livraisons_prod';
+  @override
+  String get actualTableName => 'bon_livraisons_prod';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<BonLivraisonsProdData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(_productIdMeta,
+          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('bon_livraison_id')) {
+      context.handle(
+          _bonLivraisonIdMeta,
+          bonLivraisonId.isAcceptableOrUnknown(
+              data['bon_livraison_id']!, _bonLivraisonIdMeta));
+    } else if (isInserting) {
+      context.missing(_bonLivraisonIdMeta);
+    }
+    if (data.containsKey('nbr_col')) {
+      context.handle(_nbrColMeta,
+          nbrCol.isAcceptableOrUnknown(data['nbr_col']!, _nbrColMeta));
+    } else if (isInserting) {
+      context.missing(_nbrColMeta);
+    }
+    if (data.containsKey('prix')) {
+      context.handle(
+          _prixMeta, prix.isAcceptableOrUnknown(data['prix']!, _prixMeta));
+    } else if (isInserting) {
+      context.missing(_prixMeta);
+    }
+    if (data.containsKey('remise')) {
+      context.handle(_remiseMeta,
+          remise.isAcceptableOrUnknown(data['remise']!, _remiseMeta));
+    } else if (isInserting) {
+      context.missing(_remiseMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BonLivraisonsProdData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BonLivraisonsProdData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      productId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_id'])!,
+      bonLivraisonId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}bon_livraison_id'])!,
+      nbrCol: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}nbr_col'])!,
+      prix: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}prix'])!,
+      remise: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}remise'])!,
+    );
+  }
+
+  @override
+  $BonLivraisonsProdTable createAlias(String alias) {
+    return $BonLivraisonsProdTable(attachedDatabase, alias);
+  }
+}
+
+class BonLivraisonsProdData extends DataClass
+    implements Insertable<BonLivraisonsProdData> {
+  final int id;
+  final int productId;
+  final int bonLivraisonId;
+  final String nbrCol;
+  final String prix;
+  final String remise;
+  const BonLivraisonsProdData(
+      {required this.id,
+      required this.productId,
+      required this.bonLivraisonId,
+      required this.nbrCol,
+      required this.prix,
+      required this.remise});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['product_id'] = Variable<int>(productId);
+    map['bon_livraison_id'] = Variable<int>(bonLivraisonId);
+    map['nbr_col'] = Variable<String>(nbrCol);
+    map['prix'] = Variable<String>(prix);
+    map['remise'] = Variable<String>(remise);
+    return map;
+  }
+
+  BonLivraisonsProdCompanion toCompanion(bool nullToAbsent) {
+    return BonLivraisonsProdCompanion(
+      id: Value(id),
+      productId: Value(productId),
+      bonLivraisonId: Value(bonLivraisonId),
+      nbrCol: Value(nbrCol),
+      prix: Value(prix),
+      remise: Value(remise),
+    );
+  }
+
+  factory BonLivraisonsProdData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BonLivraisonsProdData(
+      id: serializer.fromJson<int>(json['id']),
+      productId: serializer.fromJson<int>(json['productId']),
+      bonLivraisonId: serializer.fromJson<int>(json['bonLivraisonId']),
+      nbrCol: serializer.fromJson<String>(json['nbrCol']),
+      prix: serializer.fromJson<String>(json['prix']),
+      remise: serializer.fromJson<String>(json['remise']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'productId': serializer.toJson<int>(productId),
+      'bonLivraisonId': serializer.toJson<int>(bonLivraisonId),
+      'nbrCol': serializer.toJson<String>(nbrCol),
+      'prix': serializer.toJson<String>(prix),
+      'remise': serializer.toJson<String>(remise),
+    };
+  }
+
+  BonLivraisonsProdData copyWith(
+          {int? id,
+          int? productId,
+          int? bonLivraisonId,
+          String? nbrCol,
+          String? prix,
+          String? remise}) =>
+      BonLivraisonsProdData(
+        id: id ?? this.id,
+        productId: productId ?? this.productId,
+        bonLivraisonId: bonLivraisonId ?? this.bonLivraisonId,
+        nbrCol: nbrCol ?? this.nbrCol,
+        prix: prix ?? this.prix,
+        remise: remise ?? this.remise,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('BonLivraisonsProdData(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('bonLivraisonId: $bonLivraisonId, ')
+          ..write('nbrCol: $nbrCol, ')
+          ..write('prix: $prix, ')
+          ..write('remise: $remise')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, productId, bonLivraisonId, nbrCol, prix, remise);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BonLivraisonsProdData &&
+          other.id == this.id &&
+          other.productId == this.productId &&
+          other.bonLivraisonId == this.bonLivraisonId &&
+          other.nbrCol == this.nbrCol &&
+          other.prix == this.prix &&
+          other.remise == this.remise);
+}
+
+class BonLivraisonsProdCompanion
+    extends UpdateCompanion<BonLivraisonsProdData> {
+  final Value<int> id;
+  final Value<int> productId;
+  final Value<int> bonLivraisonId;
+  final Value<String> nbrCol;
+  final Value<String> prix;
+  final Value<String> remise;
+  const BonLivraisonsProdCompanion({
+    this.id = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.bonLivraisonId = const Value.absent(),
+    this.nbrCol = const Value.absent(),
+    this.prix = const Value.absent(),
+    this.remise = const Value.absent(),
+  });
+  BonLivraisonsProdCompanion.insert({
+    this.id = const Value.absent(),
+    required int productId,
+    required int bonLivraisonId,
+    required String nbrCol,
+    required String prix,
+    required String remise,
+  })  : productId = Value(productId),
+        bonLivraisonId = Value(bonLivraisonId),
+        nbrCol = Value(nbrCol),
+        prix = Value(prix),
+        remise = Value(remise);
+  static Insertable<BonLivraisonsProdData> custom({
+    Expression<int>? id,
+    Expression<int>? productId,
+    Expression<int>? bonLivraisonId,
+    Expression<String>? nbrCol,
+    Expression<String>? prix,
+    Expression<String>? remise,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (productId != null) 'product_id': productId,
+      if (bonLivraisonId != null) 'bon_livraison_id': bonLivraisonId,
+      if (nbrCol != null) 'nbr_col': nbrCol,
+      if (prix != null) 'prix': prix,
+      if (remise != null) 'remise': remise,
+    });
+  }
+
+  BonLivraisonsProdCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? productId,
+      Value<int>? bonLivraisonId,
+      Value<String>? nbrCol,
+      Value<String>? prix,
+      Value<String>? remise}) {
+    return BonLivraisonsProdCompanion(
+      id: id ?? this.id,
+      productId: productId ?? this.productId,
+      bonLivraisonId: bonLivraisonId ?? this.bonLivraisonId,
+      nbrCol: nbrCol ?? this.nbrCol,
+      prix: prix ?? this.prix,
+      remise: remise ?? this.remise,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<int>(productId.value);
+    }
+    if (bonLivraisonId.present) {
+      map['bon_livraison_id'] = Variable<int>(bonLivraisonId.value);
+    }
+    if (nbrCol.present) {
+      map['nbr_col'] = Variable<String>(nbrCol.value);
+    }
+    if (prix.present) {
+      map['prix'] = Variable<String>(prix.value);
+    }
+    if (remise.present) {
+      map['remise'] = Variable<String>(remise.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BonLivraisonsProdCompanion(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('bonLivraisonId: $bonLivraisonId, ')
+          ..write('nbrCol: $nbrCol, ')
+          ..write('prix: $prix, ')
+          ..write('remise: $remise')
           ..write(')'))
         .toString();
   }
@@ -1443,10 +1817,31 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   late final $ProductsTable products = $ProductsTable(this);
   late final $FournissersTable fournissers = $FournissersTable(this);
   late final $BonLivraisonsTable bonLivraisons = $BonLivraisonsTable(this);
+  late final $BonLivraisonsProdTable bonLivraisonsProd =
+      $BonLivraisonsProdTable(this);
+  Selectable<int> bonLivraisonData() {
+    return customSelect(
+        'SELECT *, (SELECT COUNT(*) FROM todos WHERE category = c.id) AS amount FROM categories AS c',
+        variables: [],
+        readsFrom: {}).map((QueryRow row) => row.read<int>('amount'));
+  }
+
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [clients, products, fournissers, bonLivraisons];
+      [clients, products, fournissers, bonLivraisons, bonLivraisonsProd];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
+        [
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('bon_livraisons',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('bon_livraisons_prod', kind: UpdateKind.delete),
+            ],
+          ),
+        ],
+      );
 }

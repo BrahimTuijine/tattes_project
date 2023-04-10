@@ -1,8 +1,13 @@
 class ProductModel {
-  late String productName;
+  late int productId;
   late String nbrCol;
+  late String prix;
+  late String remise;
+
   ProductModel({
-    required this.productName,
+    required this.productId,
     required this.nbrCol,
+    required this.prix,
+    required this.remise,
   });
 }
