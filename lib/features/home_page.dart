@@ -120,7 +120,9 @@ class HomePage extends HookWidget {
           PaneItem(
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            body: CreateUpdateBonLivraison(),
+            body: CreateUpdateBonLivraison(
+              currentIndex: currentIndex,
+            ),
             icon: const Icon(FluentIcons.generate),
             title: const Text('bon de livraison'),
           ),
@@ -138,7 +140,6 @@ class HomePage extends HookWidget {
             icon: const Icon(FluentIcons.pdf),
             title: const Text('bon de livraison'),
             body: const BonLivraisonList(),
-            // const ThirdPage(number: 3)
           ),
         ],
         selected: currentIndex.value,

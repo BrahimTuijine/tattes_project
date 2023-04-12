@@ -1819,11 +1819,50 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   late final $BonLivraisonsTable bonLivraisons = $BonLivraisonsTable(this);
   late final $BonLivraisonsProdTable bonLivraisonsProd =
       $BonLivraisonsProdTable(this);
-  Selectable<int> bonLivraisonData() {
+  Selectable<GetBonLivraisonFactureDataResult> getBonLivraisonFactureData(
+      int var1) {
     return customSelect(
-        'SELECT *, (SELECT COUNT(*) FROM todos WHERE category = c.id) AS amount FROM categories AS c',
-        variables: [],
-        readsFrom: {}).map((QueryRow row) => row.read<int>('amount'));
+        'SELECT DISTINCT * FROM bon_livraisons AS b,clients AS c,bon_livraisons_prod AS bp,products AS pp WHERE c.id = b.client_id AND b.id = bp.bon_livraison_id AND pp.id = bp.product_id AND b.id = ?1',
+        variables: [
+          Variable<int>(var1)
+        ],
+        readsFrom: {
+          bonLivraisons,
+          clients,
+          bonLivraisonsProd,
+          products,
+        }).map((QueryRow row) {
+      return GetBonLivraisonFactureDataResult(
+        id: row.read<int>('id'),
+        factureId: row.read<String>('facture_id'),
+        clientId: row.read<int>('client_id'),
+        createdAt: row.read<DateTime>('created_at'),
+        id1: row.read<int>('id'),
+        name: row.read<String>('name'),
+        ville: row.read<String>('ville'),
+        rue: row.read<String>('rue'),
+        phone: row.read<String>('phone'),
+        cin: row.read<String>('cin'),
+        numTva: row.read<String>('num_tva'),
+        createdAt1: row.read<DateTime>('created_at'),
+        id2: row.read<int>('id'),
+        productId: row.read<int>('product_id'),
+        bonLivraisonId: row.read<int>('bon_livraison_id'),
+        nbrCol: row.read<String>('nbr_col'),
+        prix: row.read<String>('prix'),
+        remise: row.read<String>('remise'),
+        id3: row.read<int>('id'),
+        prix1: row.read<String>('prix'),
+        libelle: row.read<String>('libelle'),
+        categorie: row.read<String>('categorie'),
+        description: row.readNullable<String>('description'),
+        tva: row.read<String>('tva'),
+        nbrePiece: row.read<String>('nbre_piece'),
+        fournisser: row.read<String>('fournisser'),
+        prixOrTax: row.read<String>('prix_or_tax'),
+        createdAt2: row.read<DateTime>('created_at'),
+      );
+    });
   }
 
   @override
@@ -1844,4 +1883,65 @@ abstract class _$MyDatabase extends GeneratedDatabase {
           ),
         ],
       );
+}
+
+class GetBonLivraisonFactureDataResult {
+  final int id;
+  final String factureId;
+  final int clientId;
+  final DateTime createdAt;
+  final int id1;
+  final String name;
+  final String ville;
+  final String rue;
+  final String phone;
+  final String cin;
+  final String numTva;
+  final DateTime createdAt1;
+  final int id2;
+  final int productId;
+  final int bonLivraisonId;
+  final String nbrCol;
+  final String prix;
+  final String remise;
+  final int id3;
+  final String prix1;
+  final String libelle;
+  final String categorie;
+  final String? description;
+  final String tva;
+  final String nbrePiece;
+  final String fournisser;
+  final String prixOrTax;
+  final DateTime createdAt2;
+  GetBonLivraisonFactureDataResult({
+    required this.id,
+    required this.factureId,
+    required this.clientId,
+    required this.createdAt,
+    required this.id1,
+    required this.name,
+    required this.ville,
+    required this.rue,
+    required this.phone,
+    required this.cin,
+    required this.numTva,
+    required this.createdAt1,
+    required this.id2,
+    required this.productId,
+    required this.bonLivraisonId,
+    required this.nbrCol,
+    required this.prix,
+    required this.remise,
+    required this.id3,
+    required this.prix1,
+    required this.libelle,
+    required this.categorie,
+    this.description,
+    required this.tva,
+    required this.nbrePiece,
+    required this.fournisser,
+    required this.prixOrTax,
+    required this.createdAt2,
+  });
 }

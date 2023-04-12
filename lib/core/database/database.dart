@@ -47,21 +47,15 @@ class Fournissers extends Table {
 class BonLivraisons extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get factureId => text()();
-  IntColumn get clientId => integer().references(
-        Clients,
-        #id,
-      )();
+  IntColumn get clientId => integer().references(Clients, #id)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class BonLivraisonsProd extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get productId => integer().references(Products, #id)();
-  IntColumn get bonLivraisonId => integer().references(
-        BonLivraisons,
-        #id,
-        onDelete: KeyAction.cascade,
-      )();
+  IntColumn get bonLivraisonId =>
+      integer().references(BonLivraisons, #id, onDelete: KeyAction.cascade)();
 
   TextColumn get nbrCol => text()();
   TextColumn get prix => text()();
@@ -95,9 +89,11 @@ class BonLivraisonsProd extends Table {
   BonLivraisons,
   BonLivraisonsProd
 ], queries: {
-//       SELECT DISTINCT * from
-// bon_livraisons b, clients c, bon_livraisons_prod bp, products pp
-// where c.id = b.client_id and b.id = bp.bon_livraison_id and pp.id = bp.product_id
+  // 'getBonLivraisonList':
+  //     'select DISTINCT * from bon_livraisons b, clients c, where c.id = b.client_id and b.id = bp.bon_livraison_id',
+  //TODO hay 3amlet build normal
+  'getBonLivraisonFactureData':
+      'select DISTINCT * from bon_livraisons b, clients c, bon_livraisons_prod bp, products pp where c.id = b.client_id and b.id = bp.bon_livraison_id and pp.id = bp.product_id and b.id = ?'
 })
 class MyDatabase extends _$MyDatabase {
   // we tell the database where to store the data with this constructor
@@ -202,43 +198,44 @@ class MyDatabase extends _$MyDatabase {
     return await into(bonLivraisonsProd).insert(bonLivraisonsProdCompanion);
   }
 
-  Future getBonLivrasonData() async {
-    return await bonLivraisonData().get();
+  Future<List<BonLivraisonWithClient>> getBonLivrasonData() async {
+    final query = select(bonLivraisons).join([
+      innerJoin(
+        clients,
+        clients.id.equalsExp(bonLivraisons.clientId),
+      ),
+    ]);
+
+    return await query.map((row) {
+      final bonLivraison = row.readTable(bonLivraisons);
+      final client = row.readTable(clients);
+      return BonLivraisonWithClient(
+          bonLivraisonId: bonLivraison.id,
+          clientName: client.name,
+          createdAt: bonLivraison.createdAt);
+    }).get();
   }
 
-  // Future<List<BonLivraisonWithProduct>> selectData() async {
-  //   // Select all the data from the BonLivraisons and BonLivraisonsProd tables
-  //   final query = select(bonLivraisons).join([
-  //     leftOuterJoin(
-  //       bonLivraisonsProd,
-  //       bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
-  //     ),
-  //     leftOuterJoin(
-  //       clients,
-  //       clients.id.equalsExp(bonLivraisons.clientId),
-  //     ),
-  //   ]);
+  Future<List<BonLivraisonWithProduct>> selectData() async {
+    // Select all the data from the BonLivraisons and BonLivraisonsProd tables
+    final query = select(bonLivraisons).join([
+      innerJoin(
+        bonLivraisonsProd,
+        bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
+      ),
+    ]);
 
-  //   // Map the result set to a list of BonLivraisonWithProduct objects
-  //   return await query.map((row) {
-  //     final bonLivraison = row.readTable(bonLivraisons);
-  //     final product = row.readTable(bonLivraisonsProd);
-  //     final client = row.readTable(clients);
+    // Map the result set to a list of BonLivraisonWithProduct objects
+    return await query.map((row) {
+      final bonLivraison = row.readTable(bonLivraisons);
+      final product = row.readTable(bonLivraisonsProd);
 
-  //     return BonLivraisonWithProduct(
-  //       bonLivraisonId: bonLivraison.id,
-  //       factureId: bonLivraison.factureId,
-  //       clientId: bonLivraison.clientId,
-  //       createdAt: bonLivraison.createdAt,
-  //       productId: product.productId,
-  //       nbrCol: product.nbrCol,
-  //       prix: product.prix,
-  //       remise: product.remise,
-  //       clientName: client.name,
-  //       clientRue: client.rue,
-  //     );
-  //   }).get();
-  // }
+      return BonLivraisonWithProduct(
+        bonLivraison: bonLivraison,
+        product: product,
+      );
+    }).get();
+  }
 
   // Future<int> deleteBonLisvraisonProduct(int id) async {
   //   return await (delete(bonLivraisonsProd)..where((tbl) => tbl.id.equals(id)))

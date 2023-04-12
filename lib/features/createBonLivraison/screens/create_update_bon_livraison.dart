@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -9,8 +10,10 @@ import 'package:products_management/features/createBonLivraison/widgets/prodcut_
 import 'package:products_management/injection.dart';
 
 class CreateUpdateBonLivraison extends HookWidget {
+  final ValueNotifier<int> currentIndex;
   CreateUpdateBonLivraison({
     super.key,
+    required this.currentIndex,
   });
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -88,6 +91,12 @@ class CreateUpdateBonLivraison extends HookWidget {
                                     FocusNode fieldFocusNode,
                                     VoidCallback onFieldSubmitted) {
                                   return TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "ma yelzmouch ykoun fara4";
+                                      }
+                                      return null;
+                                    },
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(
                                         borderSide: const BorderSide(
@@ -222,6 +231,7 @@ class CreateUpdateBonLivraison extends HookWidget {
                               remise: productList[i].remise,
                             ));
                           }
+                          currentIndex.value = 5;
                         }
                       },
                       text: 'créer',
