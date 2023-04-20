@@ -23,7 +23,11 @@ class CreateUpdateBonLivraison extends HookWidget {
   };
 
   final List<ProductModel> productList = [
-    ProductModel(nbrCol: '', prix: '', productId: 0, remise: '')
+    ProductModel(
+      nbrCol: 0,
+      prix: 0,
+      productId: 0,
+    )
   ];
 
   @override
@@ -194,10 +198,7 @@ class CreateUpdateBonLivraison extends HookWidget {
                           productModel: productList[index],
                           onAdd: () {
                             productList.add(ProductModel(
-                                nbrCol: '',
-                                prix: '',
-                                productId: 0,
-                                remise: ''));
+                                nbrCol: 0, prix: 0, productId: 0,));
                             refresh.value = !refresh.value;
                           },
                         );
@@ -227,8 +228,7 @@ class CreateUpdateBonLivraison extends HookWidget {
                               productId: productList[i].productId,
                               bonLivraisonId: bonLivraisonId,
                               nbrCol: productList[i].nbrCol,
-                              prix: productList[i].prix,
-                              remise: productList[i].remise,
+                              newProductPrice: productList[i].prix,
                             ));
                           }
                           currentIndex.value = 5;

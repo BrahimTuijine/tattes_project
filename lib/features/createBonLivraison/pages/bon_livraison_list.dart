@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:products_management/core/database/database.dart';
 import 'package:products_management/core/models/bon_livraison.dart';
 import 'package:products_management/core/strings/colors.dart';
+import 'package:products_management/core/utils/generate_pdf.dart';
+import 'package:products_management/core/utils/pdf_api.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/injection.dart';
 
@@ -74,17 +76,17 @@ class BonLivraisonList extends HookWidget {
               const SizedBox(
                 height: 30,
               ),
-              FutureBuilder<List<BonLivraisonWithClient>>(
+              FutureBuilder<List<FactureWithClient>>(
                 future: getIt<MyDatabase>().getBonLivrasonData(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<BonLivraisonWithClient>> snapshot) {
+                    AsyncSnapshot<List<FactureWithClient>> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return const Center(
                         child: Text('there is no Bon de Livraison '),
                       );
                     } else {
-                      List<BonLivraisonWithClient> reversed =
+                      List<FactureWithClient> reversed =
                           snapshot.data!.reversed.toList();
                       // print(snapshot.data);
                       return Expanded(
@@ -119,7 +121,7 @@ class BonLivraisonList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: reversed[index].clientName,
+                                    text: reversed[index].client.name,
                                   ),
                                 ),
                                 DataCell(
@@ -159,16 +161,24 @@ class BonLivraisonList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () async {
-                                        final List<BonLivraisonWithProduct>
-                                            data = await getIt<MyDatabase>()
-                                                .selectData();
-                                        print(data[0].bonLivraison.toJson());
-                                        print(data[0].product.toJson());
+                                        // final List<
+                                        //         GetBonLivraisonFactureDataResult>
+                                        //     productList =
+                                        //     await getIt<MyDatabase>()
+                                        //         .bonLivraisonFactureData(
+                                        //             reversed[index]
+                                        //                 .bonLivraisonId);
 
+                                        // print(productList.toString());
                                         // ? generate the pdf
                                         // final pdfFile =
                                         //     await PdfInvoiceApi.generate(
-                                        //         invoice);
+                                        //         client: reversed[index].client,
+                                        //         productList: productList,
+                                        //         bonLivraisonId: reversed[index]
+                                        //             .bonLivraisonId,
+                                        //         createdAt:
+                                        //             reversed[index].createdAt);
                                         // PdfApi.openFile(pdfFile);
                                       },
                                       icon: const Icon(

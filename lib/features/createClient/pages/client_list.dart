@@ -3,24 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:intl/intl.dart';
 import 'package:products_management/core/database/database.dart';
+
 import 'package:products_management/core/strings/colors.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/core/widgets/dialog.dart';
-import 'package:products_management/features/createProduct/presentation/pages/create_update_product.dart';
+import 'package:products_management/features/createClient/pages/create_update_client.dart';
 import 'package:products_management/injection.dart';
 
-class ProductList extends HookWidget {
-  ProductList({
+class ClientList extends HookWidget {
+  const ClientList({
     super.key,
   });
-
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
-  final Map<String, dynamic> productData = {
-    "name": '',
-    "prix": '',
-    "tva": '',
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +45,7 @@ class ProductList extends HookWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const CustomText(
-                    text: 'List des produits',
+                    text: 'List des clients',
                     color: Colors.grey,
                     size: 20,
                     weight: FontWeight.w600,
@@ -66,12 +59,12 @@ class ProductList extends HookWidget {
                       onPressed: () {
                         MyAlertDialog.showAlertDialog(
                             context: context,
-                            child: CreateUpdateProduct(
+                            child: CreateUpdateClient(
                               refresh: refresh,
                             ));
                       },
                       child: const Text(
-                        "Creation de produit",
+                        "Creation de client",
                       ),
                     ),
                   ),
@@ -80,55 +73,50 @@ class ProductList extends HookWidget {
               const SizedBox(
                 height: 30,
               ),
-              FutureBuilder<List<Product>>(
-                future: getIt<MyDatabase>().getProducts(),
+              FutureBuilder<List<Client>>(
+                future: getIt<MyDatabase>().getClients(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<List<Product>> snapshot) {
+                    AsyncSnapshot<List<Client>> snapshot) {
                   if (snapshot.hasData) {
                     if (snapshot.data!.isEmpty) {
                       return const Center(
-                        child: Text('there is no product'),
+                        child: Text('there is no client'),
                       );
                     } else {
-                      List<Product> reversed = snapshot.data!.reversed.toList();
+                      List<Client> reversed = snapshot.data!.reversed.toList();
                       return Expanded(
                         child: DataTable2(
                           columnSpacing: 12,
                           horizontalMargin: 12,
+                          // minWidth: 600,
                           columns: const [
                             DataColumn2(
                               label: Text("Id"),
-                              size: ColumnSize.M,
+                              // size: ColumnSize.,
                             ),
                             DataColumn2(
-                              label: Text(
-                                "Libelle",
-                              ),
-                            ),
-                            DataColumn2(
-                              label: Text("Fournisser"),
-                            ),
-                            DataColumn2(
-                              label: Text("Categorie"),
-                            ),
-                            DataColumn2(
-                              size: ColumnSize.S,
-                              label: Text("Nb piece"),
-                            ),
-                            DataColumn2(
-                              label: Text("Prix"),
-                            ),
-                            DataColumn2(
-                              label: Text("TVA"),
-                            ),
-                            DataColumn2(
-                              label: Text("Prix or tax"),
-                            ),
-                            DataColumn2(
+                              label: Text("Name"),
                               size: ColumnSize.L,
+                            ),
+                            DataColumn(
+                              label: Text('Phone'),
+                            ),
+                            DataColumn(
+                              label: Text('Ville'),
+                            ),
+                            DataColumn(
+                              label: Text('Rue'),
+                            ),
+                            DataColumn(
+                              label: Text('cin'),
+                            ),
+                            DataColumn(
+                              label: Text('num TVA'),
+                            ),
+                            DataColumn(
                               label: Text('Created At'),
                             ),
-                            DataColumn2(
+                            DataColumn(
                               label: Text('Actions'),
                             ),
                           ],
@@ -143,41 +131,23 @@ class ProductList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: reversed[index].libelle,
+                                    text: reversed[index].name,
                                   ),
                                 ),
                                 DataCell(
-                                  CustomText(
-                                    text: reversed[index].fournisser,
-                                  ),
+                                    CustomText(text: reversed[index].phone)),
+                                DataCell(CustomText(
+                                  text: reversed[index].ville,
+                                )),
+                                DataCell(
+                                  CustomText(text: reversed[index].rue),
+                                ),
+                                DataCell(
+                                  CustomText(text: reversed[index].cin),
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: reversed[index].categorie,
-                                  ),
-                                ),
-                                DataCell(
-                                  CustomText(
-                                    text: reversed[index].nbrePiece,
-                                  ),
-                                ),
-                                DataCell(
-                                  CustomText(
-                                    text: reversed[index].prix,
-                                  ),
-                                ),
-                                DataCell(
-                                  CustomText(
-                                    text: reversed[index].tva == '0.0'
-                                        ? '0 %'
-                                        : reversed[index].tva == '0.07'
-                                            ? '7 %'
-                                            : '19 %',
-                                  ),
-                                ),
-                                DataCell(
-                                  CustomText(
-                                    text: reversed[index].prixOrTax,
+                                    text: reversed[index].numTva,
                                   ),
                                 ),
                                 DataCell(
@@ -192,8 +162,14 @@ class ProductList extends HookWidget {
                                       onPressed: () {
                                         MyAlertDialog.showAlertDialog(
                                           context: context,
-                                          child: CreateUpdateProduct(
-                                            product: reversed[index],
+                                          child: CreateUpdateClient(
+                                            createdAt:
+                                                reversed[index].createdAt,
+                                            id: reversed[index].id,
+                                            name: reversed[index].name,
+                                            rue: reversed[index].rue,
+                                            phone: reversed[index].phone,
+                                            ville: reversed[index].ville,
                                             refresh: refresh,
                                           ),
                                         );
@@ -206,7 +182,7 @@ class ProductList extends HookWidget {
                                     IconButton(
                                       onPressed: () {
                                         getIt<MyDatabase>()
-                                            .deleteProduct(reversed[index].id);
+                                            .deleteClient(reversed[index].id);
                                         refresh.value = !refresh.value;
                                       },
                                       icon: const Icon(

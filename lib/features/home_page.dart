@@ -1,11 +1,13 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:products_management/features/createBonLivraison/pages/bon_livraison_list.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:products_management/features/createBonLivraison/screens/bon_livraison_list.dart';
-import 'package:products_management/features/createBonLivraison/screens/create_update_bon_livraison.dart';
-import 'package:products_management/features/createClient/presentation/pages/client_list.dart';
-import 'package:products_management/features/createProduct/presentation/pages/product_list.dart';
-import 'package:products_management/features/createSupplier/presentation/pages/supplier_list.dart';
+import 'package:products_management/features/createBonLivraison/pages/create_update_bon_livraison.dart';
+import 'package:products_management/features/createClient/pages/client_list.dart';
+import 'package:products_management/features/createFacture/pages/create_facture.dart';
+import 'package:products_management/features/createFacture/pages/facture_list.dart';
+import 'package:products_management/features/createProduct/pages/product_list.dart';
+import 'package:products_management/features/createSupplier/pages/supplier_list.dart';
 
 class HomePage extends HookWidget {
   HomePage({Key? key}) : super(key: key);
@@ -126,20 +128,29 @@ class HomePage extends HookWidget {
             icon: const Icon(FluentIcons.generate),
             title: const Text('bon de livraison'),
           ),
+          PaneItem(
+            selectedTileColor:
+                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+            body: CreateFacture(
+              currentIndex: currentIndex,
+            ),
+            icon: const Icon(FluentIcons.activate_orders),
+            title: const Text('facture'),
+          ),
           PaneItemHeader(header: const Text('List')),
-          // PaneItem(
-          //   selectedTileColor:
-          //       ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-          //   icon: const Icon(FluentIcons.screen),
-          //   title: const Text('second screen'),
-          //   body: const DataTable2SimpleDemo(),
-          // ),
           PaneItem(
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
             icon: const Icon(FluentIcons.pdf),
             title: const Text('bon de livraison'),
             body: const BonLivraisonList(),
+          ),
+          PaneItem(
+            selectedTileColor:
+                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+            icon: const Icon(FluentIcons.screen),
+            title: const Text('facture'),
+            body: const FactureList(),
           ),
         ],
         selected: currentIndex.value,

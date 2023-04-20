@@ -22,14 +22,14 @@ class Clients extends Table {
 
 class Products extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get prix => text()();
+  IntColumn get productPrice => integer()();
   TextColumn get libelle => text()();
   TextColumn get categorie => text()();
   TextColumn get description => text().nullable()();
   TextColumn get tva => text()();
-  TextColumn get nbrePiece => text()();
+  IntColumn get nbrePiece => integer()();
   TextColumn get fournisser => text()();
-  TextColumn get prixOrTax => text()();
+  RealColumn get prixOrTax => real()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   // prix or tax => prixx ttc - tva (0, 7 , 19)
 }
@@ -57,41 +57,36 @@ class BonLivraisonsProd extends Table {
   IntColumn get bonLivraisonId =>
       integer().references(BonLivraisons, #id, onDelete: KeyAction.cascade)();
 
-  TextColumn get nbrCol => text()();
-  TextColumn get prix => text()();
-  TextColumn get remise => text()();
+  IntColumn get nbrCol => integer()();
+  IntColumn get newProductPrice => integer()();
 }
 
-// abstract class BonDeLivraisonView extends View {
-//   BonLivraisons get bonLivraisons;
-//   Clients get clients;
-//   Products get products;
+class Facture extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get factureId => text()();
+  IntColumn get clientId => integer().references(Clients, #id)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+}
 
-//   @override
-//   Query as() => select([bonLivraisons.id, products.libelle, clients.name])
-//           .from(bonLivraisons)
-//           .join([
-//         innerJoin(
-//           clients,
-//           clients.id.equalsExp(bonLivraisons.id),
-//         ),
-//         innerJoin(
-//           products,
-//           products.id.equalsExp(bonLivraisons.id),
-//         ),
-//       ]);
-// }
+class FactureProd extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get productId => integer().references(Products, #id)();
+  IntColumn get bonLivraisonId =>
+      integer().references(BonLivraisons, #id, onDelete: KeyAction.cascade)();
+
+  IntColumn get nbrCol => integer()();
+  IntColumn get newProductPrice => integer()();
+}
 
 @DriftDatabase(tables: [
   Clients,
   Products,
   Fournissers,
   BonLivraisons,
-  BonLivraisonsProd
+  BonLivraisonsProd,
+  Facture,
+  FactureProd
 ], queries: {
-  // 'getBonLivraisonList':
-  //     'select DISTINCT * from bon_livraisons b, clients c, where c.id = b.client_id and b.id = bp.bon_livraison_id',
-  //TODO hay 3amlet build normal
   'getBonLivraisonFactureData':
       'select DISTINCT * from bon_livraisons b, clients c, bon_livraisons_prod bp, products pp where c.id = b.client_id and b.id = bp.bon_livraison_id and pp.id = bp.product_id and b.id = ?'
 })
@@ -198,7 +193,7 @@ class MyDatabase extends _$MyDatabase {
     return await into(bonLivraisonsProd).insert(bonLivraisonsProdCompanion);
   }
 
-  Future<List<BonLivraisonWithClient>> getBonLivrasonData() async {
+  Future<List<FactureWithClient>> getBonLivrasonData() async {
     final query = select(bonLivraisons).join([
       innerJoin(
         clients,
@@ -209,38 +204,78 @@ class MyDatabase extends _$MyDatabase {
     return await query.map((row) {
       final bonLivraison = row.readTable(bonLivraisons);
       final client = row.readTable(clients);
-      return BonLivraisonWithClient(
+      return FactureWithClient(
           bonLivraisonId: bonLivraison.id,
-          clientName: client.name,
+          client: client,
           createdAt: bonLivraison.createdAt);
     }).get();
   }
 
-  Future<List<BonLivraisonWithProduct>> selectData() async {
-    // Select all the data from the BonLivraisons and BonLivraisonsProd tables
-    final query = select(bonLivraisons).join([
+  //TODO rigelha
+  // Future<List<BonLivraisonWithProduct>> selectData() async {
+  //   // Select all the data from the BonLivraisons and BonLivraisonsProd tables
+  //   final query = select(bonLivraisons).join([
+  //     innerJoin(
+  //       bonLivraisonsProd,
+  //       bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
+  //     ),
+  //   ]);
+
+  //   // Map the result set to a list of BonLivraisonWithProduct objects
+  //   return await query.map((row) {
+  //     final bonLivraison = row.readTable(bonLivraisons);
+  //     final product = row.readTable(bonLivraisonsProd);
+
+  //     return BonLivraisonWithProduct(
+  //       bonLivraison: bonLivraison,
+  //       product: product,
+  //     );
+  //   }).get();
+  // }
+
+  // Future<List<GetBonLivraisonFactureDataResult>> bonLivraisonFactureData(
+  //     int id) async {
+  //   return await getBonLivraisonFactureData(id).get();
+  // }
+
+  //! CRUD facture
+  Future<int> insertFacture(FactureCompanion factureCompanion) async {
+    return await into(facture).insert(factureCompanion);
+  }
+
+  Future<List<FactureData>> getFacture() async {
+    return await select(facture).get();
+  }
+
+  // Future<int> deleteBonLisvraison(int id) async {
+  //   return await (delete(bonLivraisons)..where((tbl) => tbl.id.equals(id)))
+  //       .go();
+  // }
+
+  //! factureProd
+
+  Future<int> insertFactureProduct(
+      FactureProdCompanion factureProdCompanion) async {
+    return await into(factureProd).insert(factureProdCompanion);
+  }
+
+  Future<List<FactureWithClient>> getFactureData() async {
+    final query = select(facture).join([
       innerJoin(
-        bonLivraisonsProd,
-        bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
+        clients,
+        clients.id.equalsExp(facture.clientId),
       ),
     ]);
 
-    // Map the result set to a list of BonLivraisonWithProduct objects
     return await query.map((row) {
-      final bonLivraison = row.readTable(bonLivraisons);
-      final product = row.readTable(bonLivraisonsProd);
-
-      return BonLivraisonWithProduct(
-        bonLivraison: bonLivraison,
-        product: product,
-      );
+      final facture = row.readTable(bonLivraisons);
+      final client = row.readTable(clients);
+      return FactureWithClient(
+          bonLivraisonId: facture.id,
+          client: client,
+          createdAt: facture.createdAt);
     }).get();
   }
-
-  // Future<int> deleteBonLisvraisonProduct(int id) async {
-  //   return await (delete(bonLivraisonsProd)..where((tbl) => tbl.id.equals(id)))
-  //       .go();
-  // }
 }
 
 LazyDatabase _openConnection() {

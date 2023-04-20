@@ -3,7 +3,7 @@ import 'package:products_management/core/models/customer.dart';
 import 'package:products_management/core/models/supplier.dart';
 
 class Invoice {
-  final String id;
+  final int id;
   final InvoiceInfo info;
   final Supplier supplier;
   final Customer customer;
@@ -19,31 +19,29 @@ class Invoice {
 }
 
 class InvoiceInfo {
-  final String description;
   final String number;
   final DateTime date;
-  final DateTime dueDate;
+  final DateTime? dueDate;
 
   const InvoiceInfo({
-    required this.description,
     required this.number,
     required this.date,
-    required this.dueDate,
+    this.dueDate,
   });
 }
 
 class InvoiceItem {
-  final String description;
-  final DateTime date;
+  final String productName;
+  final int nbrCol;
   final int quantity;
-  final double vat;
-  final double unitPrice;
+  final int unitPrice;
+  final int index;
 
   const InvoiceItem({
-    required this.description,
-    required this.date,
+    required this.productName,
+    required this.nbrCol,
     required this.quantity,
-    required this.vat,
     required this.unitPrice,
+    required this.index,
   });
 }

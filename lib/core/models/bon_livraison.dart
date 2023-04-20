@@ -1,23 +1,30 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:products_management/core/database/database.dart';
 
-class BonLivraisonWithProduct {
+class FactureWithProduct {
   final BonLivraison bonLivraison;
   final BonLivraisonsProdData product;
 
-  BonLivraisonWithProduct({
+  FactureWithProduct({
     required this.product,
     required this.bonLivraison,
   });
 }
 
-class BonLivraisonWithClient {
+class FactureWithClient {
   final DateTime createdAt;
-  final String clientName;
+  final Client client;
   final int bonLivraisonId;
-  BonLivraisonWithClient({
+  FactureWithClient({
     required this.createdAt,
-    required this.clientName,
+    required this.client,
     required this.bonLivraisonId,
+  });
+}
+
+class BonLivraisonFactureData {
+  final String productName;
+  BonLivraisonFactureData({
+    required this.productName,
   });
 }

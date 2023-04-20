@@ -3,11 +3,44 @@ import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
+import 'package:products_management/core/database/database.dart';
+import 'package:products_management/core/models/customer.dart';
 import 'package:products_management/core/models/invoice.dart';
+import 'package:products_management/core/models/supplier.dart';
 import 'package:products_management/core/utils/pdf_api.dart';
 
 class PdfInvoiceApi {
-  static Future<File> generate(Invoice invoice) async {
+  static Future<File> generate(
+      {required List<GetBonLivraisonFactureDataResult> productList,
+      required Client client,
+      required int bonLivraisonId,
+      required DateTime createdAt}) async {
+    // !bon de livraison info to generate the pdf
+    final Invoice invoice = Invoice(
+      customer: Customer(
+        address: client.rue,
+        cin: client.cin,
+        name: client.name,
+        numTva: client.numTva,
+        phone: client.phone,
+      ),
+      id: bonLivraisonId,
+      info: InvoiceInfo(
+        date: createdAt,
+        number: '',
+      ),
+      items: List.generate(
+          productList.length,
+          (index) => InvoiceItem(
+                productName: productList[index].name,
+                quantity:
+                    productList[index].nbrePiece * productList[index].nbrCol,
+                unitPrice: productList[index].productPrice,
+                nbrCol: productList[index].nbrCol,
+                index: index,
+              )),
+      supplier: Supplier(),
+    );
     final pdf = Document();
 
     pdf.addPage(
@@ -78,7 +111,7 @@ class PdfInvoiceApi {
   }
 
   static Widget buildTotal(Invoice invoice) {
-    final double totalTTC = invoice.items
+    final int totalTTC = invoice.items
         .map((item) => item.unitPrice * item.quantity)
         .reduce((value, element) => value + element);
 
@@ -155,12 +188,12 @@ class PdfInvoiceApi {
     ];
 
     final List<List<dynamic>> data = invoice.items.map((item) {
-      final double total = item.unitPrice * item.quantity * (1 + item.vat);
+      final int total = item.unitPrice * item.quantity;
 
       return [
-        '1',
-        item.description,
-        '1',
+        item.index,
+        item.productName,
+        item.nbrCol,
         item.quantity,
         item.unitPrice,
         total.toStringAsFixed(2),
@@ -189,13 +222,11 @@ class PdfInvoiceApi {
               decoration: BoxDecoration(border: Border.all(width: 1)),
               padding: const EdgeInsets.all(8),
               child: Text('''
-STE MARMOURI GENERAL COMMERCE
-& DISTRIBUTION
-RUE DE L'ENVIRONNEMENT
-MF: 1228271P/P/M 000 EL ALIA
-Téléphone: 54 673 296 - 52 673 299
-- 56 452 015
-Email: ste.marmouri@gmail.com
+${invoice.supplier.name}
+${invoice.supplier.address}
+MF: ${invoice.supplier.mf}
+Téléphone: ${invoice.supplier.phone}
+Email: ${invoice.supplier.email}
 ''')),
           Container(
               constraints: const BoxConstraints(
@@ -208,7 +239,7 @@ Email: ste.marmouri@gmail.com
               child: Text('''
 Nom : ${invoice.customer.name}
 Rue : ${invoice.customer.address} 
-MF: 1228271P/P/M 000 EL ALIA 
+CIN: ${invoice.customer.cin}  
 Téléphone: ${invoice.customer.phone}
 ''')),
         ],
@@ -218,14 +249,14 @@ Téléphone: ${invoice.customer.phone}
     final List<String> title = <String>[
       'invoice Number',
       'invoice Date',
-      'invoice Terms',
       'Date échéance',
     ];
     final List<String> data = <String>[
       invoice.info.number,
       DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
-      invoice.info.description,
-      DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.dueDate),
+      invoice.info.dueDate == null
+          ? ""
+          : DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.dueDate!),
     ];
 
     return Row(

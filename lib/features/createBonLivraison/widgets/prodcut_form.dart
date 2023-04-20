@@ -145,7 +145,7 @@ class ProductForm extends HookWidget {
               hintText: 'Nbr Col',
             ),
             onSaved: (String? newValue) {
-              productModel.nbrCol = newValue!;
+              productModel.nbrCol = int.parse(newValue!);
             },
             validator: (String? value) {
               if (value == null || value.isEmpty) {
@@ -177,7 +177,7 @@ class ProductForm extends HookWidget {
               hintText: 'prix',
             ),
             onSaved: (String? newValue) {
-              productModel.prix = newValue!;
+              productModel.prix = int.parse(newValue!);
             },
           ),
         ),

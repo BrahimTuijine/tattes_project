@@ -25,13 +25,13 @@ class CreateUpdateProduct extends HookWidget {
     "prix": 0,
     "categorie": '',
     "description": '',
-    "nbPiece": '',
+    "nbPiece": 0,
     'fournisser': '',
     'prixOrTax': ''
   };
 
-  String prixOrTax({required int prixTtc, required double tva}) {
-    return (prixTtc - (prixTtc * tva)).toString();
+  double prixOrTax({required int prixTtc, required double tva}) {
+    return (prixTtc - (prixTtc * tva));
   }
 
   final ValueNotifier<bool> refresh;
@@ -40,8 +40,8 @@ class CreateUpdateProduct extends HookWidget {
   Widget build(BuildContext context) {
     final selectedTva =
         useState<double>(product?.tva == null ? 0 : double.parse(product!.tva));
-    final prixTtc =
-        useState<int>(product?.prix == null ? 0 : int.parse(product!.prix));
+    final prixTtc = useState<int>(
+        product?.productPrice == null ? 0 : product!.productPrice);
 
     return Form(
       key: formKey,
@@ -80,11 +80,11 @@ class CreateUpdateProduct extends HookWidget {
                           prixTtc.value = 0;
                         }
                       },
-                      initvalue: product?.prix ?? "0",
+                      initvalue: product?.productPrice.toString() ?? "0",
                       label: 'Prix',
                       texthint: 'prix',
                       onsaved: (newValue) {
-                        productData['prix'] = newValue;
+                        productData['prix'] = int.parse(newValue!);
                       },
                       validator: (value) {
                         return null;
@@ -265,11 +265,11 @@ class CreateUpdateProduct extends HookWidget {
                   SizedBox(
                     width: 300,
                     child: InputField(
-                      initvalue: product?.nbrePiece,
+                      initvalue: product?.nbrePiece.toString(),
                       label: 'nombre de piece',
                       texthint: '10',
                       onsaved: (newValue) {
-                        productData['nbPiece'] = newValue;
+                        productData['nbPiece'] = int.parse(newValue!);
                       },
                       validator: (value) {
                         return null;
@@ -310,7 +310,9 @@ class CreateUpdateProduct extends HookWidget {
                             height: 25,
                           ),
                           Text(prixOrTax(
-                              prixTtc: prixTtc.value, tva: selectedTva.value)),
+                                  prixTtc: prixTtc.value,
+                                  tva: selectedTva.value)
+                              .toString()),
                         ],
                       )),
                 ],
@@ -338,7 +340,7 @@ class CreateUpdateProduct extends HookWidget {
                           : productData['fournisser']),
                       id: drift.Value(product!.id),
                       nbrePiece: drift.Value(productData['nbPiece']),
-                      prix: drift.Value(productData['prix']),
+                      productPrice: drift.Value(productData['prix']),
                       tva: drift.Value(selectedTva.value.toString()),
                       categorie: drift.Value(productData['categorie']),
                       libelle: drift.Value(productData['libelle']),
@@ -372,7 +374,7 @@ class CreateUpdateProduct extends HookWidget {
                       libelle: drift.Value(productData['libelle']),
                       nbrePiece: drift.Value(productData['nbPiece']),
                       description: drift.Value(productData['description']),
-                      prix: drift.Value(productData['prix']),
+                      productPrice: drift.Value(productData['prix']),
                       tva: drift.Value(selectedTva.value.toString()),
                     );
 

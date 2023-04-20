@@ -406,11 +406,12 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _prixMeta = const VerificationMeta('prix');
+  static const VerificationMeta _productPriceMeta =
+      const VerificationMeta('productPrice');
   @override
-  late final GeneratedColumn<String> prix = GeneratedColumn<String>(
-      'prix', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> productPrice = GeneratedColumn<int>(
+      'product_price', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _libelleMeta =
       const VerificationMeta('libelle');
   @override
@@ -437,9 +438,9 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   static const VerificationMeta _nbrePieceMeta =
       const VerificationMeta('nbrePiece');
   @override
-  late final GeneratedColumn<String> nbrePiece = GeneratedColumn<String>(
+  late final GeneratedColumn<int> nbrePiece = GeneratedColumn<int>(
       'nbre_piece', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _fournisserMeta =
       const VerificationMeta('fournisser');
   @override
@@ -449,9 +450,9 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   static const VerificationMeta _prixOrTaxMeta =
       const VerificationMeta('prixOrTax');
   @override
-  late final GeneratedColumn<String> prixOrTax = GeneratedColumn<String>(
+  late final GeneratedColumn<double> prixOrTax = GeneratedColumn<double>(
       'prix_or_tax', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.double, requiredDuringInsert: true);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -463,7 +464,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   @override
   List<GeneratedColumn> get $columns => [
         id,
-        prix,
+        productPrice,
         libelle,
         categorie,
         description,
@@ -485,11 +486,13 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('prix')) {
+    if (data.containsKey('product_price')) {
       context.handle(
-          _prixMeta, prix.isAcceptableOrUnknown(data['prix']!, _prixMeta));
+          _productPriceMeta,
+          productPrice.isAcceptableOrUnknown(
+              data['product_price']!, _productPriceMeta));
     } else if (isInserting) {
-      context.missing(_prixMeta);
+      context.missing(_productPriceMeta);
     }
     if (data.containsKey('libelle')) {
       context.handle(_libelleMeta,
@@ -552,8 +555,8 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     return Product(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      prix: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}prix'])!,
+      productPrice: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_price'])!,
       libelle: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}libelle'])!,
       categorie: attachedDatabase.typeMapping
@@ -563,11 +566,11 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       tva: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}tva'])!,
       nbrePiece: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}nbre_piece'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}nbre_piece'])!,
       fournisser: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}fournisser'])!,
       prixOrTax: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}prix_or_tax'])!,
+          .read(DriftSqlType.double, data['${effectivePrefix}prix_or_tax'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
     );
@@ -581,18 +584,18 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
 
 class Product extends DataClass implements Insertable<Product> {
   final int id;
-  final String prix;
+  final int productPrice;
   final String libelle;
   final String categorie;
   final String? description;
   final String tva;
-  final String nbrePiece;
+  final int nbrePiece;
   final String fournisser;
-  final String prixOrTax;
+  final double prixOrTax;
   final DateTime createdAt;
   const Product(
       {required this.id,
-      required this.prix,
+      required this.productPrice,
       required this.libelle,
       required this.categorie,
       this.description,
@@ -605,16 +608,16 @@ class Product extends DataClass implements Insertable<Product> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['prix'] = Variable<String>(prix);
+    map['product_price'] = Variable<int>(productPrice);
     map['libelle'] = Variable<String>(libelle);
     map['categorie'] = Variable<String>(categorie);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
     }
     map['tva'] = Variable<String>(tva);
-    map['nbre_piece'] = Variable<String>(nbrePiece);
+    map['nbre_piece'] = Variable<int>(nbrePiece);
     map['fournisser'] = Variable<String>(fournisser);
-    map['prix_or_tax'] = Variable<String>(prixOrTax);
+    map['prix_or_tax'] = Variable<double>(prixOrTax);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -622,7 +625,7 @@ class Product extends DataClass implements Insertable<Product> {
   ProductsCompanion toCompanion(bool nullToAbsent) {
     return ProductsCompanion(
       id: Value(id),
-      prix: Value(prix),
+      productPrice: Value(productPrice),
       libelle: Value(libelle),
       categorie: Value(categorie),
       description: description == null && nullToAbsent
@@ -641,14 +644,14 @@ class Product extends DataClass implements Insertable<Product> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Product(
       id: serializer.fromJson<int>(json['id']),
-      prix: serializer.fromJson<String>(json['prix']),
+      productPrice: serializer.fromJson<int>(json['productPrice']),
       libelle: serializer.fromJson<String>(json['libelle']),
       categorie: serializer.fromJson<String>(json['categorie']),
       description: serializer.fromJson<String?>(json['description']),
       tva: serializer.fromJson<String>(json['tva']),
-      nbrePiece: serializer.fromJson<String>(json['nbrePiece']),
+      nbrePiece: serializer.fromJson<int>(json['nbrePiece']),
       fournisser: serializer.fromJson<String>(json['fournisser']),
-      prixOrTax: serializer.fromJson<String>(json['prixOrTax']),
+      prixOrTax: serializer.fromJson<double>(json['prixOrTax']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -657,32 +660,32 @@ class Product extends DataClass implements Insertable<Product> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'prix': serializer.toJson<String>(prix),
+      'productPrice': serializer.toJson<int>(productPrice),
       'libelle': serializer.toJson<String>(libelle),
       'categorie': serializer.toJson<String>(categorie),
       'description': serializer.toJson<String?>(description),
       'tva': serializer.toJson<String>(tva),
-      'nbrePiece': serializer.toJson<String>(nbrePiece),
+      'nbrePiece': serializer.toJson<int>(nbrePiece),
       'fournisser': serializer.toJson<String>(fournisser),
-      'prixOrTax': serializer.toJson<String>(prixOrTax),
+      'prixOrTax': serializer.toJson<double>(prixOrTax),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
   Product copyWith(
           {int? id,
-          String? prix,
+          int? productPrice,
           String? libelle,
           String? categorie,
           Value<String?> description = const Value.absent(),
           String? tva,
-          String? nbrePiece,
+          int? nbrePiece,
           String? fournisser,
-          String? prixOrTax,
+          double? prixOrTax,
           DateTime? createdAt}) =>
       Product(
         id: id ?? this.id,
-        prix: prix ?? this.prix,
+        productPrice: productPrice ?? this.productPrice,
         libelle: libelle ?? this.libelle,
         categorie: categorie ?? this.categorie,
         description: description.present ? description.value : this.description,
@@ -696,7 +699,7 @@ class Product extends DataClass implements Insertable<Product> {
   String toString() {
     return (StringBuffer('Product(')
           ..write('id: $id, ')
-          ..write('prix: $prix, ')
+          ..write('productPrice: $productPrice, ')
           ..write('libelle: $libelle, ')
           ..write('categorie: $categorie, ')
           ..write('description: $description, ')
@@ -710,14 +713,14 @@ class Product extends DataClass implements Insertable<Product> {
   }
 
   @override
-  int get hashCode => Object.hash(id, prix, libelle, categorie, description,
-      tva, nbrePiece, fournisser, prixOrTax, createdAt);
+  int get hashCode => Object.hash(id, productPrice, libelle, categorie,
+      description, tva, nbrePiece, fournisser, prixOrTax, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Product &&
           other.id == this.id &&
-          other.prix == this.prix &&
+          other.productPrice == this.productPrice &&
           other.libelle == this.libelle &&
           other.categorie == this.categorie &&
           other.description == this.description &&
@@ -730,18 +733,18 @@ class Product extends DataClass implements Insertable<Product> {
 
 class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<int> id;
-  final Value<String> prix;
+  final Value<int> productPrice;
   final Value<String> libelle;
   final Value<String> categorie;
   final Value<String?> description;
   final Value<String> tva;
-  final Value<String> nbrePiece;
+  final Value<int> nbrePiece;
   final Value<String> fournisser;
-  final Value<String> prixOrTax;
+  final Value<double> prixOrTax;
   final Value<DateTime> createdAt;
   const ProductsCompanion({
     this.id = const Value.absent(),
-    this.prix = const Value.absent(),
+    this.productPrice = const Value.absent(),
     this.libelle = const Value.absent(),
     this.categorie = const Value.absent(),
     this.description = const Value.absent(),
@@ -753,16 +756,16 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   });
   ProductsCompanion.insert({
     this.id = const Value.absent(),
-    required String prix,
+    required int productPrice,
     required String libelle,
     required String categorie,
     this.description = const Value.absent(),
     required String tva,
-    required String nbrePiece,
+    required int nbrePiece,
     required String fournisser,
-    required String prixOrTax,
+    required double prixOrTax,
     this.createdAt = const Value.absent(),
-  })  : prix = Value(prix),
+  })  : productPrice = Value(productPrice),
         libelle = Value(libelle),
         categorie = Value(categorie),
         tva = Value(tva),
@@ -771,19 +774,19 @@ class ProductsCompanion extends UpdateCompanion<Product> {
         prixOrTax = Value(prixOrTax);
   static Insertable<Product> custom({
     Expression<int>? id,
-    Expression<String>? prix,
+    Expression<int>? productPrice,
     Expression<String>? libelle,
     Expression<String>? categorie,
     Expression<String>? description,
     Expression<String>? tva,
-    Expression<String>? nbrePiece,
+    Expression<int>? nbrePiece,
     Expression<String>? fournisser,
-    Expression<String>? prixOrTax,
+    Expression<double>? prixOrTax,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (prix != null) 'prix': prix,
+      if (productPrice != null) 'product_price': productPrice,
       if (libelle != null) 'libelle': libelle,
       if (categorie != null) 'categorie': categorie,
       if (description != null) 'description': description,
@@ -797,18 +800,18 @@ class ProductsCompanion extends UpdateCompanion<Product> {
 
   ProductsCompanion copyWith(
       {Value<int>? id,
-      Value<String>? prix,
+      Value<int>? productPrice,
       Value<String>? libelle,
       Value<String>? categorie,
       Value<String?>? description,
       Value<String>? tva,
-      Value<String>? nbrePiece,
+      Value<int>? nbrePiece,
       Value<String>? fournisser,
-      Value<String>? prixOrTax,
+      Value<double>? prixOrTax,
       Value<DateTime>? createdAt}) {
     return ProductsCompanion(
       id: id ?? this.id,
-      prix: prix ?? this.prix,
+      productPrice: productPrice ?? this.productPrice,
       libelle: libelle ?? this.libelle,
       categorie: categorie ?? this.categorie,
       description: description ?? this.description,
@@ -826,8 +829,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (prix.present) {
-      map['prix'] = Variable<String>(prix.value);
+    if (productPrice.present) {
+      map['product_price'] = Variable<int>(productPrice.value);
     }
     if (libelle.present) {
       map['libelle'] = Variable<String>(libelle.value);
@@ -842,13 +845,13 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       map['tva'] = Variable<String>(tva.value);
     }
     if (nbrePiece.present) {
-      map['nbre_piece'] = Variable<String>(nbrePiece.value);
+      map['nbre_piece'] = Variable<int>(nbrePiece.value);
     }
     if (fournisser.present) {
       map['fournisser'] = Variable<String>(fournisser.value);
     }
     if (prixOrTax.present) {
-      map['prix_or_tax'] = Variable<String>(prixOrTax.value);
+      map['prix_or_tax'] = Variable<double>(prixOrTax.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -860,7 +863,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   String toString() {
     return (StringBuffer('ProductsCompanion(')
           ..write('id: $id, ')
-          ..write('prix: $prix, ')
+          ..write('productPrice: $productPrice, ')
           ..write('libelle: $libelle, ')
           ..write('categorie: $categorie, ')
           ..write('description: $description, ')
@@ -1513,22 +1516,18 @@ class $BonLivraisonsProdTable extends BonLivraisonsProd
           'REFERENCES bon_livraisons (id) ON DELETE CASCADE'));
   static const VerificationMeta _nbrColMeta = const VerificationMeta('nbrCol');
   @override
-  late final GeneratedColumn<String> nbrCol = GeneratedColumn<String>(
+  late final GeneratedColumn<int> nbrCol = GeneratedColumn<int>(
       'nbr_col', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _prixMeta = const VerificationMeta('prix');
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _newProductPriceMeta =
+      const VerificationMeta('newProductPrice');
   @override
-  late final GeneratedColumn<String> prix = GeneratedColumn<String>(
-      'prix', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _remiseMeta = const VerificationMeta('remise');
-  @override
-  late final GeneratedColumn<String> remise = GeneratedColumn<String>(
-      'remise', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> newProductPrice = GeneratedColumn<int>(
+      'new_product_price', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, productId, bonLivraisonId, nbrCol, prix, remise];
+      [id, productId, bonLivraisonId, nbrCol, newProductPrice];
   @override
   String get aliasedName => _alias ?? 'bon_livraisons_prod';
   @override
@@ -1562,17 +1561,13 @@ class $BonLivraisonsProdTable extends BonLivraisonsProd
     } else if (isInserting) {
       context.missing(_nbrColMeta);
     }
-    if (data.containsKey('prix')) {
+    if (data.containsKey('new_product_price')) {
       context.handle(
-          _prixMeta, prix.isAcceptableOrUnknown(data['prix']!, _prixMeta));
+          _newProductPriceMeta,
+          newProductPrice.isAcceptableOrUnknown(
+              data['new_product_price']!, _newProductPriceMeta));
     } else if (isInserting) {
-      context.missing(_prixMeta);
-    }
-    if (data.containsKey('remise')) {
-      context.handle(_remiseMeta,
-          remise.isAcceptableOrUnknown(data['remise']!, _remiseMeta));
-    } else if (isInserting) {
-      context.missing(_remiseMeta);
+      context.missing(_newProductPriceMeta);
     }
     return context;
   }
@@ -1590,11 +1585,9 @@ class $BonLivraisonsProdTable extends BonLivraisonsProd
       bonLivraisonId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}bon_livraison_id'])!,
       nbrCol: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}nbr_col'])!,
-      prix: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}prix'])!,
-      remise: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}remise'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}nbr_col'])!,
+      newProductPrice: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}new_product_price'])!,
     );
   }
 
@@ -1609,25 +1602,22 @@ class BonLivraisonsProdData extends DataClass
   final int id;
   final int productId;
   final int bonLivraisonId;
-  final String nbrCol;
-  final String prix;
-  final String remise;
+  final int nbrCol;
+  final int newProductPrice;
   const BonLivraisonsProdData(
       {required this.id,
       required this.productId,
       required this.bonLivraisonId,
       required this.nbrCol,
-      required this.prix,
-      required this.remise});
+      required this.newProductPrice});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['product_id'] = Variable<int>(productId);
     map['bon_livraison_id'] = Variable<int>(bonLivraisonId);
-    map['nbr_col'] = Variable<String>(nbrCol);
-    map['prix'] = Variable<String>(prix);
-    map['remise'] = Variable<String>(remise);
+    map['nbr_col'] = Variable<int>(nbrCol);
+    map['new_product_price'] = Variable<int>(newProductPrice);
     return map;
   }
 
@@ -1637,8 +1627,7 @@ class BonLivraisonsProdData extends DataClass
       productId: Value(productId),
       bonLivraisonId: Value(bonLivraisonId),
       nbrCol: Value(nbrCol),
-      prix: Value(prix),
-      remise: Value(remise),
+      newProductPrice: Value(newProductPrice),
     );
   }
 
@@ -1649,9 +1638,8 @@ class BonLivraisonsProdData extends DataClass
       id: serializer.fromJson<int>(json['id']),
       productId: serializer.fromJson<int>(json['productId']),
       bonLivraisonId: serializer.fromJson<int>(json['bonLivraisonId']),
-      nbrCol: serializer.fromJson<String>(json['nbrCol']),
-      prix: serializer.fromJson<String>(json['prix']),
-      remise: serializer.fromJson<String>(json['remise']),
+      nbrCol: serializer.fromJson<int>(json['nbrCol']),
+      newProductPrice: serializer.fromJson<int>(json['newProductPrice']),
     );
   }
   @override
@@ -1661,9 +1649,8 @@ class BonLivraisonsProdData extends DataClass
       'id': serializer.toJson<int>(id),
       'productId': serializer.toJson<int>(productId),
       'bonLivraisonId': serializer.toJson<int>(bonLivraisonId),
-      'nbrCol': serializer.toJson<String>(nbrCol),
-      'prix': serializer.toJson<String>(prix),
-      'remise': serializer.toJson<String>(remise),
+      'nbrCol': serializer.toJson<int>(nbrCol),
+      'newProductPrice': serializer.toJson<int>(newProductPrice),
     };
   }
 
@@ -1671,16 +1658,14 @@ class BonLivraisonsProdData extends DataClass
           {int? id,
           int? productId,
           int? bonLivraisonId,
-          String? nbrCol,
-          String? prix,
-          String? remise}) =>
+          int? nbrCol,
+          int? newProductPrice}) =>
       BonLivraisonsProdData(
         id: id ?? this.id,
         productId: productId ?? this.productId,
         bonLivraisonId: bonLivraisonId ?? this.bonLivraisonId,
         nbrCol: nbrCol ?? this.nbrCol,
-        prix: prix ?? this.prix,
-        remise: remise ?? this.remise,
+        newProductPrice: newProductPrice ?? this.newProductPrice,
       );
   @override
   String toString() {
@@ -1689,15 +1674,14 @@ class BonLivraisonsProdData extends DataClass
           ..write('productId: $productId, ')
           ..write('bonLivraisonId: $bonLivraisonId, ')
           ..write('nbrCol: $nbrCol, ')
-          ..write('prix: $prix, ')
-          ..write('remise: $remise')
+          ..write('newProductPrice: $newProductPrice')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      Object.hash(id, productId, bonLivraisonId, nbrCol, prix, remise);
+      Object.hash(id, productId, bonLivraisonId, nbrCol, newProductPrice);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1706,8 +1690,7 @@ class BonLivraisonsProdData extends DataClass
           other.productId == this.productId &&
           other.bonLivraisonId == this.bonLivraisonId &&
           other.nbrCol == this.nbrCol &&
-          other.prix == this.prix &&
-          other.remise == this.remise);
+          other.newProductPrice == this.newProductPrice);
 }
 
 class BonLivraisonsProdCompanion
@@ -1715,44 +1698,38 @@ class BonLivraisonsProdCompanion
   final Value<int> id;
   final Value<int> productId;
   final Value<int> bonLivraisonId;
-  final Value<String> nbrCol;
-  final Value<String> prix;
-  final Value<String> remise;
+  final Value<int> nbrCol;
+  final Value<int> newProductPrice;
   const BonLivraisonsProdCompanion({
     this.id = const Value.absent(),
     this.productId = const Value.absent(),
     this.bonLivraisonId = const Value.absent(),
     this.nbrCol = const Value.absent(),
-    this.prix = const Value.absent(),
-    this.remise = const Value.absent(),
+    this.newProductPrice = const Value.absent(),
   });
   BonLivraisonsProdCompanion.insert({
     this.id = const Value.absent(),
     required int productId,
     required int bonLivraisonId,
-    required String nbrCol,
-    required String prix,
-    required String remise,
+    required int nbrCol,
+    required int newProductPrice,
   })  : productId = Value(productId),
         bonLivraisonId = Value(bonLivraisonId),
         nbrCol = Value(nbrCol),
-        prix = Value(prix),
-        remise = Value(remise);
+        newProductPrice = Value(newProductPrice);
   static Insertable<BonLivraisonsProdData> custom({
     Expression<int>? id,
     Expression<int>? productId,
     Expression<int>? bonLivraisonId,
-    Expression<String>? nbrCol,
-    Expression<String>? prix,
-    Expression<String>? remise,
+    Expression<int>? nbrCol,
+    Expression<int>? newProductPrice,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (productId != null) 'product_id': productId,
       if (bonLivraisonId != null) 'bon_livraison_id': bonLivraisonId,
       if (nbrCol != null) 'nbr_col': nbrCol,
-      if (prix != null) 'prix': prix,
-      if (remise != null) 'remise': remise,
+      if (newProductPrice != null) 'new_product_price': newProductPrice,
     });
   }
 
@@ -1760,16 +1737,14 @@ class BonLivraisonsProdCompanion
       {Value<int>? id,
       Value<int>? productId,
       Value<int>? bonLivraisonId,
-      Value<String>? nbrCol,
-      Value<String>? prix,
-      Value<String>? remise}) {
+      Value<int>? nbrCol,
+      Value<int>? newProductPrice}) {
     return BonLivraisonsProdCompanion(
       id: id ?? this.id,
       productId: productId ?? this.productId,
       bonLivraisonId: bonLivraisonId ?? this.bonLivraisonId,
       nbrCol: nbrCol ?? this.nbrCol,
-      prix: prix ?? this.prix,
-      remise: remise ?? this.remise,
+      newProductPrice: newProductPrice ?? this.newProductPrice,
     );
   }
 
@@ -1786,13 +1761,10 @@ class BonLivraisonsProdCompanion
       map['bon_livraison_id'] = Variable<int>(bonLivraisonId.value);
     }
     if (nbrCol.present) {
-      map['nbr_col'] = Variable<String>(nbrCol.value);
+      map['nbr_col'] = Variable<int>(nbrCol.value);
     }
-    if (prix.present) {
-      map['prix'] = Variable<String>(prix.value);
-    }
-    if (remise.present) {
-      map['remise'] = Variable<String>(remise.value);
+    if (newProductPrice.present) {
+      map['new_product_price'] = Variable<int>(newProductPrice.value);
     }
     return map;
   }
@@ -1804,8 +1776,554 @@ class BonLivraisonsProdCompanion
           ..write('productId: $productId, ')
           ..write('bonLivraisonId: $bonLivraisonId, ')
           ..write('nbrCol: $nbrCol, ')
-          ..write('prix: $prix, ')
-          ..write('remise: $remise')
+          ..write('newProductPrice: $newProductPrice')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FactureTable extends Facture with TableInfo<$FactureTable, FactureData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FactureTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _factureIdMeta =
+      const VerificationMeta('factureId');
+  @override
+  late final GeneratedColumn<String> factureId = GeneratedColumn<String>(
+      'facture_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _clientIdMeta =
+      const VerificationMeta('clientId');
+  @override
+  late final GeneratedColumn<int> clientId = GeneratedColumn<int>(
+      'client_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES clients (id)'));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [id, factureId, clientId, createdAt];
+  @override
+  String get aliasedName => _alias ?? 'facture';
+  @override
+  String get actualTableName => 'facture';
+  @override
+  VerificationContext validateIntegrity(Insertable<FactureData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('facture_id')) {
+      context.handle(_factureIdMeta,
+          factureId.isAcceptableOrUnknown(data['facture_id']!, _factureIdMeta));
+    } else if (isInserting) {
+      context.missing(_factureIdMeta);
+    }
+    if (data.containsKey('client_id')) {
+      context.handle(_clientIdMeta,
+          clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta));
+    } else if (isInserting) {
+      context.missing(_clientIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FactureData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FactureData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      factureId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}facture_id'])!,
+      clientId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}client_id'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $FactureTable createAlias(String alias) {
+    return $FactureTable(attachedDatabase, alias);
+  }
+}
+
+class FactureData extends DataClass implements Insertable<FactureData> {
+  final int id;
+  final String factureId;
+  final int clientId;
+  final DateTime createdAt;
+  const FactureData(
+      {required this.id,
+      required this.factureId,
+      required this.clientId,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['facture_id'] = Variable<String>(factureId);
+    map['client_id'] = Variable<int>(clientId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  FactureCompanion toCompanion(bool nullToAbsent) {
+    return FactureCompanion(
+      id: Value(id),
+      factureId: Value(factureId),
+      clientId: Value(clientId),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory FactureData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FactureData(
+      id: serializer.fromJson<int>(json['id']),
+      factureId: serializer.fromJson<String>(json['factureId']),
+      clientId: serializer.fromJson<int>(json['clientId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'factureId': serializer.toJson<String>(factureId),
+      'clientId': serializer.toJson<int>(clientId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  FactureData copyWith(
+          {int? id, String? factureId, int? clientId, DateTime? createdAt}) =>
+      FactureData(
+        id: id ?? this.id,
+        factureId: factureId ?? this.factureId,
+        clientId: clientId ?? this.clientId,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('FactureData(')
+          ..write('id: $id, ')
+          ..write('factureId: $factureId, ')
+          ..write('clientId: $clientId, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, factureId, clientId, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FactureData &&
+          other.id == this.id &&
+          other.factureId == this.factureId &&
+          other.clientId == this.clientId &&
+          other.createdAt == this.createdAt);
+}
+
+class FactureCompanion extends UpdateCompanion<FactureData> {
+  final Value<int> id;
+  final Value<String> factureId;
+  final Value<int> clientId;
+  final Value<DateTime> createdAt;
+  const FactureCompanion({
+    this.id = const Value.absent(),
+    this.factureId = const Value.absent(),
+    this.clientId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  FactureCompanion.insert({
+    this.id = const Value.absent(),
+    required String factureId,
+    required int clientId,
+    this.createdAt = const Value.absent(),
+  })  : factureId = Value(factureId),
+        clientId = Value(clientId);
+  static Insertable<FactureData> custom({
+    Expression<int>? id,
+    Expression<String>? factureId,
+    Expression<int>? clientId,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (factureId != null) 'facture_id': factureId,
+      if (clientId != null) 'client_id': clientId,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  FactureCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? factureId,
+      Value<int>? clientId,
+      Value<DateTime>? createdAt}) {
+    return FactureCompanion(
+      id: id ?? this.id,
+      factureId: factureId ?? this.factureId,
+      clientId: clientId ?? this.clientId,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (factureId.present) {
+      map['facture_id'] = Variable<String>(factureId.value);
+    }
+    if (clientId.present) {
+      map['client_id'] = Variable<int>(clientId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FactureCompanion(')
+          ..write('id: $id, ')
+          ..write('factureId: $factureId, ')
+          ..write('clientId: $clientId, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $FactureProdTable extends FactureProd
+    with TableInfo<$FactureProdTable, FactureProdData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FactureProdTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _productIdMeta =
+      const VerificationMeta('productId');
+  @override
+  late final GeneratedColumn<int> productId = GeneratedColumn<int>(
+      'product_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES products (id)'));
+  static const VerificationMeta _bonLivraisonIdMeta =
+      const VerificationMeta('bonLivraisonId');
+  @override
+  late final GeneratedColumn<int> bonLivraisonId = GeneratedColumn<int>(
+      'bon_livraison_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES bon_livraisons (id) ON DELETE CASCADE'));
+  static const VerificationMeta _nbrColMeta = const VerificationMeta('nbrCol');
+  @override
+  late final GeneratedColumn<int> nbrCol = GeneratedColumn<int>(
+      'nbr_col', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _newProductPriceMeta =
+      const VerificationMeta('newProductPrice');
+  @override
+  late final GeneratedColumn<int> newProductPrice = GeneratedColumn<int>(
+      'new_product_price', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, productId, bonLivraisonId, nbrCol, newProductPrice];
+  @override
+  String get aliasedName => _alias ?? 'facture_prod';
+  @override
+  String get actualTableName => 'facture_prod';
+  @override
+  VerificationContext validateIntegrity(Insertable<FactureProdData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('product_id')) {
+      context.handle(_productIdMeta,
+          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
+    } else if (isInserting) {
+      context.missing(_productIdMeta);
+    }
+    if (data.containsKey('bon_livraison_id')) {
+      context.handle(
+          _bonLivraisonIdMeta,
+          bonLivraisonId.isAcceptableOrUnknown(
+              data['bon_livraison_id']!, _bonLivraisonIdMeta));
+    } else if (isInserting) {
+      context.missing(_bonLivraisonIdMeta);
+    }
+    if (data.containsKey('nbr_col')) {
+      context.handle(_nbrColMeta,
+          nbrCol.isAcceptableOrUnknown(data['nbr_col']!, _nbrColMeta));
+    } else if (isInserting) {
+      context.missing(_nbrColMeta);
+    }
+    if (data.containsKey('new_product_price')) {
+      context.handle(
+          _newProductPriceMeta,
+          newProductPrice.isAcceptableOrUnknown(
+              data['new_product_price']!, _newProductPriceMeta));
+    } else if (isInserting) {
+      context.missing(_newProductPriceMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FactureProdData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FactureProdData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      productId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}product_id'])!,
+      bonLivraisonId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}bon_livraison_id'])!,
+      nbrCol: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}nbr_col'])!,
+      newProductPrice: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}new_product_price'])!,
+    );
+  }
+
+  @override
+  $FactureProdTable createAlias(String alias) {
+    return $FactureProdTable(attachedDatabase, alias);
+  }
+}
+
+class FactureProdData extends DataClass implements Insertable<FactureProdData> {
+  final int id;
+  final int productId;
+  final int bonLivraisonId;
+  final int nbrCol;
+  final int newProductPrice;
+  const FactureProdData(
+      {required this.id,
+      required this.productId,
+      required this.bonLivraisonId,
+      required this.nbrCol,
+      required this.newProductPrice});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['product_id'] = Variable<int>(productId);
+    map['bon_livraison_id'] = Variable<int>(bonLivraisonId);
+    map['nbr_col'] = Variable<int>(nbrCol);
+    map['new_product_price'] = Variable<int>(newProductPrice);
+    return map;
+  }
+
+  FactureProdCompanion toCompanion(bool nullToAbsent) {
+    return FactureProdCompanion(
+      id: Value(id),
+      productId: Value(productId),
+      bonLivraisonId: Value(bonLivraisonId),
+      nbrCol: Value(nbrCol),
+      newProductPrice: Value(newProductPrice),
+    );
+  }
+
+  factory FactureProdData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FactureProdData(
+      id: serializer.fromJson<int>(json['id']),
+      productId: serializer.fromJson<int>(json['productId']),
+      bonLivraisonId: serializer.fromJson<int>(json['bonLivraisonId']),
+      nbrCol: serializer.fromJson<int>(json['nbrCol']),
+      newProductPrice: serializer.fromJson<int>(json['newProductPrice']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'productId': serializer.toJson<int>(productId),
+      'bonLivraisonId': serializer.toJson<int>(bonLivraisonId),
+      'nbrCol': serializer.toJson<int>(nbrCol),
+      'newProductPrice': serializer.toJson<int>(newProductPrice),
+    };
+  }
+
+  FactureProdData copyWith(
+          {int? id,
+          int? productId,
+          int? bonLivraisonId,
+          int? nbrCol,
+          int? newProductPrice}) =>
+      FactureProdData(
+        id: id ?? this.id,
+        productId: productId ?? this.productId,
+        bonLivraisonId: bonLivraisonId ?? this.bonLivraisonId,
+        nbrCol: nbrCol ?? this.nbrCol,
+        newProductPrice: newProductPrice ?? this.newProductPrice,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('FactureProdData(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('bonLivraisonId: $bonLivraisonId, ')
+          ..write('nbrCol: $nbrCol, ')
+          ..write('newProductPrice: $newProductPrice')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, productId, bonLivraisonId, nbrCol, newProductPrice);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FactureProdData &&
+          other.id == this.id &&
+          other.productId == this.productId &&
+          other.bonLivraisonId == this.bonLivraisonId &&
+          other.nbrCol == this.nbrCol &&
+          other.newProductPrice == this.newProductPrice);
+}
+
+class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
+  final Value<int> id;
+  final Value<int> productId;
+  final Value<int> bonLivraisonId;
+  final Value<int> nbrCol;
+  final Value<int> newProductPrice;
+  const FactureProdCompanion({
+    this.id = const Value.absent(),
+    this.productId = const Value.absent(),
+    this.bonLivraisonId = const Value.absent(),
+    this.nbrCol = const Value.absent(),
+    this.newProductPrice = const Value.absent(),
+  });
+  FactureProdCompanion.insert({
+    this.id = const Value.absent(),
+    required int productId,
+    required int bonLivraisonId,
+    required int nbrCol,
+    required int newProductPrice,
+  })  : productId = Value(productId),
+        bonLivraisonId = Value(bonLivraisonId),
+        nbrCol = Value(nbrCol),
+        newProductPrice = Value(newProductPrice);
+  static Insertable<FactureProdData> custom({
+    Expression<int>? id,
+    Expression<int>? productId,
+    Expression<int>? bonLivraisonId,
+    Expression<int>? nbrCol,
+    Expression<int>? newProductPrice,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (productId != null) 'product_id': productId,
+      if (bonLivraisonId != null) 'bon_livraison_id': bonLivraisonId,
+      if (nbrCol != null) 'nbr_col': nbrCol,
+      if (newProductPrice != null) 'new_product_price': newProductPrice,
+    });
+  }
+
+  FactureProdCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? productId,
+      Value<int>? bonLivraisonId,
+      Value<int>? nbrCol,
+      Value<int>? newProductPrice}) {
+    return FactureProdCompanion(
+      id: id ?? this.id,
+      productId: productId ?? this.productId,
+      bonLivraisonId: bonLivraisonId ?? this.bonLivraisonId,
+      nbrCol: nbrCol ?? this.nbrCol,
+      newProductPrice: newProductPrice ?? this.newProductPrice,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (productId.present) {
+      map['product_id'] = Variable<int>(productId.value);
+    }
+    if (bonLivraisonId.present) {
+      map['bon_livraison_id'] = Variable<int>(bonLivraisonId.value);
+    }
+    if (nbrCol.present) {
+      map['nbr_col'] = Variable<int>(nbrCol.value);
+    }
+    if (newProductPrice.present) {
+      map['new_product_price'] = Variable<int>(newProductPrice.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FactureProdCompanion(')
+          ..write('id: $id, ')
+          ..write('productId: $productId, ')
+          ..write('bonLivraisonId: $bonLivraisonId, ')
+          ..write('nbrCol: $nbrCol, ')
+          ..write('newProductPrice: $newProductPrice')
           ..write(')'))
         .toString();
   }
@@ -1819,6 +2337,8 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   late final $BonLivraisonsTable bonLivraisons = $BonLivraisonsTable(this);
   late final $BonLivraisonsProdTable bonLivraisonsProd =
       $BonLivraisonsProdTable(this);
+  late final $FactureTable facture = $FactureTable(this);
+  late final $FactureProdTable factureProd = $FactureProdTable(this);
   Selectable<GetBonLivraisonFactureDataResult> getBonLivraisonFactureData(
       int var1) {
     return customSelect(
@@ -1848,18 +2368,17 @@ abstract class _$MyDatabase extends GeneratedDatabase {
         id2: row.read<int>('id'),
         productId: row.read<int>('product_id'),
         bonLivraisonId: row.read<int>('bon_livraison_id'),
-        nbrCol: row.read<String>('nbr_col'),
-        prix: row.read<String>('prix'),
-        remise: row.read<String>('remise'),
+        nbrCol: row.read<int>('nbr_col'),
+        newProductPrice: row.read<int>('new_product_price'),
         id3: row.read<int>('id'),
-        prix1: row.read<String>('prix'),
+        productPrice: row.read<int>('product_price'),
         libelle: row.read<String>('libelle'),
         categorie: row.read<String>('categorie'),
         description: row.readNullable<String>('description'),
         tva: row.read<String>('tva'),
-        nbrePiece: row.read<String>('nbre_piece'),
+        nbrePiece: row.read<int>('nbre_piece'),
         fournisser: row.read<String>('fournisser'),
-        prixOrTax: row.read<String>('prix_or_tax'),
+        prixOrTax: row.read<double>('prix_or_tax'),
         createdAt2: row.read<DateTime>('created_at'),
       );
     });
@@ -1869,8 +2388,15 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [clients, products, fournissers, bonLivraisons, bonLivraisonsProd];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        clients,
+        products,
+        fournissers,
+        bonLivraisons,
+        bonLivraisonsProd,
+        facture,
+        factureProd
+      ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
@@ -1879,6 +2405,13 @@ abstract class _$MyDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('bon_livraisons_prod', kind: UpdateKind.delete),
+            ],
+          ),
+          WritePropagation(
+            on: TableUpdateQuery.onTableName('bon_livraisons',
+                limitUpdateKind: UpdateKind.delete),
+            result: [
+              TableUpdate('facture_prod', kind: UpdateKind.delete),
             ],
           ),
         ],
@@ -1901,18 +2434,17 @@ class GetBonLivraisonFactureDataResult {
   final int id2;
   final int productId;
   final int bonLivraisonId;
-  final String nbrCol;
-  final String prix;
-  final String remise;
+  final int nbrCol;
+  final int newProductPrice;
   final int id3;
-  final String prix1;
+  final int productPrice;
   final String libelle;
   final String categorie;
   final String? description;
   final String tva;
-  final String nbrePiece;
+  final int nbrePiece;
   final String fournisser;
-  final String prixOrTax;
+  final double prixOrTax;
   final DateTime createdAt2;
   GetBonLivraisonFactureDataResult({
     required this.id,
@@ -1931,10 +2463,9 @@ class GetBonLivraisonFactureDataResult {
     required this.productId,
     required this.bonLivraisonId,
     required this.nbrCol,
-    required this.prix,
-    required this.remise,
+    required this.newProductPrice,
     required this.id3,
-    required this.prix1,
+    required this.productPrice,
     required this.libelle,
     required this.categorie,
     this.description,

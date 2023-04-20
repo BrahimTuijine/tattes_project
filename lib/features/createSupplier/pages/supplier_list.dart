@@ -6,7 +6,7 @@ import 'package:products_management/core/database/database.dart';
 import 'package:products_management/core/strings/colors.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/core/widgets/dialog.dart';
-import 'package:products_management/features/createSupplier/presentation/pages/create_update_supplier.dart';
+import 'package:products_management/features/createSupplier/pages/create_update_supplier.dart';
 import 'package:products_management/injection.dart';
 
 class SupplierList extends HookWidget {
