@@ -198,7 +198,10 @@ class CreateUpdateBonLivraison extends HookWidget {
                           productModel: productList[index],
                           onAdd: () {
                             productList.add(ProductModel(
-                                nbrCol: 0, prix: 0, productId: 0,));
+                              nbrCol: 0,
+                              prix: 0,
+                              productId: 0,
+                            ));
                             refresh.value = !refresh.value;
                           },
                         );
@@ -231,7 +234,7 @@ class CreateUpdateBonLivraison extends HookWidget {
                               newProductPrice: productList[i].prix,
                             ));
                           }
-                          currentIndex.value = 5;
+                          currentIndex.value = 6;
                         }
                       },
                       text: 'créer',

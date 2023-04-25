@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -234,7 +233,7 @@ class CreateFacture extends HookWidget {
                               newProductPrice: productList[i].prix,
                             ));
                           }
-                          currentIndex.value = 5;
+                          currentIndex.value = 7;
                         }
                       },
                       text: 'créer',

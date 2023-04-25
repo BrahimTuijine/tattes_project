@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:products_management/core/database/database.dart';
 import 'package:products_management/core/models/bon_livraison.dart';
 import 'package:products_management/core/strings/colors.dart';
-import 'package:products_management/core/utils/generate_pdf.dart';
+import 'package:products_management/core/utils/pdf_bonlivraison.dart';
 import 'package:products_management/core/utils/pdf_api.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/injection.dart';
@@ -161,25 +161,22 @@ class BonLivraisonList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () async {
-                                        // final List<
-                                        //         GetBonLivraisonFactureDataResult>
-                                        //     productList =
-                                        //     await getIt<MyDatabase>()
-                                        //         .bonLivraisonFactureData(
-                                        //             reversed[index]
-                                        //                 .bonLivraisonId);
+                                        final productList =
+                                            await getIt<MyDatabase>()
+                                                .getBonLivrisonWithProduct(
+                                          reversed[index].bonLivraisonId,
+                                        );
 
-                                        // print(productList.toString());
                                         // ? generate the pdf
-                                        // final pdfFile =
-                                        //     await PdfInvoiceApi.generate(
-                                        //         client: reversed[index].client,
-                                        //         productList: productList,
-                                        //         bonLivraisonId: reversed[index]
-                                        //             .bonLivraisonId,
-                                        //         createdAt:
-                                        //             reversed[index].createdAt);
-                                        // PdfApi.openFile(pdfFile);
+                                        final pdfFile =
+                                            await BonLivraisonPdf.generate(
+                                                client: reversed[index].client,
+                                                productList: productList,
+                                                bonLivraisonId: reversed[index]
+                                                    .bonLivraisonId,
+                                                createdAt:
+                                                    reversed[index].createdAt);
+                                        PdfApi.openFile(pdfFile);
                                       },
                                       icon: const Icon(
                                         Icons.remove_red_eye,
@@ -188,11 +185,23 @@ class BonLivraisonList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () async {
-                                        //? final pdfFile =
-                                        //     await PdfInvoiceApi.generate(
-                                        //         invoice);
+                                        final productList =
+                                            await getIt<MyDatabase>()
+                                                .getBonLivrisonWithProduct(
+                                          reversed[index].bonLivraisonId,
+                                        );
+
+                                        // ? generate the pdf
+                                        final pdfFile =
+                                            await BonLivraisonPdf.generate(
+                                                client: reversed[index].client,
+                                                productList: productList,
+                                                bonLivraisonId: reversed[index]
+                                                    .bonLivraisonId,
+                                                createdAt:
+                                                    reversed[index].createdAt);
                                         // ? print pdf
-                                        // PdfApi.printPdf(pdfFile);
+                                        PdfApi.printPdf(pdfFile);
                                       },
                                       icon: const Icon(
                                         Icons.print,

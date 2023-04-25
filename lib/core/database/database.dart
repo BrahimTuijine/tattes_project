@@ -1,10 +1,13 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // To open the database, add these imports to the existing file defining the
 // database class. They are used to open the database.
 import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
 import 'package:products_management/core/models/bon_livraison.dart';
 
 part 'database.g.dart';
@@ -22,7 +25,7 @@ class Clients extends Table {
 
 class Products extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get productPrice => integer()();
+  RealColumn get productPrice => real()();
   TextColumn get libelle => text()();
   TextColumn get categorie => text()();
   TextColumn get description => text().nullable()();
@@ -58,7 +61,7 @@ class BonLivraisonsProd extends Table {
       integer().references(BonLivraisons, #id, onDelete: KeyAction.cascade)();
 
   IntColumn get nbrCol => integer()();
-  IntColumn get newProductPrice => integer()();
+  RealColumn get newProductPrice => real()();
 }
 
 class Facture extends Table {
@@ -75,7 +78,7 @@ class FactureProd extends Table {
       integer().references(BonLivraisons, #id, onDelete: KeyAction.cascade)();
 
   IntColumn get nbrCol => integer()();
-  IntColumn get newProductPrice => integer()();
+  RealColumn get newProductPrice => real()();
 }
 
 @DriftDatabase(tables: [
@@ -211,27 +214,40 @@ class MyDatabase extends _$MyDatabase {
     }).get();
   }
 
-  //TODO rigelha
-  // Future<List<BonLivraisonWithProduct>> selectData() async {
-  //   // Select all the data from the BonLivraisons and BonLivraisonsProd tables
-  //   final query = select(bonLivraisons).join([
-  //     innerJoin(
-  //       bonLivraisonsProd,
-  //       bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
-  //     ),
-  //   ]);
+  Future<List<BonLivraisonPdfData>> getBonLivrisonWithProduct(int bonId) async {
+    final query = select(bonLivraisonsProd).join([
+      innerJoin(
+        bonLivraisons,
+        bonLivraisonsProd.bonLivraisonId.equalsExp(bonLivraisons.id),
+      ),
+      innerJoin(
+        products,
+        bonLivraisonsProd.productId.equalsExp(products.id),
+      ),
+    ])
+      ..where(bonLivraisons.id.equals(bonId));
 
-  //   // Map the result set to a list of BonLivraisonWithProduct objects
-  //   return await query.map((row) {
-  //     final bonLivraison = row.readTable(bonLivraisons);
-  //     final product = row.readTable(bonLivraisonsProd);
+    final List<Product> productList = [];
+    final List<BonLivraisonsProdData> bonLivraisonsProductList = [];
+    final List<BonLivraisonPdfData> bonLivraisonPdfData = [];
 
-  //     return BonLivraisonWithProduct(
-  //       bonLivraison: bonLivraison,
-  //       product: product,
-  //     );
-  //   }).get();
-  // }
+    await query.map((row) {
+      final bonLivraisonsProduct = row.readTable(bonLivraisonsProd);
+      final product = row.readTable(products);
+      bonLivraisonsProductList.add(bonLivraisonsProduct);
+      productList.add(product);
+    }).get();
+    for (var product in productList) {
+      final result = bonLivraisonsProductList
+          .where((element) => product.id == element.productId)
+          .toList();
+      bonLivraisonPdfData.add(BonLivraisonPdfData(
+          product: product,
+          nbrCol: result[0].nbrCol,
+          newPrice: result[0].newProductPrice));
+    }
+    return bonLivraisonPdfData;
+  }
 
   // Future<List<GetBonLivraisonFactureDataResult>> bonLivraisonFactureData(
   //     int id) async {
@@ -276,6 +292,17 @@ class MyDatabase extends _$MyDatabase {
           createdAt: facture.createdAt);
     }).get();
   }
+}
+
+class BonLivraisonPdfData {
+  final Product product;
+  final int nbrCol;
+  final double newPrice;
+  BonLivraisonPdfData({
+    required this.product,
+    required this.nbrCol,
+    required this.newPrice,
+  });
 }
 
 LazyDatabase _openConnection() {

@@ -30,7 +30,7 @@ class CreateUpdateProduct extends HookWidget {
     'prixOrTax': ''
   };
 
-  double prixOrTax({required int prixTtc, required double tva}) {
+  double prixOrTax({required double prixTtc, required double tva}) {
     return (prixTtc - (prixTtc * tva));
   }
 
@@ -40,7 +40,7 @@ class CreateUpdateProduct extends HookWidget {
   Widget build(BuildContext context) {
     final selectedTva =
         useState<double>(product?.tva == null ? 0 : double.parse(product!.tva));
-    final prixTtc = useState<int>(
+    final prixTtc = useState<double>(
         product?.productPrice == null ? 0 : product!.productPrice);
 
     return Form(
@@ -74,8 +74,8 @@ class CreateUpdateProduct extends HookWidget {
                       // controller: prixController,
                       onChanged: (prix) {
                         try {
-                          int.tryParse(prix);
-                          prixTtc.value = int.parse(prix);
+                          double.tryParse(prix);
+                          prixTtc.value = double.parse(prix);
                         } catch (e) {
                           prixTtc.value = 0;
                         }

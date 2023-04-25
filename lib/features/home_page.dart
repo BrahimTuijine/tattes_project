@@ -8,6 +8,7 @@ import 'package:products_management/features/createFacture/pages/create_facture.
 import 'package:products_management/features/createFacture/pages/facture_list.dart';
 import 'package:products_management/features/createProduct/pages/product_list.dart';
 import 'package:products_management/features/createSupplier/pages/supplier_list.dart';
+import 'package:products_management/features/dashboard/pages/dashboard.dart';
 
 class HomePage extends HookWidget {
   HomePage({Key? key}) : super(key: key);
@@ -82,7 +83,7 @@ class HomePage extends HookWidget {
           PaneItem(
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            body: const Text('dashboard'),
+            body: const DashBoard(),
             icon: const Icon(FluentIcons.home),
             title: const Text(
               'home Page',

@@ -15,6 +15,7 @@ class FactureWithClient {
   final DateTime createdAt;
   final Client client;
   final int bonLivraisonId;
+
   FactureWithClient({
     required this.createdAt,
     required this.client,

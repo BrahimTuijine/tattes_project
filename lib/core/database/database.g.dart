@@ -409,9 +409,9 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   static const VerificationMeta _productPriceMeta =
       const VerificationMeta('productPrice');
   @override
-  late final GeneratedColumn<int> productPrice = GeneratedColumn<int>(
+  late final GeneratedColumn<double> productPrice = GeneratedColumn<double>(
       'product_price', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.double, requiredDuringInsert: true);
   static const VerificationMeta _libelleMeta =
       const VerificationMeta('libelle');
   @override
@@ -556,7 +556,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       productPrice: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}product_price'])!,
+          .read(DriftSqlType.double, data['${effectivePrefix}product_price'])!,
       libelle: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}libelle'])!,
       categorie: attachedDatabase.typeMapping
@@ -584,7 +584,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
 
 class Product extends DataClass implements Insertable<Product> {
   final int id;
-  final int productPrice;
+  final double productPrice;
   final String libelle;
   final String categorie;
   final String? description;
@@ -608,7 +608,7 @@ class Product extends DataClass implements Insertable<Product> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['product_price'] = Variable<int>(productPrice);
+    map['product_price'] = Variable<double>(productPrice);
     map['libelle'] = Variable<String>(libelle);
     map['categorie'] = Variable<String>(categorie);
     if (!nullToAbsent || description != null) {
@@ -644,7 +644,7 @@ class Product extends DataClass implements Insertable<Product> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Product(
       id: serializer.fromJson<int>(json['id']),
-      productPrice: serializer.fromJson<int>(json['productPrice']),
+      productPrice: serializer.fromJson<double>(json['productPrice']),
       libelle: serializer.fromJson<String>(json['libelle']),
       categorie: serializer.fromJson<String>(json['categorie']),
       description: serializer.fromJson<String?>(json['description']),
@@ -660,7 +660,7 @@ class Product extends DataClass implements Insertable<Product> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'productPrice': serializer.toJson<int>(productPrice),
+      'productPrice': serializer.toJson<double>(productPrice),
       'libelle': serializer.toJson<String>(libelle),
       'categorie': serializer.toJson<String>(categorie),
       'description': serializer.toJson<String?>(description),
@@ -674,7 +674,7 @@ class Product extends DataClass implements Insertable<Product> {
 
   Product copyWith(
           {int? id,
-          int? productPrice,
+          double? productPrice,
           String? libelle,
           String? categorie,
           Value<String?> description = const Value.absent(),
@@ -733,7 +733,7 @@ class Product extends DataClass implements Insertable<Product> {
 
 class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<int> id;
-  final Value<int> productPrice;
+  final Value<double> productPrice;
   final Value<String> libelle;
   final Value<String> categorie;
   final Value<String?> description;
@@ -756,7 +756,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   });
   ProductsCompanion.insert({
     this.id = const Value.absent(),
-    required int productPrice,
+    required double productPrice,
     required String libelle,
     required String categorie,
     this.description = const Value.absent(),
@@ -774,7 +774,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
         prixOrTax = Value(prixOrTax);
   static Insertable<Product> custom({
     Expression<int>? id,
-    Expression<int>? productPrice,
+    Expression<double>? productPrice,
     Expression<String>? libelle,
     Expression<String>? categorie,
     Expression<String>? description,
@@ -800,7 +800,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
 
   ProductsCompanion copyWith(
       {Value<int>? id,
-      Value<int>? productPrice,
+      Value<double>? productPrice,
       Value<String>? libelle,
       Value<String>? categorie,
       Value<String?>? description,
@@ -830,7 +830,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       map['id'] = Variable<int>(id.value);
     }
     if (productPrice.present) {
-      map['product_price'] = Variable<int>(productPrice.value);
+      map['product_price'] = Variable<double>(productPrice.value);
     }
     if (libelle.present) {
       map['libelle'] = Variable<String>(libelle.value);
@@ -1522,9 +1522,9 @@ class $BonLivraisonsProdTable extends BonLivraisonsProd
   static const VerificationMeta _newProductPriceMeta =
       const VerificationMeta('newProductPrice');
   @override
-  late final GeneratedColumn<int> newProductPrice = GeneratedColumn<int>(
+  late final GeneratedColumn<double> newProductPrice = GeneratedColumn<double>(
       'new_product_price', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.double, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
       [id, productId, bonLivraisonId, nbrCol, newProductPrice];
@@ -1586,8 +1586,8 @@ class $BonLivraisonsProdTable extends BonLivraisonsProd
           .read(DriftSqlType.int, data['${effectivePrefix}bon_livraison_id'])!,
       nbrCol: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}nbr_col'])!,
-      newProductPrice: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}new_product_price'])!,
+      newProductPrice: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}new_product_price'])!,
     );
   }
 
@@ -1603,7 +1603,7 @@ class BonLivraisonsProdData extends DataClass
   final int productId;
   final int bonLivraisonId;
   final int nbrCol;
-  final int newProductPrice;
+  final double newProductPrice;
   const BonLivraisonsProdData(
       {required this.id,
       required this.productId,
@@ -1617,7 +1617,7 @@ class BonLivraisonsProdData extends DataClass
     map['product_id'] = Variable<int>(productId);
     map['bon_livraison_id'] = Variable<int>(bonLivraisonId);
     map['nbr_col'] = Variable<int>(nbrCol);
-    map['new_product_price'] = Variable<int>(newProductPrice);
+    map['new_product_price'] = Variable<double>(newProductPrice);
     return map;
   }
 
@@ -1639,7 +1639,7 @@ class BonLivraisonsProdData extends DataClass
       productId: serializer.fromJson<int>(json['productId']),
       bonLivraisonId: serializer.fromJson<int>(json['bonLivraisonId']),
       nbrCol: serializer.fromJson<int>(json['nbrCol']),
-      newProductPrice: serializer.fromJson<int>(json['newProductPrice']),
+      newProductPrice: serializer.fromJson<double>(json['newProductPrice']),
     );
   }
   @override
@@ -1650,7 +1650,7 @@ class BonLivraisonsProdData extends DataClass
       'productId': serializer.toJson<int>(productId),
       'bonLivraisonId': serializer.toJson<int>(bonLivraisonId),
       'nbrCol': serializer.toJson<int>(nbrCol),
-      'newProductPrice': serializer.toJson<int>(newProductPrice),
+      'newProductPrice': serializer.toJson<double>(newProductPrice),
     };
   }
 
@@ -1659,7 +1659,7 @@ class BonLivraisonsProdData extends DataClass
           int? productId,
           int? bonLivraisonId,
           int? nbrCol,
-          int? newProductPrice}) =>
+          double? newProductPrice}) =>
       BonLivraisonsProdData(
         id: id ?? this.id,
         productId: productId ?? this.productId,
@@ -1699,7 +1699,7 @@ class BonLivraisonsProdCompanion
   final Value<int> productId;
   final Value<int> bonLivraisonId;
   final Value<int> nbrCol;
-  final Value<int> newProductPrice;
+  final Value<double> newProductPrice;
   const BonLivraisonsProdCompanion({
     this.id = const Value.absent(),
     this.productId = const Value.absent(),
@@ -1712,7 +1712,7 @@ class BonLivraisonsProdCompanion
     required int productId,
     required int bonLivraisonId,
     required int nbrCol,
-    required int newProductPrice,
+    required double newProductPrice,
   })  : productId = Value(productId),
         bonLivraisonId = Value(bonLivraisonId),
         nbrCol = Value(nbrCol),
@@ -1722,7 +1722,7 @@ class BonLivraisonsProdCompanion
     Expression<int>? productId,
     Expression<int>? bonLivraisonId,
     Expression<int>? nbrCol,
-    Expression<int>? newProductPrice,
+    Expression<double>? newProductPrice,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1738,7 +1738,7 @@ class BonLivraisonsProdCompanion
       Value<int>? productId,
       Value<int>? bonLivraisonId,
       Value<int>? nbrCol,
-      Value<int>? newProductPrice}) {
+      Value<double>? newProductPrice}) {
     return BonLivraisonsProdCompanion(
       id: id ?? this.id,
       productId: productId ?? this.productId,
@@ -1764,7 +1764,7 @@ class BonLivraisonsProdCompanion
       map['nbr_col'] = Variable<int>(nbrCol.value);
     }
     if (newProductPrice.present) {
-      map['new_product_price'] = Variable<int>(newProductPrice.value);
+      map['new_product_price'] = Variable<double>(newProductPrice.value);
     }
     return map;
   }
@@ -2072,9 +2072,9 @@ class $FactureProdTable extends FactureProd
   static const VerificationMeta _newProductPriceMeta =
       const VerificationMeta('newProductPrice');
   @override
-  late final GeneratedColumn<int> newProductPrice = GeneratedColumn<int>(
+  late final GeneratedColumn<double> newProductPrice = GeneratedColumn<double>(
       'new_product_price', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.double, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
       [id, productId, bonLivraisonId, nbrCol, newProductPrice];
@@ -2135,8 +2135,8 @@ class $FactureProdTable extends FactureProd
           .read(DriftSqlType.int, data['${effectivePrefix}bon_livraison_id'])!,
       nbrCol: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}nbr_col'])!,
-      newProductPrice: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}new_product_price'])!,
+      newProductPrice: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}new_product_price'])!,
     );
   }
 
@@ -2151,7 +2151,7 @@ class FactureProdData extends DataClass implements Insertable<FactureProdData> {
   final int productId;
   final int bonLivraisonId;
   final int nbrCol;
-  final int newProductPrice;
+  final double newProductPrice;
   const FactureProdData(
       {required this.id,
       required this.productId,
@@ -2165,7 +2165,7 @@ class FactureProdData extends DataClass implements Insertable<FactureProdData> {
     map['product_id'] = Variable<int>(productId);
     map['bon_livraison_id'] = Variable<int>(bonLivraisonId);
     map['nbr_col'] = Variable<int>(nbrCol);
-    map['new_product_price'] = Variable<int>(newProductPrice);
+    map['new_product_price'] = Variable<double>(newProductPrice);
     return map;
   }
 
@@ -2187,7 +2187,7 @@ class FactureProdData extends DataClass implements Insertable<FactureProdData> {
       productId: serializer.fromJson<int>(json['productId']),
       bonLivraisonId: serializer.fromJson<int>(json['bonLivraisonId']),
       nbrCol: serializer.fromJson<int>(json['nbrCol']),
-      newProductPrice: serializer.fromJson<int>(json['newProductPrice']),
+      newProductPrice: serializer.fromJson<double>(json['newProductPrice']),
     );
   }
   @override
@@ -2198,7 +2198,7 @@ class FactureProdData extends DataClass implements Insertable<FactureProdData> {
       'productId': serializer.toJson<int>(productId),
       'bonLivraisonId': serializer.toJson<int>(bonLivraisonId),
       'nbrCol': serializer.toJson<int>(nbrCol),
-      'newProductPrice': serializer.toJson<int>(newProductPrice),
+      'newProductPrice': serializer.toJson<double>(newProductPrice),
     };
   }
 
@@ -2207,7 +2207,7 @@ class FactureProdData extends DataClass implements Insertable<FactureProdData> {
           int? productId,
           int? bonLivraisonId,
           int? nbrCol,
-          int? newProductPrice}) =>
+          double? newProductPrice}) =>
       FactureProdData(
         id: id ?? this.id,
         productId: productId ?? this.productId,
@@ -2246,7 +2246,7 @@ class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
   final Value<int> productId;
   final Value<int> bonLivraisonId;
   final Value<int> nbrCol;
-  final Value<int> newProductPrice;
+  final Value<double> newProductPrice;
   const FactureProdCompanion({
     this.id = const Value.absent(),
     this.productId = const Value.absent(),
@@ -2259,7 +2259,7 @@ class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
     required int productId,
     required int bonLivraisonId,
     required int nbrCol,
-    required int newProductPrice,
+    required double newProductPrice,
   })  : productId = Value(productId),
         bonLivraisonId = Value(bonLivraisonId),
         nbrCol = Value(nbrCol),
@@ -2269,7 +2269,7 @@ class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
     Expression<int>? productId,
     Expression<int>? bonLivraisonId,
     Expression<int>? nbrCol,
-    Expression<int>? newProductPrice,
+    Expression<double>? newProductPrice,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2285,7 +2285,7 @@ class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
       Value<int>? productId,
       Value<int>? bonLivraisonId,
       Value<int>? nbrCol,
-      Value<int>? newProductPrice}) {
+      Value<double>? newProductPrice}) {
     return FactureProdCompanion(
       id: id ?? this.id,
       productId: productId ?? this.productId,
@@ -2311,7 +2311,7 @@ class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
       map['nbr_col'] = Variable<int>(nbrCol.value);
     }
     if (newProductPrice.present) {
-      map['new_product_price'] = Variable<int>(newProductPrice.value);
+      map['new_product_price'] = Variable<double>(newProductPrice.value);
     }
     return map;
   }
@@ -2369,9 +2369,9 @@ abstract class _$MyDatabase extends GeneratedDatabase {
         productId: row.read<int>('product_id'),
         bonLivraisonId: row.read<int>('bon_livraison_id'),
         nbrCol: row.read<int>('nbr_col'),
-        newProductPrice: row.read<int>('new_product_price'),
+        newProductPrice: row.read<double>('new_product_price'),
         id3: row.read<int>('id'),
-        productPrice: row.read<int>('product_price'),
+        productPrice: row.read<double>('product_price'),
         libelle: row.read<String>('libelle'),
         categorie: row.read<String>('categorie'),
         description: row.readNullable<String>('description'),
@@ -2435,9 +2435,9 @@ class GetBonLivraisonFactureDataResult {
   final int productId;
   final int bonLivraisonId;
   final int nbrCol;
-  final int newProductPrice;
+  final double newProductPrice;
   final int id3;
-  final int productPrice;
+  final double productPrice;
   final String libelle;
   final String categorie;
   final String? description;

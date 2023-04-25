@@ -34,7 +34,7 @@ class InvoiceItem {
   final String productName;
   final int nbrCol;
   final int quantity;
-  final int unitPrice;
+  final double unitPrice;
   final int index;
 
   const InvoiceItem({

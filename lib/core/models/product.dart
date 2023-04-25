@@ -1,7 +1,7 @@
 class ProductModel {
   late int productId;
   late int nbrCol;
-  late int prix;
+  late double prix;
 
   ProductModel({
     required this.productId,

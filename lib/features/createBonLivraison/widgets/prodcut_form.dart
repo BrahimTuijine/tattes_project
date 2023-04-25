@@ -20,6 +20,7 @@ class ProductForm extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final newPriceController = useTextEditingController();
     return Row(
       children: [
         FutureBuilder<List<Product>>(
@@ -78,6 +79,8 @@ class ProductForm extends HookWidget {
                       },
                       onSelected: (Product product) {
                         productModel.productId = product.id;
+                        newPriceController.text =
+                            product.productPrice.toString();
                       },
                       optionsViewBuilder: (BuildContext context,
                           AutocompleteOnSelected<Product> onSelected,
@@ -161,6 +164,7 @@ class ProductForm extends HookWidget {
         SizedBox(
           width: 80,
           child: TextFormField(
+            controller: newPriceController,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black),
@@ -177,7 +181,13 @@ class ProductForm extends HookWidget {
               hintText: 'prix',
             ),
             onSaved: (String? newValue) {
-              productModel.prix = int.parse(newValue!);
+              productModel.prix = double.parse(newValue!);
+            },
+            validator: (String? value) {
+              if (value == null || value.isEmpty) {
+                return "ma yelzmouch ykoun fara4";
+              }
+              return null;
             },
           ),
         ),

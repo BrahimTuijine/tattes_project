@@ -9,12 +9,13 @@ import 'package:products_management/core/models/invoice.dart';
 import 'package:products_management/core/models/supplier.dart';
 import 'package:products_management/core/utils/pdf_api.dart';
 
-class PdfInvoiceApi {
-  static Future<File> generate(
-      {required List<GetBonLivraisonFactureDataResult> productList,
-      required Client client,
-      required int bonLivraisonId,
-      required DateTime createdAt}) async {
+class BonLivraisonPdf {
+  static Future<File> generate({
+    required List<BonLivraisonPdfData> productList,
+    required Client client,
+    required int bonLivraisonId,
+    required DateTime createdAt,
+  }) async {
     // !bon de livraison info to generate the pdf
     final Invoice invoice = Invoice(
       customer: Customer(
@@ -32,10 +33,9 @@ class PdfInvoiceApi {
       items: List.generate(
           productList.length,
           (index) => InvoiceItem(
-                productName: productList[index].name,
-                quantity:
-                    productList[index].nbrePiece * productList[index].nbrCol,
-                unitPrice: productList[index].productPrice,
+                productName: productList[index].product.libelle,
+                quantity: productList[index].product.nbrePiece,
+                unitPrice: productList[index].newPrice,
                 nbrCol: productList[index].nbrCol,
                 index: index,
               )),
@@ -111,8 +111,8 @@ class PdfInvoiceApi {
   }
 
   static Widget buildTotal(Invoice invoice) {
-    final int totalTTC = invoice.items
-        .map((item) => item.unitPrice * item.quantity)
+    final double totalTTC = invoice.items
+        .map((item) => item.unitPrice * item.quantity * item.nbrCol)
         .reduce((value, element) => value + element);
 
     return Container(
@@ -126,24 +126,8 @@ class PdfInvoiceApi {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildText(
-                  title: 'Total HT',
-                  value: totalTTC.toString(),
-                  unite: true,
-                ),
-                buildText(
-                  title: 'Total TVA',
-                  value: 80.20.toString(),
-                  unite: true,
-                ),
-                buildText(
-                  title: 'Timbre fiscal',
-                  value: 1000.toString(),
-                  unite: true,
-                ),
-                Divider(),
-                buildText(
                   title: 'Total TTC',
-                  value: 1000.toString(),
+                  value: totalTTC.toString(),
                   unite: true,
                 ),
                 SizedBox(height: 2 * PdfPageFormat.mm),
@@ -188,7 +172,7 @@ class PdfInvoiceApi {
     ];
 
     final List<List<dynamic>> data = invoice.items.map((item) {
-      final int total = item.unitPrice * item.quantity;
+      final double total = item.unitPrice * item.quantity * item.nbrCol;
 
       return [
         item.index,
