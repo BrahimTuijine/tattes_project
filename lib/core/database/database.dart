@@ -29,7 +29,7 @@ class Products extends Table {
   TextColumn get libelle => text()();
   TextColumn get categorie => text()();
   TextColumn get description => text().nullable()();
-  TextColumn get tva => text()();
+  RealColumn get tva => real()();
   IntColumn get nbrePiece => integer()();
   TextColumn get fournisser => text()();
   RealColumn get prixOrTax => real()();
@@ -66,7 +66,7 @@ class BonLivraisonsProd extends Table {
 
 class Facture extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get factureId => text()();
+  TextColumn get factureUniqeId => text()();
   IntColumn get clientId => integer().references(Clients, #id)();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
@@ -74,25 +74,23 @@ class Facture extends Table {
 class FactureProd extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get productId => integer().references(Products, #id)();
-  IntColumn get bonLivraisonId =>
-      integer().references(BonLivraisons, #id, onDelete: KeyAction.cascade)();
-
+  IntColumn get factureId =>
+      integer().references(Facture, #id, onDelete: KeyAction.cascade)();
   IntColumn get nbrCol => integer()();
   RealColumn get newProductPrice => real()();
 }
 
-@DriftDatabase(tables: [
-  Clients,
-  Products,
-  Fournissers,
-  BonLivraisons,
-  BonLivraisonsProd,
-  Facture,
-  FactureProd
-], queries: {
-  'getBonLivraisonFactureData':
-      'select DISTINCT * from bon_livraisons b, clients c, bon_livraisons_prod bp, products pp where c.id = b.client_id and b.id = bp.bon_livraison_id and pp.id = bp.product_id and b.id = ?'
-})
+@DriftDatabase(
+  tables: [
+    Clients,
+    Products,
+    Fournissers,
+    BonLivraisons,
+    BonLivraisonsProd,
+    Facture,
+    FactureProd
+  ],
+)
 class MyDatabase extends _$MyDatabase {
   // we tell the database where to store the data with this constructor
   MyDatabase() : super(_openConnection());
@@ -208,13 +206,13 @@ class MyDatabase extends _$MyDatabase {
       final bonLivraison = row.readTable(bonLivraisons);
       final client = row.readTable(clients);
       return FactureWithClient(
-          bonLivraisonId: bonLivraison.id,
+          factureId: bonLivraison.id,
           client: client,
           createdAt: bonLivraison.createdAt);
     }).get();
   }
 
-  Future<List<BonLivraisonPdfData>> getBonLivrisonWithProduct(int bonId) async {
+  Future<List<PdfData>> getBonLivrisonFactureData(int bonId) async {
     final query = select(bonLivraisonsProd).join([
       innerJoin(
         bonLivraisons,
@@ -229,7 +227,7 @@ class MyDatabase extends _$MyDatabase {
 
     final List<Product> productList = [];
     final List<BonLivraisonsProdData> bonLivraisonsProductList = [];
-    final List<BonLivraisonPdfData> bonLivraisonPdfData = [];
+    final List<PdfData> bonLivraisonPdfData = [];
 
     await query.map((row) {
       final bonLivraisonsProduct = row.readTable(bonLivraisonsProd);
@@ -241,7 +239,7 @@ class MyDatabase extends _$MyDatabase {
       final result = bonLivraisonsProductList
           .where((element) => product.id == element.productId)
           .toList();
-      bonLivraisonPdfData.add(BonLivraisonPdfData(
+      bonLivraisonPdfData.add(PdfData(
           product: product,
           nbrCol: result[0].nbrCol,
           newPrice: result[0].newProductPrice));
@@ -284,21 +282,56 @@ class MyDatabase extends _$MyDatabase {
     ]);
 
     return await query.map((row) {
-      final facture = row.readTable(bonLivraisons);
+      final newFacture = row.readTable(facture);
       final client = row.readTable(clients);
       return FactureWithClient(
-          bonLivraisonId: facture.id,
+          factureId: newFacture.id,
           client: client,
-          createdAt: facture.createdAt);
+          createdAt: newFacture.createdAt);
     }).get();
+  }
+
+  Future<List<PdfData>> getFacturePdfData(int factureId) async {
+    final query = select(factureProd).join([
+      innerJoin(
+        facture,
+        factureProd.factureId.equalsExp(facture.id),
+      ),
+      innerJoin(
+        products,
+        factureProd.productId.equalsExp(products.id),
+      ),
+    ])
+      ..where(facture.id.equals(factureId));
+
+    final List<Product> productList = [];
+    final List<FactureProdData> factureProductList = [];
+    final List<PdfData> facturePdfData = [];
+
+    await query.map((row) {
+      final factureProduct = row.readTable(factureProd);
+      final product = row.readTable(products);
+      factureProductList.add(factureProduct);
+      productList.add(product);
+    }).get();
+    for (var product in productList) {
+      final result = factureProductList
+          .where((element) => product.id == element.productId)
+          .toList();
+      facturePdfData.add(PdfData(
+          product: product,
+          nbrCol: result[0].nbrCol,
+          newPrice: result[0].newProductPrice));
+    }
+    return facturePdfData;
   }
 }
 
-class BonLivraisonPdfData {
+class PdfData {
   final Product product;
   final int nbrCol;
   final double newPrice;
-  BonLivraisonPdfData({
+  PdfData({
     required this.product,
     required this.nbrCol,
     required this.newPrice,

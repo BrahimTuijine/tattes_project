@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import 'package:products_management/core/database/database.dart';
 import 'package:products_management/core/models/bon_livraison.dart';
 import 'package:products_management/core/strings/colors.dart';
+import 'package:products_management/core/utils/pdf_api.dart';
+import 'package:products_management/core/utils/pdf_facture.dart';
 import 'package:products_management/core/widgets/custom_text.dart';
 import 'package:products_management/injection.dart';
 
@@ -55,7 +57,7 @@ class FactureList extends HookWidget {
                 height: 30,
               ),
               FutureBuilder<List<FactureWithClient>>(
-                future: getIt<MyDatabase>().getBonLivrasonData(),
+                future: getIt<MyDatabase>().getFactureData(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<FactureWithClient>> snapshot) {
                   if (snapshot.hasData) {
@@ -94,7 +96,7 @@ class FactureList extends HookWidget {
                               cells: [
                                 DataCell(
                                   CustomText(
-                                    text: '${reversed[index].bonLivraisonId}',
+                                    text: '${reversed[index].factureId}',
                                   ),
                                 ),
                                 DataCell(
@@ -128,7 +130,7 @@ class FactureList extends HookWidget {
                                       onPressed: () async {
                                         await getIt<MyDatabase>()
                                             .deleteBonLisvraison(
-                                                reversed[index].bonLivraisonId);
+                                                reversed[index].factureId);
 
                                         refresh.value = !refresh.value;
                                       },
@@ -139,25 +141,21 @@ class FactureList extends HookWidget {
                                     ),
                                     IconButton(
                                       onPressed: () async {
-                                        // final List<
-                                        //         GetBonLivraisonFactureDataResult>
-                                        //     productList =
-                                        //     await getIt<MyDatabase>()
-                                        //         .bonLivraisonFactureData(
-                                        //             reversed[index]
-                                        //                 .bonLivraisonId);
+                                        final productList =
+                                            await getIt<MyDatabase>()
+                                                .getFacturePdfData(
+                                                    reversed[index].factureId);
 
-                                        // print(productList.toString());
                                         // ? generate the pdf
-                                        // final pdfFile =
-                                        //     await PdfInvoiceApi.generate(
-                                        //         client: reversed[index].client,
-                                        //         productList: productList,
-                                        //         bonLivraisonId: reversed[index]
-                                        //             .bonLivraisonId,
-                                        //         createdAt:
-                                        //             reversed[index].createdAt);
-                                        // PdfApi.openFile(pdfFile);
+                                        final pdfFile =
+                                            await FacturePdf.generate(
+                                                client: reversed[index].client,
+                                                productList: productList,
+                                                bonLivraisonId:
+                                                    reversed[index].factureId,
+                                                createdAt:
+                                                    reversed[index].createdAt);
+                                        PdfApi.openFile(pdfFile);
                                       },
                                       icon: const Icon(
                                         Icons.remove_red_eye,
@@ -167,10 +165,22 @@ class FactureList extends HookWidget {
                                     IconButton(
                                       onPressed: () async {
                                         //? final pdfFile =
-                                        //     await PdfInvoiceApi.generate(
-                                        //         invoice);
+                                        final productList =
+                                            await getIt<MyDatabase>()
+                                                .getFacturePdfData(
+                                                    reversed[index].factureId);
+
+                                        // ? generate the pdf
+                                        final pdfFile =
+                                            await FacturePdf.generate(
+                                                client: reversed[index].client,
+                                                productList: productList,
+                                                bonLivraisonId:
+                                                    reversed[index].factureId,
+                                                createdAt:
+                                                    reversed[index].createdAt);
                                         // ? print pdf
-                                        // PdfApi.printPdf(pdfFile);
+                                        PdfApi.printPdf(pdfFile);
                                       },
                                       icon: const Icon(
                                         Icons.print,

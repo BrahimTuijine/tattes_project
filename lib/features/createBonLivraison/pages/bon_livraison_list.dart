@@ -116,7 +116,7 @@ class BonLivraisonList extends HookWidget {
                               cells: [
                                 DataCell(
                                   CustomText(
-                                    text: '${reversed[index].bonLivraisonId}',
+                                    text: '${reversed[index].factureId}',
                                   ),
                                 ),
                                 DataCell(
@@ -150,7 +150,7 @@ class BonLivraisonList extends HookWidget {
                                       onPressed: () async {
                                         await getIt<MyDatabase>()
                                             .deleteBonLisvraison(
-                                                reversed[index].bonLivraisonId);
+                                                reversed[index].factureId);
 
                                         refresh.value = !refresh.value;
                                       },
@@ -163,8 +163,8 @@ class BonLivraisonList extends HookWidget {
                                       onPressed: () async {
                                         final productList =
                                             await getIt<MyDatabase>()
-                                                .getBonLivrisonWithProduct(
-                                          reversed[index].bonLivraisonId,
+                                                .getBonLivrisonFactureData(
+                                          reversed[index].factureId,
                                         );
 
                                         // ? generate the pdf
@@ -173,7 +173,7 @@ class BonLivraisonList extends HookWidget {
                                                 client: reversed[index].client,
                                                 productList: productList,
                                                 bonLivraisonId: reversed[index]
-                                                    .bonLivraisonId,
+                                                    .factureId,
                                                 createdAt:
                                                     reversed[index].createdAt);
                                         PdfApi.openFile(pdfFile);
@@ -187,8 +187,8 @@ class BonLivraisonList extends HookWidget {
                                       onPressed: () async {
                                         final productList =
                                             await getIt<MyDatabase>()
-                                                .getBonLivrisonWithProduct(
-                                          reversed[index].bonLivraisonId,
+                                                .getBonLivrisonFactureData(
+                                          reversed[index].factureId,
                                         );
 
                                         // ? generate the pdf
@@ -197,7 +197,7 @@ class BonLivraisonList extends HookWidget {
                                                 client: reversed[index].client,
                                                 productList: productList,
                                                 bonLivraisonId: reversed[index]
-                                                    .bonLivraisonId,
+                                                    .factureId,
                                                 createdAt:
                                                     reversed[index].createdAt);
                                         // ? print pdf

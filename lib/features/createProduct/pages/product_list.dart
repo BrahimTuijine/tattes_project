@@ -169,9 +169,9 @@ class ProductList extends HookWidget {
                                 ),
                                 DataCell(
                                   CustomText(
-                                    text: reversed[index].tva == '0.0'
+                                    text: reversed[index].tva == 0.0
                                         ? '0 %'
-                                        : reversed[index].tva == '0.07'
+                                        : reversed[index].tva == 0.07
                                             ? '7 %'
                                             : '19 %',
                                   ),

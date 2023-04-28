@@ -14,12 +14,12 @@ class FactureWithProduct {
 class FactureWithClient {
   final DateTime createdAt;
   final Client client;
-  final int bonLivraisonId;
+  final int factureId;
 
   FactureWithClient({
     required this.createdAt,
     required this.client,
-    required this.bonLivraisonId,
+    required this.factureId,
   });
 }
 

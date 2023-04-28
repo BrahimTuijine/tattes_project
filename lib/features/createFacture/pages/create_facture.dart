@@ -216,10 +216,11 @@ class CreateFacture extends HookWidget {
                       onpressed: () async {
                         if (formKey.currentState!.validate()) {
                           formKey.currentState!.save();
-                          final int bonLivraisonId =
+                          final int factureId =
                               await getIt<MyDatabase>().insertFacture(
                             FactureCompanion.insert(
-                              factureId: 'lazem yetbadel',
+                              //TODO chouflou 7all bech ykoun bel tartib 
+                              factureUniqeId: 'lazem yetbadel',
                               clientId: bonLivraisonData['clientId'],
                             ),
                           );
@@ -228,7 +229,7 @@ class CreateFacture extends HookWidget {
                             getIt<MyDatabase>().insertFactureProduct(
                                 FactureProdCompanion.insert(
                               productId: productList[i].productId,
-                              bonLivraisonId: bonLivraisonId,
+                              factureId: factureId,
                               nbrCol: productList[i].nbrCol,
                               newProductPrice: productList[i].prix,
                             ));

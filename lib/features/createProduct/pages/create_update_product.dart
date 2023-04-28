@@ -39,7 +39,7 @@ class CreateUpdateProduct extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final selectedTva =
-        useState<double>(product?.tva == null ? 0 : double.parse(product!.tva));
+        useState<double>(product?.tva == null ? 0 : product!.tva);
     final prixTtc = useState<double>(
         product?.productPrice == null ? 0 : product!.productPrice);
 
@@ -84,7 +84,7 @@ class CreateUpdateProduct extends HookWidget {
                       label: 'Prix',
                       texthint: 'prix',
                       onsaved: (newValue) {
-                        productData['prix'] = int.parse(newValue!);
+                        productData['prix'] = double.parse(newValue!);
                       },
                       validator: (value) {
                         return null;
@@ -341,7 +341,7 @@ class CreateUpdateProduct extends HookWidget {
                       id: drift.Value(product!.id),
                       nbrePiece: drift.Value(productData['nbPiece']),
                       productPrice: drift.Value(productData['prix']),
-                      tva: drift.Value(selectedTva.value.toString()),
+                      tva: drift.Value(selectedTva.value),
                       categorie: drift.Value(productData['categorie']),
                       libelle: drift.Value(productData['libelle']),
                       description: drift.Value(productData['description']),
@@ -375,7 +375,7 @@ class CreateUpdateProduct extends HookWidget {
                       nbrePiece: drift.Value(productData['nbPiece']),
                       description: drift.Value(productData['description']),
                       productPrice: drift.Value(productData['prix']),
-                      tva: drift.Value(selectedTva.value.toString()),
+                      tva: drift.Value(selectedTva.value),
                     );
 
                     getIt<MyDatabase>().insertProduct(entity);

@@ -36,6 +36,7 @@ class InvoiceItem {
   final int quantity;
   final double unitPrice;
   final int index;
+  final double? tva;
 
   const InvoiceItem({
     required this.productName,
@@ -43,5 +44,6 @@ class InvoiceItem {
     required this.quantity,
     required this.unitPrice,
     required this.index,
+    this.tva,
   });
 }

@@ -11,7 +11,7 @@ import 'package:products_management/core/utils/pdf_api.dart';
 
 class BonLivraisonPdf {
   static Future<File> generate({
-    required List<BonLivraisonPdfData> productList,
+    required List<PdfData> productList,
     required Client client,
     required int bonLivraisonId,
     required DateTime createdAt,

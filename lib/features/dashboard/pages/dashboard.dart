@@ -14,7 +14,7 @@ class DashBoard extends HookWidget {
           constraints: const BoxConstraints(
               minWidth: double.infinity, minHeight: double.infinity),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0xfff6f4fc),
             border: Border.all(color: active.withOpacity(.4), width: .5),
             boxShadow: [
               BoxShadow(
@@ -30,7 +30,10 @@ class DashBoard extends HookWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('test'),
+              Container(
+                  child: Row(
+                children: const [],
+              ))
             ],
           ),
         ),

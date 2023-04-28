@@ -11,7 +11,7 @@ import 'package:products_management/core/utils/pdf_api.dart';
 
 class FacturePdf {
   static Future<File> generate({
-    required List<BonLivraisonPdfData> productList,
+    required List<PdfData> productList,
     required Client client,
     required int bonLivraisonId,
     required DateTime createdAt,
@@ -38,6 +38,7 @@ class FacturePdf {
                 unitPrice: productList[index].newPrice,
                 nbrCol: productList[index].nbrCol,
                 index: index,
+                tva: productList[index].product.tva,
               )),
       supplier: Supplier(),
     );
@@ -190,14 +191,15 @@ class FacturePdf {
 
     final List<List<dynamic>> data = invoice.items.map((item) {
       final double total = item.unitPrice * item.quantity * item.nbrCol;
+      final int totalQuantiry = item.quantity * item.nbrCol;
 
       return [
         item.index,
         item.productName,
-        item.nbrCol,
-        item.unitPrice,
-        item.quantity,
-        total.toStringAsFixed(2),
+        '${item.tva}%',
+        item.unitPrice / 1000,
+        totalQuantiry,
+        total / 1000,
       ];
     }).toList();
 
