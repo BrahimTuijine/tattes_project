@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:products_management/core/database/database.dart';
 import 'package:products_management/core/strings/colors.dart';
+import 'package:products_management/core/validator/validator.dart';
 import 'package:products_management/core/widgets/dialog.dart';
 import 'package:products_management/core/widgets/elevated_btn.dart';
 import 'package:products_management/core/widgets/from_field.dart';
@@ -61,6 +62,9 @@ class CreateUpdateProduct extends HookWidget {
                         productData['libelle'] = newValue;
                       },
                       validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'ma yelzmouch ykoun fara4';
+                        }
                         return null;
                       },
                     ),
@@ -87,6 +91,12 @@ class CreateUpdateProduct extends HookWidget {
                         productData['prix'] = double.parse(newValue!);
                       },
                       validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'ma yelzmouch ykoun fara4';
+                        }
+                        if (!Validators.isNumeric(value)) {
+                          return 'yelzmou ykoun ar9am';
+                        }
                         return null;
                       },
                     ),
@@ -188,7 +198,13 @@ class CreateUpdateProduct extends HookWidget {
                                         fieldTextEditingController,
                                     FocusNode fieldFocusNode,
                                     VoidCallback onFieldSubmitted) {
-                                  return TextField(
+                                  return TextFormField(
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return "ma yelzmouch ykoun fara4";
+                                      }
+                                      return null;
+                                    },
                                     decoration: const InputDecoration(
                                       border: UnderlineInputBorder(
                                         borderSide: BorderSide(color: grey),
@@ -272,6 +288,12 @@ class CreateUpdateProduct extends HookWidget {
                         productData['nbPiece'] = int.parse(newValue!);
                       },
                       validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "ma yelzmouch ykoun fara4";
+                        }
+                        if (!Validators.isNumeric(value)) {
+                          return 'lazem ykou noumrou';
+                        }
                         return null;
                       },
                     ),

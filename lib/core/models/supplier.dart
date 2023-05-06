@@ -5,10 +5,10 @@ class Supplier {
   final String phone;
   final String email;
   Supplier({
-    this.name = 'STE MARMOURI GENERAL COMMERCE &\n DISTRIBUTION',
-    this.address = "RUE DE L'ENVIRONNEMENT",
-    this.mf = "ma na3raffch",
-    this.phone = "50611513 => badlou",
+    this.name = 'GRIBAA WAEL VENTE GROS PRODUITS \nALIMENTAIRES',
+    this.address = "RUE 17 Decembre 7016 El ALIA",
+    this.mf = "1795670 / J / N / C000",
+    this.phone = "20074624 - 54056468",
     this.email = "waelg@gmail.com",
   });
 }

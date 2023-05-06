@@ -55,9 +55,22 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
+  static const VerificationMeta _isDeletedMeta =
+      const VerificationMeta('isDeleted');
+  @override
+  late final GeneratedColumn<bool> isDeleted =
+      GeneratedColumn<bool>('is_deleted', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_deleted" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, ville, rue, phone, cin, numTva, createdAt];
+      [id, name, ville, rue, phone, cin, numTva, createdAt, isDeleted];
   @override
   String get aliasedName => _alias ?? 'clients';
   @override
@@ -110,6 +123,10 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
     return context;
   }
 
@@ -135,6 +152,8 @@ class $ClientsTable extends Clients with TableInfo<$ClientsTable, Client> {
           .read(DriftSqlType.string, data['${effectivePrefix}num_tva'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      isDeleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
     );
   }
 
@@ -153,6 +172,7 @@ class Client extends DataClass implements Insertable<Client> {
   final String cin;
   final String numTva;
   final DateTime createdAt;
+  final bool isDeleted;
   const Client(
       {required this.id,
       required this.name,
@@ -161,7 +181,8 @@ class Client extends DataClass implements Insertable<Client> {
       required this.phone,
       required this.cin,
       required this.numTva,
-      required this.createdAt});
+      required this.createdAt,
+      required this.isDeleted});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -173,6 +194,7 @@ class Client extends DataClass implements Insertable<Client> {
     map['cin'] = Variable<String>(cin);
     map['num_tva'] = Variable<String>(numTva);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['is_deleted'] = Variable<bool>(isDeleted);
     return map;
   }
 
@@ -186,6 +208,7 @@ class Client extends DataClass implements Insertable<Client> {
       cin: Value(cin),
       numTva: Value(numTva),
       createdAt: Value(createdAt),
+      isDeleted: Value(isDeleted),
     );
   }
 
@@ -201,6 +224,7 @@ class Client extends DataClass implements Insertable<Client> {
       cin: serializer.fromJson<String>(json['cin']),
       numTva: serializer.fromJson<String>(json['numTva']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
     );
   }
   @override
@@ -215,6 +239,7 @@ class Client extends DataClass implements Insertable<Client> {
       'cin': serializer.toJson<String>(cin),
       'numTva': serializer.toJson<String>(numTva),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
     };
   }
 
@@ -226,7 +251,8 @@ class Client extends DataClass implements Insertable<Client> {
           String? phone,
           String? cin,
           String? numTva,
-          DateTime? createdAt}) =>
+          DateTime? createdAt,
+          bool? isDeleted}) =>
       Client(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -236,6 +262,7 @@ class Client extends DataClass implements Insertable<Client> {
         cin: cin ?? this.cin,
         numTva: numTva ?? this.numTva,
         createdAt: createdAt ?? this.createdAt,
+        isDeleted: isDeleted ?? this.isDeleted,
       );
   @override
   String toString() {
@@ -247,14 +274,15 @@ class Client extends DataClass implements Insertable<Client> {
           ..write('phone: $phone, ')
           ..write('cin: $cin, ')
           ..write('numTva: $numTva, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, ville, rue, phone, cin, numTva, createdAt);
+  int get hashCode => Object.hash(
+      id, name, ville, rue, phone, cin, numTva, createdAt, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -266,7 +294,8 @@ class Client extends DataClass implements Insertable<Client> {
           other.phone == this.phone &&
           other.cin == this.cin &&
           other.numTva == this.numTva &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.isDeleted == this.isDeleted);
 }
 
 class ClientsCompanion extends UpdateCompanion<Client> {
@@ -278,6 +307,7 @@ class ClientsCompanion extends UpdateCompanion<Client> {
   final Value<String> cin;
   final Value<String> numTva;
   final Value<DateTime> createdAt;
+  final Value<bool> isDeleted;
   const ClientsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -287,6 +317,7 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     this.cin = const Value.absent(),
     this.numTva = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
   });
   ClientsCompanion.insert({
     this.id = const Value.absent(),
@@ -297,6 +328,7 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     required String cin,
     required String numTva,
     this.createdAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
   })  : name = Value(name),
         ville = Value(ville),
         rue = Value(rue),
@@ -312,6 +344,7 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     Expression<String>? cin,
     Expression<String>? numTva,
     Expression<DateTime>? createdAt,
+    Expression<bool>? isDeleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -322,6 +355,7 @@ class ClientsCompanion extends UpdateCompanion<Client> {
       if (cin != null) 'cin': cin,
       if (numTva != null) 'num_tva': numTva,
       if (createdAt != null) 'created_at': createdAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
     });
   }
 
@@ -333,7 +367,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
       Value<String>? phone,
       Value<String>? cin,
       Value<String>? numTva,
-      Value<DateTime>? createdAt}) {
+      Value<DateTime>? createdAt,
+      Value<bool>? isDeleted}) {
     return ClientsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -343,6 +378,7 @@ class ClientsCompanion extends UpdateCompanion<Client> {
       cin: cin ?? this.cin,
       numTva: numTva ?? this.numTva,
       createdAt: createdAt ?? this.createdAt,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 
@@ -373,6 +409,9 @@ class ClientsCompanion extends UpdateCompanion<Client> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
     return map;
   }
 
@@ -386,7 +425,8 @@ class ClientsCompanion extends UpdateCompanion<Client> {
           ..write('phone: $phone, ')
           ..write('cin: $cin, ')
           ..write('numTva: $numTva, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
@@ -461,6 +501,19 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
+  static const VerificationMeta _isDeletedMeta =
+      const VerificationMeta('isDeleted');
+  @override
+  late final GeneratedColumn<bool> isDeleted =
+      GeneratedColumn<bool>('is_deleted', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_deleted" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -472,7 +525,8 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         nbrePiece,
         fournisser,
         prixOrTax,
-        createdAt
+        createdAt,
+        isDeleted
       ];
   @override
   String get aliasedName => _alias ?? 'products';
@@ -544,6 +598,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
     return context;
   }
 
@@ -573,6 +631,8 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
           .read(DriftSqlType.double, data['${effectivePrefix}prix_or_tax'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      isDeleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
     );
   }
 
@@ -593,6 +653,7 @@ class Product extends DataClass implements Insertable<Product> {
   final String fournisser;
   final double prixOrTax;
   final DateTime createdAt;
+  final bool isDeleted;
   const Product(
       {required this.id,
       required this.productPrice,
@@ -603,7 +664,8 @@ class Product extends DataClass implements Insertable<Product> {
       required this.nbrePiece,
       required this.fournisser,
       required this.prixOrTax,
-      required this.createdAt});
+      required this.createdAt,
+      required this.isDeleted});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -619,6 +681,7 @@ class Product extends DataClass implements Insertable<Product> {
     map['fournisser'] = Variable<String>(fournisser);
     map['prix_or_tax'] = Variable<double>(prixOrTax);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['is_deleted'] = Variable<bool>(isDeleted);
     return map;
   }
 
@@ -636,6 +699,7 @@ class Product extends DataClass implements Insertable<Product> {
       fournisser: Value(fournisser),
       prixOrTax: Value(prixOrTax),
       createdAt: Value(createdAt),
+      isDeleted: Value(isDeleted),
     );
   }
 
@@ -653,6 +717,7 @@ class Product extends DataClass implements Insertable<Product> {
       fournisser: serializer.fromJson<String>(json['fournisser']),
       prixOrTax: serializer.fromJson<double>(json['prixOrTax']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
     );
   }
   @override
@@ -669,6 +734,7 @@ class Product extends DataClass implements Insertable<Product> {
       'fournisser': serializer.toJson<String>(fournisser),
       'prixOrTax': serializer.toJson<double>(prixOrTax),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
     };
   }
 
@@ -682,7 +748,8 @@ class Product extends DataClass implements Insertable<Product> {
           int? nbrePiece,
           String? fournisser,
           double? prixOrTax,
-          DateTime? createdAt}) =>
+          DateTime? createdAt,
+          bool? isDeleted}) =>
       Product(
         id: id ?? this.id,
         productPrice: productPrice ?? this.productPrice,
@@ -694,6 +761,7 @@ class Product extends DataClass implements Insertable<Product> {
         fournisser: fournisser ?? this.fournisser,
         prixOrTax: prixOrTax ?? this.prixOrTax,
         createdAt: createdAt ?? this.createdAt,
+        isDeleted: isDeleted ?? this.isDeleted,
       );
   @override
   String toString() {
@@ -707,14 +775,15 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('nbrePiece: $nbrePiece, ')
           ..write('fournisser: $fournisser, ')
           ..write('prixOrTax: $prixOrTax, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(id, productPrice, libelle, categorie,
-      description, tva, nbrePiece, fournisser, prixOrTax, createdAt);
+      description, tva, nbrePiece, fournisser, prixOrTax, createdAt, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -728,7 +797,8 @@ class Product extends DataClass implements Insertable<Product> {
           other.nbrePiece == this.nbrePiece &&
           other.fournisser == this.fournisser &&
           other.prixOrTax == this.prixOrTax &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.isDeleted == this.isDeleted);
 }
 
 class ProductsCompanion extends UpdateCompanion<Product> {
@@ -742,6 +812,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<String> fournisser;
   final Value<double> prixOrTax;
   final Value<DateTime> createdAt;
+  final Value<bool> isDeleted;
   const ProductsCompanion({
     this.id = const Value.absent(),
     this.productPrice = const Value.absent(),
@@ -753,6 +824,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.fournisser = const Value.absent(),
     this.prixOrTax = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
   });
   ProductsCompanion.insert({
     this.id = const Value.absent(),
@@ -765,6 +837,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     required String fournisser,
     required double prixOrTax,
     this.createdAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
   })  : productPrice = Value(productPrice),
         libelle = Value(libelle),
         categorie = Value(categorie),
@@ -783,6 +856,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<String>? fournisser,
     Expression<double>? prixOrTax,
     Expression<DateTime>? createdAt,
+    Expression<bool>? isDeleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -795,6 +869,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (fournisser != null) 'fournisser': fournisser,
       if (prixOrTax != null) 'prix_or_tax': prixOrTax,
       if (createdAt != null) 'created_at': createdAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
     });
   }
 
@@ -808,7 +883,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       Value<int>? nbrePiece,
       Value<String>? fournisser,
       Value<double>? prixOrTax,
-      Value<DateTime>? createdAt}) {
+      Value<DateTime>? createdAt,
+      Value<bool>? isDeleted}) {
     return ProductsCompanion(
       id: id ?? this.id,
       productPrice: productPrice ?? this.productPrice,
@@ -820,6 +896,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       fournisser: fournisser ?? this.fournisser,
       prixOrTax: prixOrTax ?? this.prixOrTax,
       createdAt: createdAt ?? this.createdAt,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 
@@ -856,6 +933,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
     return map;
   }
 
@@ -871,7 +951,8 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('nbrePiece: $nbrePiece, ')
           ..write('fournisser: $fournisser, ')
           ..write('prixOrTax: $prixOrTax, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
@@ -925,9 +1006,22 @@ class $FournissersTable extends Fournissers
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
+  static const VerificationMeta _isDeletedMeta =
+      const VerificationMeta('isDeleted');
+  @override
+  late final GeneratedColumn<bool> isDeleted =
+      GeneratedColumn<bool>('is_deleted', aliasedName, false,
+          type: DriftSqlType.bool,
+          requiredDuringInsert: false,
+          defaultConstraints: GeneratedColumn.constraintsDependsOnDialect({
+            SqlDialect.sqlite: 'CHECK ("is_deleted" IN (0, 1))',
+            SqlDialect.mysql: '',
+            SqlDialect.postgres: '',
+          }),
+          defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, ville, rue, phone, tva, createdAt];
+      [id, name, ville, rue, phone, tva, createdAt, isDeleted];
   @override
   String get aliasedName => _alias ?? 'fournissers';
   @override
@@ -974,6 +1068,10 @@ class $FournissersTable extends Fournissers
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
     }
+    if (data.containsKey('is_deleted')) {
+      context.handle(_isDeletedMeta,
+          isDeleted.isAcceptableOrUnknown(data['is_deleted']!, _isDeletedMeta));
+    }
     return context;
   }
 
@@ -997,6 +1095,8 @@ class $FournissersTable extends Fournissers
           .read(DriftSqlType.string, data['${effectivePrefix}tva'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      isDeleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_deleted'])!,
     );
   }
 
@@ -1014,6 +1114,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
   final String phone;
   final String tva;
   final DateTime createdAt;
+  final bool isDeleted;
   const Fournisser(
       {required this.id,
       required this.name,
@@ -1021,7 +1122,8 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       required this.rue,
       required this.phone,
       required this.tva,
-      required this.createdAt});
+      required this.createdAt,
+      required this.isDeleted});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1032,6 +1134,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
     map['phone'] = Variable<String>(phone);
     map['tva'] = Variable<String>(tva);
     map['created_at'] = Variable<DateTime>(createdAt);
+    map['is_deleted'] = Variable<bool>(isDeleted);
     return map;
   }
 
@@ -1044,6 +1147,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       phone: Value(phone),
       tva: Value(tva),
       createdAt: Value(createdAt),
+      isDeleted: Value(isDeleted),
     );
   }
 
@@ -1058,6 +1162,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       phone: serializer.fromJson<String>(json['phone']),
       tva: serializer.fromJson<String>(json['tva']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      isDeleted: serializer.fromJson<bool>(json['isDeleted']),
     );
   }
   @override
@@ -1071,6 +1176,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
       'phone': serializer.toJson<String>(phone),
       'tva': serializer.toJson<String>(tva),
       'createdAt': serializer.toJson<DateTime>(createdAt),
+      'isDeleted': serializer.toJson<bool>(isDeleted),
     };
   }
 
@@ -1081,7 +1187,8 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           String? rue,
           String? phone,
           String? tva,
-          DateTime? createdAt}) =>
+          DateTime? createdAt,
+          bool? isDeleted}) =>
       Fournisser(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -1090,6 +1197,7 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
         phone: phone ?? this.phone,
         tva: tva ?? this.tva,
         createdAt: createdAt ?? this.createdAt,
+        isDeleted: isDeleted ?? this.isDeleted,
       );
   @override
   String toString() {
@@ -1100,13 +1208,15 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           ..write('rue: $rue, ')
           ..write('phone: $phone, ')
           ..write('tva: $tva, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, ville, rue, phone, tva, createdAt);
+  int get hashCode =>
+      Object.hash(id, name, ville, rue, phone, tva, createdAt, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1117,7 +1227,8 @@ class Fournisser extends DataClass implements Insertable<Fournisser> {
           other.rue == this.rue &&
           other.phone == this.phone &&
           other.tva == this.tva &&
-          other.createdAt == this.createdAt);
+          other.createdAt == this.createdAt &&
+          other.isDeleted == this.isDeleted);
 }
 
 class FournissersCompanion extends UpdateCompanion<Fournisser> {
@@ -1128,6 +1239,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
   final Value<String> phone;
   final Value<String> tva;
   final Value<DateTime> createdAt;
+  final Value<bool> isDeleted;
   const FournissersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -1136,6 +1248,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     this.phone = const Value.absent(),
     this.tva = const Value.absent(),
     this.createdAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
   });
   FournissersCompanion.insert({
     this.id = const Value.absent(),
@@ -1145,6 +1258,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     required String phone,
     required String tva,
     this.createdAt = const Value.absent(),
+    this.isDeleted = const Value.absent(),
   })  : name = Value(name),
         ville = Value(ville),
         rue = Value(rue),
@@ -1158,6 +1272,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     Expression<String>? phone,
     Expression<String>? tva,
     Expression<DateTime>? createdAt,
+    Expression<bool>? isDeleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1167,6 +1282,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       if (phone != null) 'phone': phone,
       if (tva != null) 'tva': tva,
       if (createdAt != null) 'created_at': createdAt,
+      if (isDeleted != null) 'is_deleted': isDeleted,
     });
   }
 
@@ -1177,7 +1293,8 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       Value<String>? rue,
       Value<String>? phone,
       Value<String>? tva,
-      Value<DateTime>? createdAt}) {
+      Value<DateTime>? createdAt,
+      Value<bool>? isDeleted}) {
     return FournissersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -1186,6 +1303,7 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
       phone: phone ?? this.phone,
       tva: tva ?? this.tva,
       createdAt: createdAt ?? this.createdAt,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 
@@ -1213,6 +1331,9 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
+    if (isDeleted.present) {
+      map['is_deleted'] = Variable<bool>(isDeleted.value);
+    }
     return map;
   }
 
@@ -1225,7 +1346,8 @@ class FournissersCompanion extends UpdateCompanion<Fournisser> {
           ..write('rue: $rue, ')
           ..write('phone: $phone, ')
           ..write('tva: $tva, ')
-          ..write('createdAt: $createdAt')
+          ..write('createdAt: $createdAt, ')
+          ..write('isDeleted: $isDeleted')
           ..write(')'))
         .toString();
   }
@@ -1782,557 +1904,6 @@ class BonLivraisonsProdCompanion
   }
 }
 
-class $FactureTable extends Facture with TableInfo<$FactureTable, FactureData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $FactureTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _factureUniqeIdMeta =
-      const VerificationMeta('factureUniqeId');
-  @override
-  late final GeneratedColumn<String> factureUniqeId = GeneratedColumn<String>(
-      'facture_uniqe_id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _clientIdMeta =
-      const VerificationMeta('clientId');
-  @override
-  late final GeneratedColumn<int> clientId = GeneratedColumn<int>(
-      'client_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES clients (id)'));
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, factureUniqeId, clientId, createdAt];
-  @override
-  String get aliasedName => _alias ?? 'facture';
-  @override
-  String get actualTableName => 'facture';
-  @override
-  VerificationContext validateIntegrity(Insertable<FactureData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('facture_uniqe_id')) {
-      context.handle(
-          _factureUniqeIdMeta,
-          factureUniqeId.isAcceptableOrUnknown(
-              data['facture_uniqe_id']!, _factureUniqeIdMeta));
-    } else if (isInserting) {
-      context.missing(_factureUniqeIdMeta);
-    }
-    if (data.containsKey('client_id')) {
-      context.handle(_clientIdMeta,
-          clientId.isAcceptableOrUnknown(data['client_id']!, _clientIdMeta));
-    } else if (isInserting) {
-      context.missing(_clientIdMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  FactureData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FactureData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      factureUniqeId: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}facture_uniqe_id'])!,
-      clientId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}client_id'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-    );
-  }
-
-  @override
-  $FactureTable createAlias(String alias) {
-    return $FactureTable(attachedDatabase, alias);
-  }
-}
-
-class FactureData extends DataClass implements Insertable<FactureData> {
-  final int id;
-  final String factureUniqeId;
-  final int clientId;
-  final DateTime createdAt;
-  const FactureData(
-      {required this.id,
-      required this.factureUniqeId,
-      required this.clientId,
-      required this.createdAt});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['facture_uniqe_id'] = Variable<String>(factureUniqeId);
-    map['client_id'] = Variable<int>(clientId);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    return map;
-  }
-
-  FactureCompanion toCompanion(bool nullToAbsent) {
-    return FactureCompanion(
-      id: Value(id),
-      factureUniqeId: Value(factureUniqeId),
-      clientId: Value(clientId),
-      createdAt: Value(createdAt),
-    );
-  }
-
-  factory FactureData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FactureData(
-      id: serializer.fromJson<int>(json['id']),
-      factureUniqeId: serializer.fromJson<String>(json['factureUniqeId']),
-      clientId: serializer.fromJson<int>(json['clientId']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'factureUniqeId': serializer.toJson<String>(factureUniqeId),
-      'clientId': serializer.toJson<int>(clientId),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-    };
-  }
-
-  FactureData copyWith(
-          {int? id,
-          String? factureUniqeId,
-          int? clientId,
-          DateTime? createdAt}) =>
-      FactureData(
-        id: id ?? this.id,
-        factureUniqeId: factureUniqeId ?? this.factureUniqeId,
-        clientId: clientId ?? this.clientId,
-        createdAt: createdAt ?? this.createdAt,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('FactureData(')
-          ..write('id: $id, ')
-          ..write('factureUniqeId: $factureUniqeId, ')
-          ..write('clientId: $clientId, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, factureUniqeId, clientId, createdAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FactureData &&
-          other.id == this.id &&
-          other.factureUniqeId == this.factureUniqeId &&
-          other.clientId == this.clientId &&
-          other.createdAt == this.createdAt);
-}
-
-class FactureCompanion extends UpdateCompanion<FactureData> {
-  final Value<int> id;
-  final Value<String> factureUniqeId;
-  final Value<int> clientId;
-  final Value<DateTime> createdAt;
-  const FactureCompanion({
-    this.id = const Value.absent(),
-    this.factureUniqeId = const Value.absent(),
-    this.clientId = const Value.absent(),
-    this.createdAt = const Value.absent(),
-  });
-  FactureCompanion.insert({
-    this.id = const Value.absent(),
-    required String factureUniqeId,
-    required int clientId,
-    this.createdAt = const Value.absent(),
-  })  : factureUniqeId = Value(factureUniqeId),
-        clientId = Value(clientId);
-  static Insertable<FactureData> custom({
-    Expression<int>? id,
-    Expression<String>? factureUniqeId,
-    Expression<int>? clientId,
-    Expression<DateTime>? createdAt,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (factureUniqeId != null) 'facture_uniqe_id': factureUniqeId,
-      if (clientId != null) 'client_id': clientId,
-      if (createdAt != null) 'created_at': createdAt,
-    });
-  }
-
-  FactureCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? factureUniqeId,
-      Value<int>? clientId,
-      Value<DateTime>? createdAt}) {
-    return FactureCompanion(
-      id: id ?? this.id,
-      factureUniqeId: factureUniqeId ?? this.factureUniqeId,
-      clientId: clientId ?? this.clientId,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (factureUniqeId.present) {
-      map['facture_uniqe_id'] = Variable<String>(factureUniqeId.value);
-    }
-    if (clientId.present) {
-      map['client_id'] = Variable<int>(clientId.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FactureCompanion(')
-          ..write('id: $id, ')
-          ..write('factureUniqeId: $factureUniqeId, ')
-          ..write('clientId: $clientId, ')
-          ..write('createdAt: $createdAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $FactureProdTable extends FactureProd
-    with TableInfo<$FactureProdTable, FactureProdData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $FactureProdTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _productIdMeta =
-      const VerificationMeta('productId');
-  @override
-  late final GeneratedColumn<int> productId = GeneratedColumn<int>(
-      'product_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('REFERENCES products (id)'));
-  static const VerificationMeta _factureIdMeta =
-      const VerificationMeta('factureId');
-  @override
-  late final GeneratedColumn<int> factureId = GeneratedColumn<int>(
-      'facture_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'REFERENCES facture (id) ON DELETE CASCADE'));
-  static const VerificationMeta _nbrColMeta = const VerificationMeta('nbrCol');
-  @override
-  late final GeneratedColumn<int> nbrCol = GeneratedColumn<int>(
-      'nbr_col', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _newProductPriceMeta =
-      const VerificationMeta('newProductPrice');
-  @override
-  late final GeneratedColumn<double> newProductPrice = GeneratedColumn<double>(
-      'new_product_price', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, productId, factureId, nbrCol, newProductPrice];
-  @override
-  String get aliasedName => _alias ?? 'facture_prod';
-  @override
-  String get actualTableName => 'facture_prod';
-  @override
-  VerificationContext validateIntegrity(Insertable<FactureProdData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('product_id')) {
-      context.handle(_productIdMeta,
-          productId.isAcceptableOrUnknown(data['product_id']!, _productIdMeta));
-    } else if (isInserting) {
-      context.missing(_productIdMeta);
-    }
-    if (data.containsKey('facture_id')) {
-      context.handle(_factureIdMeta,
-          factureId.isAcceptableOrUnknown(data['facture_id']!, _factureIdMeta));
-    } else if (isInserting) {
-      context.missing(_factureIdMeta);
-    }
-    if (data.containsKey('nbr_col')) {
-      context.handle(_nbrColMeta,
-          nbrCol.isAcceptableOrUnknown(data['nbr_col']!, _nbrColMeta));
-    } else if (isInserting) {
-      context.missing(_nbrColMeta);
-    }
-    if (data.containsKey('new_product_price')) {
-      context.handle(
-          _newProductPriceMeta,
-          newProductPrice.isAcceptableOrUnknown(
-              data['new_product_price']!, _newProductPriceMeta));
-    } else if (isInserting) {
-      context.missing(_newProductPriceMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  FactureProdData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FactureProdData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      productId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}product_id'])!,
-      factureId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}facture_id'])!,
-      nbrCol: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}nbr_col'])!,
-      newProductPrice: attachedDatabase.typeMapping.read(
-          DriftSqlType.double, data['${effectivePrefix}new_product_price'])!,
-    );
-  }
-
-  @override
-  $FactureProdTable createAlias(String alias) {
-    return $FactureProdTable(attachedDatabase, alias);
-  }
-}
-
-class FactureProdData extends DataClass implements Insertable<FactureProdData> {
-  final int id;
-  final int productId;
-  final int factureId;
-  final int nbrCol;
-  final double newProductPrice;
-  const FactureProdData(
-      {required this.id,
-      required this.productId,
-      required this.factureId,
-      required this.nbrCol,
-      required this.newProductPrice});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['product_id'] = Variable<int>(productId);
-    map['facture_id'] = Variable<int>(factureId);
-    map['nbr_col'] = Variable<int>(nbrCol);
-    map['new_product_price'] = Variable<double>(newProductPrice);
-    return map;
-  }
-
-  FactureProdCompanion toCompanion(bool nullToAbsent) {
-    return FactureProdCompanion(
-      id: Value(id),
-      productId: Value(productId),
-      factureId: Value(factureId),
-      nbrCol: Value(nbrCol),
-      newProductPrice: Value(newProductPrice),
-    );
-  }
-
-  factory FactureProdData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FactureProdData(
-      id: serializer.fromJson<int>(json['id']),
-      productId: serializer.fromJson<int>(json['productId']),
-      factureId: serializer.fromJson<int>(json['factureId']),
-      nbrCol: serializer.fromJson<int>(json['nbrCol']),
-      newProductPrice: serializer.fromJson<double>(json['newProductPrice']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'productId': serializer.toJson<int>(productId),
-      'factureId': serializer.toJson<int>(factureId),
-      'nbrCol': serializer.toJson<int>(nbrCol),
-      'newProductPrice': serializer.toJson<double>(newProductPrice),
-    };
-  }
-
-  FactureProdData copyWith(
-          {int? id,
-          int? productId,
-          int? factureId,
-          int? nbrCol,
-          double? newProductPrice}) =>
-      FactureProdData(
-        id: id ?? this.id,
-        productId: productId ?? this.productId,
-        factureId: factureId ?? this.factureId,
-        nbrCol: nbrCol ?? this.nbrCol,
-        newProductPrice: newProductPrice ?? this.newProductPrice,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('FactureProdData(')
-          ..write('id: $id, ')
-          ..write('productId: $productId, ')
-          ..write('factureId: $factureId, ')
-          ..write('nbrCol: $nbrCol, ')
-          ..write('newProductPrice: $newProductPrice')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, productId, factureId, nbrCol, newProductPrice);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FactureProdData &&
-          other.id == this.id &&
-          other.productId == this.productId &&
-          other.factureId == this.factureId &&
-          other.nbrCol == this.nbrCol &&
-          other.newProductPrice == this.newProductPrice);
-}
-
-class FactureProdCompanion extends UpdateCompanion<FactureProdData> {
-  final Value<int> id;
-  final Value<int> productId;
-  final Value<int> factureId;
-  final Value<int> nbrCol;
-  final Value<double> newProductPrice;
-  const FactureProdCompanion({
-    this.id = const Value.absent(),
-    this.productId = const Value.absent(),
-    this.factureId = const Value.absent(),
-    this.nbrCol = const Value.absent(),
-    this.newProductPrice = const Value.absent(),
-  });
-  FactureProdCompanion.insert({
-    this.id = const Value.absent(),
-    required int productId,
-    required int factureId,
-    required int nbrCol,
-    required double newProductPrice,
-  })  : productId = Value(productId),
-        factureId = Value(factureId),
-        nbrCol = Value(nbrCol),
-        newProductPrice = Value(newProductPrice);
-  static Insertable<FactureProdData> custom({
-    Expression<int>? id,
-    Expression<int>? productId,
-    Expression<int>? factureId,
-    Expression<int>? nbrCol,
-    Expression<double>? newProductPrice,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (productId != null) 'product_id': productId,
-      if (factureId != null) 'facture_id': factureId,
-      if (nbrCol != null) 'nbr_col': nbrCol,
-      if (newProductPrice != null) 'new_product_price': newProductPrice,
-    });
-  }
-
-  FactureProdCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? productId,
-      Value<int>? factureId,
-      Value<int>? nbrCol,
-      Value<double>? newProductPrice}) {
-    return FactureProdCompanion(
-      id: id ?? this.id,
-      productId: productId ?? this.productId,
-      factureId: factureId ?? this.factureId,
-      nbrCol: nbrCol ?? this.nbrCol,
-      newProductPrice: newProductPrice ?? this.newProductPrice,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (productId.present) {
-      map['product_id'] = Variable<int>(productId.value);
-    }
-    if (factureId.present) {
-      map['facture_id'] = Variable<int>(factureId.value);
-    }
-    if (nbrCol.present) {
-      map['nbr_col'] = Variable<int>(nbrCol.value);
-    }
-    if (newProductPrice.present) {
-      map['new_product_price'] = Variable<double>(newProductPrice.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FactureProdCompanion(')
-          ..write('id: $id, ')
-          ..write('productId: $productId, ')
-          ..write('factureId: $factureId, ')
-          ..write('nbrCol: $nbrCol, ')
-          ..write('newProductPrice: $newProductPrice')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$MyDatabase extends GeneratedDatabase {
   _$MyDatabase(QueryExecutor e) : super(e);
   late final $ClientsTable clients = $ClientsTable(this);
@@ -2341,21 +1912,12 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   late final $BonLivraisonsTable bonLivraisons = $BonLivraisonsTable(this);
   late final $BonLivraisonsProdTable bonLivraisonsProd =
       $BonLivraisonsProdTable(this);
-  late final $FactureTable facture = $FactureTable(this);
-  late final $FactureProdTable factureProd = $FactureProdTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [
-        clients,
-        products,
-        fournissers,
-        bonLivraisons,
-        bonLivraisonsProd,
-        facture,
-        factureProd
-      ];
+  List<DatabaseSchemaEntity> get allSchemaEntities =>
+      [clients, products, fournissers, bonLivraisons, bonLivraisonsProd];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules(
         [
@@ -2364,13 +1926,6 @@ abstract class _$MyDatabase extends GeneratedDatabase {
                 limitUpdateKind: UpdateKind.delete),
             result: [
               TableUpdate('bon_livraisons_prod', kind: UpdateKind.delete),
-            ],
-          ),
-          WritePropagation(
-            on: TableUpdateQuery.onTableName('facture',
-                limitUpdateKind: UpdateKind.delete),
-            result: [
-              TableUpdate('facture_prod', kind: UpdateKind.delete),
             ],
           ),
         ],

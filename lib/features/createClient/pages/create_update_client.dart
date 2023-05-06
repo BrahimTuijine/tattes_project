@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:products_management/core/database/database.dart';
 import 'package:products_management/core/strings/colors.dart';
+import 'package:products_management/core/validator/validator.dart';
 import 'package:products_management/core/widgets/dialog.dart';
 import 'package:products_management/core/widgets/elevated_btn.dart';
 import 'package:products_management/core/widgets/from_field.dart';
@@ -62,7 +63,7 @@ class CreateUpdateClient extends HookWidget {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'ma yelzemch ykoun l ism fara4';
-                        } else if (value.contains(RegExp(r'[0-9]'))) {
+                        } else if (!Validators.isAlphabetic(value)) {
                           return 'ism alli 7attitou 4alet';
                         }
                         return null;
@@ -111,10 +112,10 @@ class CreateUpdateClient extends HookWidget {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'ma yelzemch ykoun fara4';
-                        } else if (value.contains(RegExp(r'[0-9]'))) {
+                        } else if (!Validators.containsOnlyAlphanumeric(
+                            value)) {
                           return 'ism alli 7attitou 4alet';
-                        }
-                        if (value.length > 20) {
+                        } else if (value.length > 20) {
                           return 'alli ktebtou twill barcha';
                         }
                         return null;
@@ -138,7 +139,9 @@ class CreateUpdateClient extends HookWidget {
                         clientData['rue'] = newValue;
                       },
                       validator: (value) {
-                        if (value.toString().length > 20) {
+                        if (!Validators.containsOnlyAlphanumeric(value!)) {
+                          return 'rue alli ktebtou 4alet';
+                        } else if (value.toString().length > 20) {
                           return 'alli ktebtou twill barcha';
                         }
                         return null;
@@ -162,6 +165,8 @@ class CreateUpdateClient extends HookWidget {
                           return 'ma yelzemch ykoun fara4';
                         } else if (value.toString().length != 8) {
                           return 'noumrou cin 4alet';
+                        } else if (!Validators.isNumeric(value)) {
+                          return 'noumrou cin 4alet';
                         }
                         return null;
                       },
@@ -180,6 +185,9 @@ class CreateUpdateClient extends HookWidget {
                         clientData['tva'] = newValue;
                       },
                       validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "ma yelzmouch ykoun fara4";
+                        }
                         return null;
                       },
                     ),

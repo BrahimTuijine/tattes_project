@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/core/database/database.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:products_management/core/strings/colors.dart';
+import 'package:products_management/core/validator/validator.dart';
 import 'package:products_management/core/widgets/dialog.dart';
 import 'package:products_management/core/widgets/elevated_btn.dart';
 import 'package:products_management/core/widgets/from_field.dart';
@@ -54,7 +55,7 @@ class CreateUpdateSupplier extends HookWidget {
             validator: (value) {
               if (value!.isEmpty) {
                 return 'ma yelzemch ykoun l ism fara4';
-              } else if (value.contains(RegExp(r'[0-9]'))) {
+              } else if (!Validators.isAlphabetic(value)) {
                 return 'ism alli 7attitou 4alet';
               }
               return null;
@@ -73,15 +74,13 @@ class CreateUpdateSupplier extends HookWidget {
                 clientData['phone'] = newValue!.trim();
               },
               validator: (value) {
-                if (value!.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return 'ma yelzemch ykoun fara4';
                 } else if (value.length != 8) {
                   return 'noumrou alli ktebtou 4alet';
                 }
-                try {
-                  int.parse(value);
-                } on FormatException {
-                  return 'noumrou alli ktebtou 4alet';
+                if (!Validators.isNumeric(value)) {
+                  return 'noumrou 4alet';
                 }
                 return null;
               },
@@ -100,10 +99,10 @@ class CreateUpdateSupplier extends HookWidget {
                 clientData['ville'] = newValue;
               },
               validator: (value) {
-                if (value!.isEmpty) {
+                if (value == null || value.isEmpty) {
                   return 'ma yelzemch ykoun fara4';
-                } else if (value.contains(RegExp(r'[0-9]'))) {
-                  return 'ism alli 7attitou 4alet';
+                } else if (!Validators.isAlphabetic(value)) {
+                  return 'ville alli 7attitou 4alet';
                 }
                 if (value.length > 20) {
                   return 'alli ktebtou twill barcha';
@@ -145,6 +144,9 @@ class CreateUpdateSupplier extends HookWidget {
                 clientData['tva'] = newValue;
               },
               validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'ma yelzemch ykoun fara4';
+                }
                 return null;
               },
             ),

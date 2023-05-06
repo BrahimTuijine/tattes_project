@@ -21,6 +21,7 @@ class Clients extends Table {
   TextColumn get cin => text()();
   TextColumn get numTva => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 }
 
 class Products extends Table {
@@ -34,6 +35,7 @@ class Products extends Table {
   TextColumn get fournisser => text()();
   RealColumn get prixOrTax => real()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
   // prix or tax => prixx ttc - tva (0, 7 , 19)
 }
 
@@ -45,6 +47,7 @@ class Fournissers extends Table {
   TextColumn get phone => text()();
   TextColumn get tva => text()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 }
 
 class BonLivraisons extends Table {
@@ -64,21 +67,21 @@ class BonLivraisonsProd extends Table {
   RealColumn get newProductPrice => real()();
 }
 
-class Facture extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get factureUniqeId => text()();
-  IntColumn get clientId => integer().references(Clients, #id)();
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
-}
+// class Facture extends Table {
+//   IntColumn get id => integer().autoIncrement()();
+//   TextColumn get factureUniqeId => text()();
+//   IntColumn get clientId => integer().references(Clients, #id)();
+//   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+// }
 
-class FactureProd extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get productId => integer().references(Products, #id)();
-  IntColumn get factureId =>
-      integer().references(Facture, #id, onDelete: KeyAction.cascade)();
-  IntColumn get nbrCol => integer()();
-  RealColumn get newProductPrice => real()();
-}
+// class FactureProd extends Table {
+//   IntColumn get id => integer().autoIncrement()();
+//   IntColumn get productId => integer().references(Products, #id)();
+//   IntColumn get factureId =>
+//       integer().references(Facture, #id, onDelete: KeyAction.cascade)();
+//   IntColumn get nbrCol => integer()();
+//   RealColumn get newProductPrice => real()();
+// }
 
 @DriftDatabase(
   tables: [
@@ -87,8 +90,8 @@ class FactureProd extends Table {
     Fournissers,
     BonLivraisons,
     BonLivraisonsProd,
-    Facture,
-    FactureProd
+    // Facture,
+    // FactureProd
   ],
 )
 class MyDatabase extends _$MyDatabase {
@@ -106,7 +109,10 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<List<Client>> getClients() async {
-    return await select(clients).get();
+    // return await select(clients).get();
+
+    return (select(clients)..where((tbl) => tbl.isDeleted.isValue(false)))
+        .get();
   }
 
   Future<int> updateClient(ClientsCompanion clientsCompanion) async {
@@ -118,7 +124,10 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<int> deleteClient(int id) async {
-    return await (delete(clients)..where((tbl) => tbl.id.equals(id))).go();
+    // return await (delete(clients)..where((tbl) => tbl.id.equals(id))).go();
+    return (update(clients)..where((tbl) => tbl.id.equals(id))).write(
+      const ClientsCompanion(isDeleted: Value(true)),
+    );
   }
 
   //! CRUD product
@@ -127,7 +136,9 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<List<Product>> getProducts() async {
-    return await select(products).get();
+    // return await select(products).get();
+    return (select(products)..where((tbl) => tbl.isDeleted.isValue(false)))
+        .get();
   }
 
   Future<int> updateProduct(ProductsCompanion productsCompanion) async {
@@ -139,7 +150,10 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<int> deleteProduct(int id) async {
-    return await (delete(products)..where((tbl) => tbl.id.equals(id))).go();
+    // return await (delete(products)..where((tbl) => tbl.id.equals(id))).go();
+    return (update(products)..where((tbl) => tbl.id.equals(id))).write(
+      const ProductsCompanion(isDeleted: Value(true)),
+    );
   }
 
   //! CRUD fournisseur
@@ -148,7 +162,9 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<List<Fournisser>> getSuppliers() async {
-    return await select(fournissers).get();
+    // return await select(fournissers).get();
+    return (select(fournissers)..where((tbl) => tbl.isDeleted.isValue(false)))
+        .get();
   }
 
   Future<int> updateSuppliers(FournissersCompanion fournissersCompanion) async {
@@ -160,7 +176,10 @@ class MyDatabase extends _$MyDatabase {
   }
 
   Future<int> deleteSuppliers(int id) async {
-    return await (delete(fournissers)..where((tbl) => tbl.id.equals(id))).go();
+    // return await (delete(fournissers)..where((tbl) => tbl.id.equals(id))).go();
+    return (update(fournissers)..where((tbl) => tbl.id.equals(id))).write(
+      const FournissersCompanion(isDeleted: Value(true)),
+    );
   }
 
   //! CRUD bonLisvraison
@@ -252,79 +271,79 @@ class MyDatabase extends _$MyDatabase {
   //   return await getBonLivraisonFactureData(id).get();
   // }
 
-  //! CRUD facture
-  Future<int> insertFacture(FactureCompanion factureCompanion) async {
-    return await into(facture).insert(factureCompanion);
-  }
+  // //! CRUD facture
+  // Future<int> insertFacture(FactureCompanion factureCompanion) async {
+  //   return await into(facture).insert(factureCompanion);
+  // }
 
-  Future<List<FactureData>> getFacture() async {
-    return await select(facture).get();
-  }
+  // Future<List<FactureData>> getFacture() async {
+  //   return await select(facture).get();
+  // }
 
-  // Future<int> deleteBonLisvraison(int id) async {
-  //   return await (delete(bonLivraisons)..where((tbl) => tbl.id.equals(id)))
+  // Future<int> deleteFacture(int id) async {
+  //   return await (delete(facture)..where((tbl) => tbl.id.equals(id)))
   //       .go();
   // }
 
   //! factureProd
 
-  Future<int> insertFactureProduct(
-      FactureProdCompanion factureProdCompanion) async {
-    return await into(factureProd).insert(factureProdCompanion);
-  }
+  // Future<int> insertFactureProduct(
+  //     FactureProdCompanion factureProdCompanion) async {
+  //   return await into(factureProd).insert(factureProdCompanion);
+  // }
 
-  Future<List<FactureWithClient>> getFactureData() async {
-    final query = select(facture).join([
-      innerJoin(
-        clients,
-        clients.id.equalsExp(facture.clientId),
-      ),
-    ]);
+  // Future<List<FactureWithClient>> getFactureData() async {
+  //   final query = select(facture).join([
+  //     innerJoin(
+  //       clients,
+  //       clients.id.equalsExp(facture.clientId),
+  //     ),
+  //   ]);
 
-    return await query.map((row) {
-      final newFacture = row.readTable(facture);
-      final client = row.readTable(clients);
-      return FactureWithClient(
-          factureId: newFacture.id,
-          client: client,
-          createdAt: newFacture.createdAt);
-    }).get();
-  }
+  //   return await query.map((row) {
+  //     final newFacture = row.readTable(facture);
+  //     final client = row.readTable(clients);
+  //     return FactureWithClient(
+  //         factureId: newFacture.id,
+  //         client: client,
+  //         createdAt: newFacture.createdAt);
+  //   }).get();
+  // }
 
-  Future<List<PdfData>> getFacturePdfData(int factureId) async {
-    final query = select(factureProd).join([
-      innerJoin(
-        facture,
-        factureProd.factureId.equalsExp(facture.id),
-      ),
-      innerJoin(
-        products,
-        factureProd.productId.equalsExp(products.id),
-      ),
-    ])
-      ..where(facture.id.equals(factureId));
+  // Future<List<PdfData>> getFacturePdfData(int factureId) async {
+  //   final query = select(factureProd).join([
+  //     innerJoin(
+  //       facture,
+  //       factureProd.factureId.equalsExp(facture.id),
+  //     ),
+  //     innerJoin(
+  //       products,
+  //       factureProd.productId.equalsExp(products.id),
+  //     ),
+  //   ])
+  //     ..where(facture.id.equals(factureId));
 
-    final List<Product> productList = [];
-    final List<FactureProdData> factureProductList = [];
-    final List<PdfData> facturePdfData = [];
+  //   final List<Product> productList = [];
+  //   final List<FactureProdData> factureProductList = [];
+  //   final List<PdfData> facturePdfData = [];
 
-    await query.map((row) {
-      final factureProduct = row.readTable(factureProd);
-      final product = row.readTable(products);
-      factureProductList.add(factureProduct);
-      productList.add(product);
-    }).get();
-    for (var product in productList) {
-      final result = factureProductList
-          .where((element) => product.id == element.productId)
-          .toList();
-      facturePdfData.add(PdfData(
-          product: product,
-          nbrCol: result[0].nbrCol,
-          newPrice: result[0].newProductPrice));
-    }
-    return facturePdfData;
-  }
+  //   await query.map((row) {
+  //     final factureProduct = row.readTable(factureProd);
+  //     final product = row.readTable(products);
+  //     factureProductList.add(factureProduct);
+  //     productList.add(product);
+  //   }).get();
+  //   for (var product in productList) {
+  //     final result = factureProductList
+  //         .where((element) => product.id == element.productId)
+  //         .toList();
+  //     facturePdfData.add(PdfData(
+  //         product: product,
+  //         nbrCol: result[0].nbrCol,
+  //         newPrice: result[0].newProductPrice));
+  //   }
+  //   return facturePdfData;
+  // }
 }
 
 class PdfData {

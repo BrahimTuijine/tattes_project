@@ -234,7 +234,7 @@ class CreateUpdateBonLivraison extends HookWidget {
                               newProductPrice: productList[i].prix,
                             ));
                           }
-                          currentIndex.value = 6;
+                          currentIndex.value = 4;
                         }
                       },
                       text: 'créer',

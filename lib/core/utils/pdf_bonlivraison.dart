@@ -66,14 +66,14 @@ class BonLivraisonPdf {
         children: [
           // SizedBox(height: 1 * PdfPageFormat.cm),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               buildSupplierAddress(invoice),
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: FlutterLogo(),
-              ),
+              // SizedBox(
+              //   height: 50,
+              //   width: 50,
+              //   child: FlutterLogo(),
+              // ),
             ],
           ),
           SizedBox(height: 1 * PdfPageFormat.cm),
@@ -127,7 +127,7 @@ class BonLivraisonPdf {
               children: [
                 buildText(
                   title: 'Total TTC',
-                  value: totalTTC.toString(),
+                  value: '${totalTTC / 1000}00',
                   unite: true,
                 ),
                 SizedBox(height: 2 * PdfPageFormat.mm),
@@ -178,9 +178,9 @@ class BonLivraisonPdf {
         item.index,
         item.productName,
         item.nbrCol,
-        item.quantity,
-        item.unitPrice,
-        total.toStringAsFixed(2),
+        item.quantity * item.nbrCol,
+        '${item.unitPrice / 1000}00',
+        '${total / 1000}00',
       ];
     }).toList();
 
@@ -208,9 +208,9 @@ class BonLivraisonPdf {
               child: Text('''
 ${invoice.supplier.name}
 ${invoice.supplier.address}
-MF: ${invoice.supplier.mf}
 Téléphone: ${invoice.supplier.phone}
 Email: ${invoice.supplier.email}
+MF: ${invoice.supplier.mf}
 ''')),
           Container(
               constraints: const BoxConstraints(
@@ -225,6 +225,7 @@ Nom : ${invoice.customer.name}
 Rue : ${invoice.customer.address} 
 CIN: ${invoice.customer.cin}  
 Téléphone: ${invoice.customer.phone}
+Num. TVA: ${invoice.customer.numTva}
 ''')),
         ],
       );
@@ -233,14 +234,10 @@ Téléphone: ${invoice.customer.phone}
     final List<String> title = <String>[
       'invoice Number',
       'invoice Date',
-      'Date échéance',
     ];
     final List<String> data = <String>[
       invoice.info.number,
       DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
-      invoice.info.dueDate == null
-          ? ""
-          : DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.dueDate!),
     ];
 
     return Row(

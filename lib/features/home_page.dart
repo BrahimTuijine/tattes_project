@@ -4,11 +4,8 @@ import 'package:products_management/features/createBonLivraison/pages/bon_livrai
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:products_management/features/createBonLivraison/pages/create_update_bon_livraison.dart';
 import 'package:products_management/features/createClient/pages/client_list.dart';
-import 'package:products_management/features/createFacture/pages/create_facture.dart';
-import 'package:products_management/features/createFacture/pages/facture_list.dart';
 import 'package:products_management/features/createProduct/pages/product_list.dart';
 import 'package:products_management/features/createSupplier/pages/supplier_list.dart';
-import 'package:products_management/features/dashboard/pages/dashboard.dart';
 
 class HomePage extends HookWidget {
   HomePage({Key? key}) : super(key: key);
@@ -80,18 +77,18 @@ class HomePage extends HookWidget {
           ),
         ),
         items: <NavigationPaneItem>[
-          PaneItem(
-            selectedTileColor:
-                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            body: const DashBoard(),
-            icon: const Icon(FluentIcons.home),
-            title: const Text(
-              'home Page',
-              style: TextStyle(
-                color: Colors.grey,
-              ),
-            ),
-          ),
+          // PaneItem(
+          //   selectedTileColor:
+          //       ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+          //   body: const DashBoard(),
+          //   icon: const Icon(FluentIcons.home),
+          //   title: const Text(
+          //     'home Page',
+          //     style: TextStyle(
+          //       color: Colors.grey,
+          //     ),
+          //   ),
+          // ),
           PaneItemHeader(
             header: const Text('Creation'),
           ),
@@ -127,32 +124,32 @@ class HomePage extends HookWidget {
               currentIndex: currentIndex,
             ),
             icon: const Icon(FluentIcons.generate),
-            title: const Text('bon de livraison'),
+            title: const Text('Facture'),
           ),
-          PaneItem(
-            selectedTileColor:
-                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            body: CreateFacture(
-              currentIndex: currentIndex,
-            ),
-            icon: const Icon(FluentIcons.activate_orders),
-            title: const Text('facture'),
-          ),
+          // PaneItem(
+          //   selectedTileColor:
+          //       ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+          //   body: CreateFacture(
+          //     currentIndex: currentIndex,
+          //   ),
+          //   icon: const Icon(FluentIcons.activate_orders),
+          //   title: const Text('facture'),
+          // ),
           PaneItemHeader(header: const Text('List')),
           PaneItem(
             selectedTileColor:
                 ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
             icon: const Icon(FluentIcons.pdf),
-            title: const Text('bon de livraison'),
+            title: const Text('Facture'),
             body: const BonLivraisonList(),
           ),
-          PaneItem(
-            selectedTileColor:
-                ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
-            icon: const Icon(FluentIcons.screen),
-            title: const Text('facture'),
-            body: const FactureList(),
-          ),
+          // PaneItem(
+          //   selectedTileColor:
+          //       ButtonState.all(const Color(0xFF01706E).withOpacity(.25)),
+          //   icon: const Icon(FluentIcons.screen),
+          //   title: const Text('facture'),
+          //   body: const FactureList(),
+          // ),
         ],
         selected: currentIndex.value,
         onChanged: (value) {

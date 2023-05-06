@@ -68,14 +68,14 @@ class FacturePdf {
         children: [
           // SizedBox(height: 1 * PdfPageFormat.cm),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               buildSupplierAddress(invoice),
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: FlutterLogo(),
-              ),
+              // SizedBox(
+              //   height: 50,
+              //   width: 50,
+              //   child: FlutterLogo(),
+              // ),
             ],
           ),
           SizedBox(height: 1 * PdfPageFormat.cm),
@@ -83,7 +83,7 @@ class FacturePdf {
         ],
       );
   static buildSupplierAddress(Invoice invoice) => Text(
-        ' BON DE LIVRAISON N°${invoice.id}',
+        'FACTURE N°${invoice.id}',
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
       );
 
@@ -117,6 +117,12 @@ class FacturePdf {
         .map((item) => item.unitPrice * item.quantity * item.nbrCol)
         .reduce((value, element) => value + element);
 
+    final double totalTva = invoice.items.map((item) {
+      final totalQuantity = item.quantity * item.nbrCol;
+      final totalTTC = item.unitPrice * totalQuantity;
+      return totalTTC * item.tva!;
+    }).reduce((value, element) => value + element);
+
     return Container(
       alignment: Alignment.topRight,
       child: Row(
@@ -129,12 +135,12 @@ class FacturePdf {
               children: [
                 buildText(
                   title: 'Total HT',
-                  value: totalTTC.toString(),
+                  value: '${totalTTC / 1000}00',
                   unite: true,
                 ),
                 buildText(
                   title: 'Total TVA',
-                  value: 80.20.toString(),
+                  value: '${totalTva / 1000}00',
                   unite: true,
                 ),
                 buildText(
@@ -145,7 +151,7 @@ class FacturePdf {
                 Divider(),
                 buildText(
                   title: 'Total TTC',
-                  value: totalTTC.toString(),
+                  value: '${(totalTTC + 1000 + totalTva) / 1000}00',
                   unite: true,
                 ),
                 SizedBox(height: 2 * PdfPageFormat.mm),
@@ -184,7 +190,7 @@ class FacturePdf {
       'Ln',
       'Désignation',
       'Tva',
-      'P.U. HT',
+      'P.U. TTC',
       'Qté',
       'Total TTC',
     ];
@@ -197,9 +203,9 @@ class FacturePdf {
         item.index,
         item.productName,
         '${item.tva}%',
-        item.unitPrice / 1000,
+        '${item.unitPrice / 1000}00',
         totalQuantiry,
-        total / 1000,
+        '${total / 1000}00',
       ];
     }).toList();
 
@@ -227,9 +233,9 @@ class FacturePdf {
               child: Text('''
 ${invoice.supplier.name}
 ${invoice.supplier.address}
-MF: ${invoice.supplier.mf}
 Téléphone: ${invoice.supplier.phone}
 Email: ${invoice.supplier.email}
+MF: ${invoice.supplier.mf}
 ''')),
           Container(
               constraints: const BoxConstraints(
@@ -244,6 +250,7 @@ Nom : ${invoice.customer.name}
 Rue : ${invoice.customer.address} 
 CIN: ${invoice.customer.cin}  
 Téléphone: ${invoice.customer.phone}
+Num. TVA: ${invoice.customer.numTva}
 ''')),
         ],
       );
@@ -252,14 +259,10 @@ Téléphone: ${invoice.customer.phone}
     final List<String> title = <String>[
       'invoice Number',
       'invoice Date',
-      'Date échéance',
     ];
     final List<String> data = <String>[
       invoice.info.number,
       DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
-      invoice.info.dueDate == null
-          ? ""
-          : DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.dueDate!),
     ];
 
     return Row(
