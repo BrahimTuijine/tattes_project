@@ -135,23 +135,27 @@ class FacturePdf {
               children: [
                 buildText(
                   title: 'Total HT',
-                  value: '${totalTTC / 1000}00',
+                  value:
+                      (double.parse('${totalTTC / 1000}00').toStringAsFixed(3)),
                   unite: true,
                 ),
                 buildText(
                   title: 'Total TVA',
-                  value: '${totalTva / 1000}00',
+                  value:
+                      (double.parse('${totalTva / 1000}00').toStringAsFixed(3)),
                   unite: true,
                 ),
                 buildText(
                   title: 'Timbre fiscal',
-                  value: 1000.toString(),
+                  value: "1.000",
                   unite: true,
                 ),
                 Divider(),
                 buildText(
                   title: 'Total TTC',
-                  value: '${(totalTTC + 1000 + totalTva) / 1000}00',
+                  value:
+                      double.parse('${(totalTTC + 1000 + totalTva) / 1000}00')
+                          .toStringAsFixed(3),
                   unite: true,
                 ),
                 SizedBox(height: 2 * PdfPageFormat.mm),
@@ -203,9 +207,9 @@ class FacturePdf {
         item.index,
         item.productName,
         '${item.tva}%',
-        '${item.unitPrice / 1000}00',
+        (double.parse('${item.unitPrice / 1000}00').toStringAsFixed(3)),
         totalQuantiry,
-        '${total / 1000}00',
+        (double.parse('${total / 1000}00').toStringAsFixed(3)),
       ];
     }).toList();
 
@@ -256,36 +260,41 @@ Num. TVA: ${invoice.customer.numTva}
       );
 
   static Widget buildInvoiceInfo(Invoice invoice) {
-    final List<String> title = <String>[
-      'invoice Number',
-      'invoice Date',
-    ];
-    final List<String> data = <String>[
-      invoice.info.number,
-      DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
-    ];
+    // final List<String> title = <String>[
+    //   'invoice Number',
+    //   'invoice Date',
+    // ];
+    // final List<String> data = <String>[
+    //   invoice.info.number,
+    //   DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
+    // ];
 
     return Row(
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(
-            title.length,
-            (index) => Text(title[index],
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          ),
-        ),
+        Text("Date",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         SizedBox(width: 3 * PdfPageFormat.cm),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(
-            title.length,
-            (index) => Text(
-              data[index],
-              style: const TextStyle(fontSize: 12),
-            ),
-          ),
-        ),
+        Text(DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+        // Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: List.generate(
+        //     title.length,
+        //     (index) => Text(title[index],
+        //         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+        //   ),
+        // ),
+        // SizedBox(width: 3 * PdfPageFormat.cm),
+        // Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: List.generate(
+        //     title.length,
+        //     (index) => Text(
+        //       data[index],
+        //       style: const TextStyle(fontSize: 12),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
