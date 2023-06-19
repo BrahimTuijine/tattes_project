@@ -19,6 +19,7 @@ class FacturePdf {
     // !facture info to generate the pdf
     final Invoice invoice = Invoice(
       customer: Customer(
+        ville: client.ville,
         address: client.rue,
         cin: client.cin,
         name: client.name,
@@ -213,7 +214,7 @@ class FacturePdf {
       ];
     }).toList();
 
-    return Table.fromTextArray(
+    return TableHelper.fromTextArray(
       headerAlignment: Alignment.topLeft,
       data: data,
       headers: headers,
@@ -251,9 +252,8 @@ MF: ${invoice.supplier.mf}
               decoration: BoxDecoration(border: Border.all(width: 1)),
               child: Text('''
 Nom : ${invoice.customer.name}
+Ville: ${invoice.customer.ville}
 Rue : ${invoice.customer.address} 
-CIN: ${invoice.customer.cin}  
-Téléphone: ${invoice.customer.phone}
 Num. TVA: ${invoice.customer.numTva}
 ''')),
         ],

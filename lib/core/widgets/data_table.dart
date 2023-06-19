@@ -28,9 +28,9 @@ class DataTable2SimpleDemo extends HookWidget {
           ),
           padding: const EdgeInsets.all(16),
           margin: const EdgeInsets.only(bottom: 30),
-          child: Column(
+          child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const <Widget>[
+            children: <Widget>[
               CustomText(
                 text: 'Available clients ',
                 color: Colors.grey,

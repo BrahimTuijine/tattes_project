@@ -43,9 +43,9 @@ class BonLivraisonList extends HookWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Row(
+              const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   CustomText(
                     text: 'List des Bon de Livraison',
                     color: Colors.grey,
@@ -173,8 +173,8 @@ class BonLivraisonList extends HookWidget {
                                             await BonLivraisonPdf.generate(
                                                 client: reversed[index].client,
                                                 productList: productList,
-                                                bonLivraisonId: reversed[index]
-                                                    .factureId,
+                                                bonLivraisonId:
+                                                    reversed[index].factureId,
                                                 createdAt:
                                                     reversed[index].createdAt);
                                         PdfApi.openFile(pdfFile);
@@ -197,8 +197,8 @@ class BonLivraisonList extends HookWidget {
                                             await BonLivraisonPdf.generate(
                                                 client: reversed[index].client,
                                                 productList: productList,
-                                                bonLivraisonId: reversed[index]
-                                                    .factureId,
+                                                bonLivraisonId:
+                                                    reversed[index].factureId,
                                                 createdAt:
                                                     reversed[index].createdAt);
                                         // ? print pdf
@@ -222,8 +222,8 @@ class BonLivraisonList extends HookWidget {
                                             await FacturePdf.generate(
                                                 client: reversed[index].client,
                                                 productList: productList,
-                                                bonLivraisonId: reversed[index]
-                                                    .factureId,
+                                                bonLivraisonId:
+                                                    reversed[index].factureId,
                                                 createdAt:
                                                     reversed[index].createdAt);
                                         PdfApi.openFile(pdfFile);
@@ -246,8 +246,8 @@ class BonLivraisonList extends HookWidget {
                                             await FacturePdf.generate(
                                                 client: reversed[index].client,
                                                 productList: productList,
-                                                bonLivraisonId: reversed[index]
-                                                    .factureId,
+                                                bonLivraisonId:
+                                                    reversed[index].factureId,
                                                 createdAt:
                                                     reversed[index].createdAt);
                                         // ? print pdf

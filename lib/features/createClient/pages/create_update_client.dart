@@ -34,7 +34,7 @@ class CreateUpdateClient extends HookWidget {
     "rue": '',
     "ville": '',
     "name": '',
-    "phone": 0,
+    "phone": '',
     "cin": '',
     "tva": ''
   };
@@ -83,16 +83,17 @@ class CreateUpdateClient extends HookWidget {
                         clientData['phone'] = newValue!.trim();
                       },
                       validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'ma yelzemch ykoun fara4';
-                        } else if (value.length != 8) {
-                          return 'noumrou alli ktebtou 4alet';
+                        if (value!.isNotEmpty) {
+                          if (value.length != 8) {
+                            return 'noumrou alli ktebtou 4alet';
+                          }
+                          try {
+                            int.parse(value);
+                          } on FormatException {
+                            return 'noumrou alli ktebtou 4alet';
+                          }
                         }
-                        try {
-                          int.parse(value);
-                        } on FormatException {
-                          return 'noumrou alli ktebtou 4alet';
-                        }
+
                         return null;
                       },
                     ),
@@ -161,13 +162,14 @@ class CreateUpdateClient extends HookWidget {
                         clientData['cin'] = newValue;
                       },
                       validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'ma yelzemch ykoun fara4';
-                        } else if (value.toString().length != 8) {
-                          return 'noumrou cin 4alet';
-                        } else if (!Validators.isNumeric(value)) {
-                          return 'noumrou cin 4alet';
+                        if (value!.isNotEmpty) {
+                          if (value.length != 8) {
+                            return 'noumrou cin 4alet';
+                          } else if (!Validators.isNumeric(value)) {
+                            return 'noumrou cin 4alet';
+                          }
                         }
+
                         return null;
                       },
                     ),

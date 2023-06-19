@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:open_document/open_document.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart';
@@ -22,9 +22,10 @@ class PdfApi {
   static Future openFile(File file) async {
     final url = file.path;
 
-    await OpenDocument.openDocument(
-      filePath: url,
-    );
+    // await OpenDocument.openDocument(
+    //   filePath: url,
+    // );
+    OpenFilex.open(url);
   }
 
   static void printPdf(File pdfFile) async {

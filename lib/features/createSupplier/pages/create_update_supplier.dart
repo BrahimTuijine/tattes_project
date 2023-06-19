@@ -34,7 +34,7 @@ class CreateUpdateSupplier extends HookWidget {
     "rue": '',
     "ville": '',
     "name": '',
-    "phone": 0,
+    "phone": '',
     "tva": ''
   };
 
@@ -74,14 +74,15 @@ class CreateUpdateSupplier extends HookWidget {
                 clientData['phone'] = newValue!.trim();
               },
               validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'ma yelzemch ykoun fara4';
-                } else if (value.length != 8) {
-                  return 'noumrou alli ktebtou 4alet';
+                if (value!.isNotEmpty) {
+                  if (value.length != 8) {
+                    return 'noumrou alli ktebtou 4alet';
+                  }
+                  if (!Validators.isNumeric(value)) {
+                    return 'noumrou 4alet';
+                  }
                 }
-                if (!Validators.isNumeric(value)) {
-                  return 'noumrou 4alet';
-                }
+
                 return null;
               },
             ),
