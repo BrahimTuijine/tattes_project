@@ -72,6 +72,7 @@ class ProductList extends HookWidget {
                       },
                       child: const Text(
                         "Creation de produit",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
@@ -117,6 +118,9 @@ class ProductList extends HookWidget {
                             ),
                             DataColumn2(
                               label: Text("Prix"),
+                            ),
+                            DataColumn2(
+                              label: Text("Nb produit"),
                             ),
                             DataColumn2(
                               label: Text("TVA"),
@@ -165,6 +169,12 @@ class ProductList extends HookWidget {
                                   CustomText(
                                     text:
                                         reversed[index].productPrice.toString(),
+                                  ),
+                                ),
+                                DataCell(
+                                  CustomText(
+                                    text:
+                                        reversed[index].nbreProduit.toString(),
                                   ),
                                 ),
                                 DataCell(

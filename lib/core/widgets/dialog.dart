@@ -12,6 +12,7 @@ class MyAlertDialog {
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Colors.white,
           title: title,
           actions: actions,
           content: SingleChildScrollView(child: child),

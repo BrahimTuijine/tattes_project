@@ -65,6 +65,7 @@ class ClientList extends HookWidget {
                       },
                       child: const Text(
                         "Creation de client",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

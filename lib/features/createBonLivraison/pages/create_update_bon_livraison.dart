@@ -102,6 +102,11 @@ class CreateUpdateBonLivraison extends HookWidget {
                                       return null;
                                     },
                                     decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(
+                                            color: Colors.black),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
                                       border: OutlineInputBorder(
                                         borderSide: const BorderSide(
                                             color: Colors.black),

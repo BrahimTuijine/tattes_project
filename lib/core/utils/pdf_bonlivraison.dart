@@ -252,7 +252,7 @@ Num. TVA: ${invoice.customer.numTva}
         Text("Date",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         SizedBox(width: 3 * PdfPageFormat.cm),
-        Text(DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
+        Text(DateFormat('yyyy-MM-dd').format(invoice.info.date),
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         // Column(
         //   crossAxisAlignment: CrossAxisAlignment.start,

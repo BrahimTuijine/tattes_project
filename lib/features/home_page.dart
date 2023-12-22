@@ -76,6 +76,7 @@ class HomePage extends HookWidget {
             style: FluentTheme.of(context).typography.title,
           ),
         ),
+        size: const NavigationPaneSize(openWidth: 250),
         items: <NavigationPaneItem>[
           // PaneItem(
           //   selectedTileColor:

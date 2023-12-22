@@ -27,9 +27,7 @@ class ElevButton extends StatelessWidget {
         onPressed: onpressed,
         child: Text(
           text,
-          style: const TextStyle(
-            fontSize: 22,
-          ),
+          style: const TextStyle(fontSize: 22, color: Colors.white),
         ),
       ),
     );

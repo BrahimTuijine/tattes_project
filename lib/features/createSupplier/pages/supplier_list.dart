@@ -62,6 +62,7 @@ class SupplierList extends HookWidget {
                       },
                       child: const Text(
                         "Creation de fournisseur",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),

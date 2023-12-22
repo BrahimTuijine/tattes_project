@@ -44,6 +44,9 @@ class InputField extends StatelessWidget {
           onSaved: onsaved,
           validator: validator,
           decoration: InputDecoration(
+            enabledBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: grey),
+            ),
             border: const UnderlineInputBorder(
               borderSide: BorderSide(color: grey),
             ),

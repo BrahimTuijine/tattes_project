@@ -54,7 +54,8 @@ class FacturePdf {
               buildTitle(invoice),
               SizedBox(height: 1 * PdfPageFormat.cm),
               buildTable(invoice),
-              Divider(),
+              SizedBox(height: 1 * PdfPageFormat.cm),
+              // Divider(),
               buildTotal(invoice),
               buildFooter(invoice)
             ]),
@@ -218,10 +219,16 @@ class FacturePdf {
       headerAlignment: Alignment.topLeft,
       data: data,
       headers: headers,
-      border: null,
+      cellStyle: const TextStyle(fontSize: 10),
+      border: const TableBorder(
+        left: BorderSide(color: PdfColors.black, width: 1),
+        right: BorderSide(color: PdfColors.black, width: 1),
+        bottom: BorderSide(color: PdfColors.black, width: 1),
+        top: BorderSide(color: PdfColors.black, width: 1),
+      ),
       headerStyle: TextStyle(fontWeight: FontWeight.bold),
       headerDecoration: const BoxDecoration(color: PdfColors.grey300),
-      cellHeight: 30,
+      cellHeight: 25,
     );
   }
 
@@ -274,7 +281,7 @@ Num. TVA: ${invoice.customer.numTva}
         Text("Date",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         SizedBox(width: 3 * PdfPageFormat.cm),
-        Text(DateFormat('yyyy-MM-dd kk:mm').format(invoice.info.date),
+        Text(DateFormat('yyyy-MM-dd').format(invoice.info.date),
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
         // Column(
         //   crossAxisAlignment: CrossAxisAlignment.start,

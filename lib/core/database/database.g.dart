@@ -481,6 +481,14 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
   late final GeneratedColumn<int> nbrePiece = GeneratedColumn<int>(
       'nbre_piece', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _nbreProduitMeta =
+      const VerificationMeta('nbreProduit');
+  @override
+  late final GeneratedColumn<int> nbreProduit = GeneratedColumn<int>(
+      'nbre_produit', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _fournisserMeta =
       const VerificationMeta('fournisser');
   @override
@@ -523,6 +531,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         description,
         tva,
         nbrePiece,
+        nbreProduit,
         fournisser,
         prixOrTax,
         createdAt,
@@ -578,6 +587,12 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     } else if (isInserting) {
       context.missing(_nbrePieceMeta);
     }
+    if (data.containsKey('nbre_produit')) {
+      context.handle(
+          _nbreProduitMeta,
+          nbreProduit.isAcceptableOrUnknown(
+              data['nbre_produit']!, _nbreProduitMeta));
+    }
     if (data.containsKey('fournisser')) {
       context.handle(
           _fournisserMeta,
@@ -625,6 +640,8 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
           .read(DriftSqlType.double, data['${effectivePrefix}tva'])!,
       nbrePiece: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}nbre_piece'])!,
+      nbreProduit: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}nbre_produit'])!,
       fournisser: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}fournisser'])!,
       prixOrTax: attachedDatabase.typeMapping
@@ -650,6 +667,7 @@ class Product extends DataClass implements Insertable<Product> {
   final String? description;
   final double tva;
   final int nbrePiece;
+  final int nbreProduit;
   final String fournisser;
   final double prixOrTax;
   final DateTime createdAt;
@@ -662,6 +680,7 @@ class Product extends DataClass implements Insertable<Product> {
       this.description,
       required this.tva,
       required this.nbrePiece,
+      required this.nbreProduit,
       required this.fournisser,
       required this.prixOrTax,
       required this.createdAt,
@@ -678,6 +697,7 @@ class Product extends DataClass implements Insertable<Product> {
     }
     map['tva'] = Variable<double>(tva);
     map['nbre_piece'] = Variable<int>(nbrePiece);
+    map['nbre_produit'] = Variable<int>(nbreProduit);
     map['fournisser'] = Variable<String>(fournisser);
     map['prix_or_tax'] = Variable<double>(prixOrTax);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -696,6 +716,7 @@ class Product extends DataClass implements Insertable<Product> {
           : Value(description),
       tva: Value(tva),
       nbrePiece: Value(nbrePiece),
+      nbreProduit: Value(nbreProduit),
       fournisser: Value(fournisser),
       prixOrTax: Value(prixOrTax),
       createdAt: Value(createdAt),
@@ -714,6 +735,7 @@ class Product extends DataClass implements Insertable<Product> {
       description: serializer.fromJson<String?>(json['description']),
       tva: serializer.fromJson<double>(json['tva']),
       nbrePiece: serializer.fromJson<int>(json['nbrePiece']),
+      nbreProduit: serializer.fromJson<int>(json['nbreProduit']),
       fournisser: serializer.fromJson<String>(json['fournisser']),
       prixOrTax: serializer.fromJson<double>(json['prixOrTax']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -731,6 +753,7 @@ class Product extends DataClass implements Insertable<Product> {
       'description': serializer.toJson<String?>(description),
       'tva': serializer.toJson<double>(tva),
       'nbrePiece': serializer.toJson<int>(nbrePiece),
+      'nbreProduit': serializer.toJson<int>(nbreProduit),
       'fournisser': serializer.toJson<String>(fournisser),
       'prixOrTax': serializer.toJson<double>(prixOrTax),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -746,6 +769,7 @@ class Product extends DataClass implements Insertable<Product> {
           Value<String?> description = const Value.absent(),
           double? tva,
           int? nbrePiece,
+          int? nbreProduit,
           String? fournisser,
           double? prixOrTax,
           DateTime? createdAt,
@@ -758,6 +782,7 @@ class Product extends DataClass implements Insertable<Product> {
         description: description.present ? description.value : this.description,
         tva: tva ?? this.tva,
         nbrePiece: nbrePiece ?? this.nbrePiece,
+        nbreProduit: nbreProduit ?? this.nbreProduit,
         fournisser: fournisser ?? this.fournisser,
         prixOrTax: prixOrTax ?? this.prixOrTax,
         createdAt: createdAt ?? this.createdAt,
@@ -773,6 +798,7 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('description: $description, ')
           ..write('tva: $tva, ')
           ..write('nbrePiece: $nbrePiece, ')
+          ..write('nbreProduit: $nbreProduit, ')
           ..write('fournisser: $fournisser, ')
           ..write('prixOrTax: $prixOrTax, ')
           ..write('createdAt: $createdAt, ')
@@ -782,8 +808,19 @@ class Product extends DataClass implements Insertable<Product> {
   }
 
   @override
-  int get hashCode => Object.hash(id, productPrice, libelle, categorie,
-      description, tva, nbrePiece, fournisser, prixOrTax, createdAt, isDeleted);
+  int get hashCode => Object.hash(
+      id,
+      productPrice,
+      libelle,
+      categorie,
+      description,
+      tva,
+      nbrePiece,
+      nbreProduit,
+      fournisser,
+      prixOrTax,
+      createdAt,
+      isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -795,6 +832,7 @@ class Product extends DataClass implements Insertable<Product> {
           other.description == this.description &&
           other.tva == this.tva &&
           other.nbrePiece == this.nbrePiece &&
+          other.nbreProduit == this.nbreProduit &&
           other.fournisser == this.fournisser &&
           other.prixOrTax == this.prixOrTax &&
           other.createdAt == this.createdAt &&
@@ -809,6 +847,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<String?> description;
   final Value<double> tva;
   final Value<int> nbrePiece;
+  final Value<int> nbreProduit;
   final Value<String> fournisser;
   final Value<double> prixOrTax;
   final Value<DateTime> createdAt;
@@ -821,6 +860,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.description = const Value.absent(),
     this.tva = const Value.absent(),
     this.nbrePiece = const Value.absent(),
+    this.nbreProduit = const Value.absent(),
     this.fournisser = const Value.absent(),
     this.prixOrTax = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -834,6 +874,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.description = const Value.absent(),
     required double tva,
     required int nbrePiece,
+    this.nbreProduit = const Value.absent(),
     required String fournisser,
     required double prixOrTax,
     this.createdAt = const Value.absent(),
@@ -853,6 +894,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<String>? description,
     Expression<double>? tva,
     Expression<int>? nbrePiece,
+    Expression<int>? nbreProduit,
     Expression<String>? fournisser,
     Expression<double>? prixOrTax,
     Expression<DateTime>? createdAt,
@@ -866,6 +908,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (description != null) 'description': description,
       if (tva != null) 'tva': tva,
       if (nbrePiece != null) 'nbre_piece': nbrePiece,
+      if (nbreProduit != null) 'nbre_produit': nbreProduit,
       if (fournisser != null) 'fournisser': fournisser,
       if (prixOrTax != null) 'prix_or_tax': prixOrTax,
       if (createdAt != null) 'created_at': createdAt,
@@ -881,6 +924,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       Value<String?>? description,
       Value<double>? tva,
       Value<int>? nbrePiece,
+      Value<int>? nbreProduit,
       Value<String>? fournisser,
       Value<double>? prixOrTax,
       Value<DateTime>? createdAt,
@@ -893,6 +937,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       description: description ?? this.description,
       tva: tva ?? this.tva,
       nbrePiece: nbrePiece ?? this.nbrePiece,
+      nbreProduit: nbreProduit ?? this.nbreProduit,
       fournisser: fournisser ?? this.fournisser,
       prixOrTax: prixOrTax ?? this.prixOrTax,
       createdAt: createdAt ?? this.createdAt,
@@ -924,6 +969,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (nbrePiece.present) {
       map['nbre_piece'] = Variable<int>(nbrePiece.value);
     }
+    if (nbreProduit.present) {
+      map['nbre_produit'] = Variable<int>(nbreProduit.value);
+    }
     if (fournisser.present) {
       map['fournisser'] = Variable<String>(fournisser.value);
     }
@@ -949,6 +997,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('description: $description, ')
           ..write('tva: $tva, ')
           ..write('nbrePiece: $nbrePiece, ')
+          ..write('nbreProduit: $nbreProduit, ')
           ..write('fournisser: $fournisser, ')
           ..write('prixOrTax: $prixOrTax, ')
           ..write('createdAt: $createdAt, ')

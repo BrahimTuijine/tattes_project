@@ -28,8 +28,7 @@ class ProductForm extends HookWidget {
           builder:
               (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
             if (snapshot.hasData) {
-              return SizedBox(
-                width: 300,
+              return Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -49,6 +48,10 @@ class ProductForm extends HookWidget {
                           VoidCallback onFieldSubmitted) {
                         return TextFormField(
                           decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(color: Colors.black),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             border: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.black),
                               borderRadius: BorderRadius.circular(8),
@@ -129,10 +132,13 @@ class ProductForm extends HookWidget {
         const SizedBox(
           width: 20,
         ),
-        SizedBox(
-          width: 80,
+        Expanded(
           child: TextFormField(
             decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black),
                 borderRadius: BorderRadius.circular(8),
@@ -161,11 +167,14 @@ class ProductForm extends HookWidget {
         const SizedBox(
           width: 20,
         ),
-        SizedBox(
-          width: 80,
+        Expanded(
           child: TextFormField(
             controller: newPriceController,
             decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
               border: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black),
                 borderRadius: BorderRadius.circular(8),

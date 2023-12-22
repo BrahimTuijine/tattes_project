@@ -32,6 +32,7 @@ class Products extends Table {
   TextColumn get description => text().nullable()();
   RealColumn get tva => real()();
   IntColumn get nbrePiece => integer()();
+  IntColumn get nbreProduit => integer().withDefault(const Constant(0))();
   TextColumn get fournisser => text()();
   RealColumn get prixOrTax => real()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
@@ -265,7 +266,6 @@ class MyDatabase extends _$MyDatabase {
     }
     return bonLivraisonPdfData;
   }
-
 }
 
 class PdfData {
