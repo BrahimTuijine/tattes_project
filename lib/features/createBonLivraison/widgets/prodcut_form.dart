@@ -21,6 +21,7 @@ class ProductForm extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final newPriceController = useTextEditingController();
+    final productNumber = useTextEditingController();
     return Row(
       children: [
         FutureBuilder<List<Product>>(
@@ -29,105 +30,126 @@ class ProductForm extends HookWidget {
               (BuildContext context, AsyncSnapshot<List<Product>> snapshot) {
             if (snapshot.hasData) {
               return Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Autocomplete<Product>(
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        return snapshot.data!
-                            .where((Product element) => element.libelle
-                                .toLowerCase()
-                                .contains(textEditingValue.text.toLowerCase()))
-                            .toList();
+                child: Autocomplete<Product>(
+                  optionsBuilder: (TextEditingValue textEditingValue) {
+                    return snapshot.data!
+                        .where((Product element) => element.libelle
+                            .toLowerCase()
+                            .contains(textEditingValue.text.toLowerCase()))
+                        .toList();
+                  },
+                  displayStringForOption: (Product option) => option.libelle,
+                  fieldViewBuilder: (BuildContext context,
+                      TextEditingController fieldTextEditingController,
+                      FocusNode fieldFocusNode,
+                      VoidCallback onFieldSubmitted) {
+                    return TextFormField(
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        filled: false,
+                        hintText: 'liste des produits',
+                        hintStyle: const TextStyle(color: grey, fontSize: 13),
+                      ),
+                      controller: fieldTextEditingController,
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return "ma yelzmouch ykoun fara4";
+                        }
+                        return null;
                       },
-                      displayStringForOption: (Product option) =>
-                          option.libelle,
-                      fieldViewBuilder: (BuildContext context,
-                          TextEditingController fieldTextEditingController,
-                          FocusNode fieldFocusNode,
-                          VoidCallback onFieldSubmitted) {
-                        return TextFormField(
-                          decoration: InputDecoration(
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            disabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.black),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            filled: false,
-                            hintText: 'liste des produits',
-                            hintStyle:
-                                const TextStyle(color: grey, fontSize: 13),
-                          ),
-                          controller: fieldTextEditingController,
-                          validator: (String? value) {
-                            if (value == null || value.isEmpty) {
-                              return "ma yelzmouch ykoun fara4";
-                            }
-                            return null;
-                          },
-                          focusNode: fieldFocusNode,
-                          style: const TextStyle(),
-                        );
-                      },
-                      onSelected: (Product product) {
-                        productModel.productId = product.id;
-                        newPriceController.text =
-                            product.productPrice.toString();
-                      },
-                      optionsViewBuilder: (BuildContext context,
-                          AutocompleteOnSelected<Product> onSelected,
-                          Iterable<Product> options) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [kDefaultShadow],
-                              color: Colors.white,
-                            ),
-                            width: 250,
-                            constraints: const BoxConstraints(maxHeight: 200),
-                            child: Material(
-                              child: ListView.builder(
-                                padding: const EdgeInsets.all(10.0),
-                                itemCount: options.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final Product option =
-                                      options.elementAt(index);
+                      focusNode: fieldFocusNode,
+                      style: const TextStyle(),
+                    );
+                  },
+                  onSelected: (Product product) {
+                    productModel.productId = product.id;
+                    newPriceController.text = product.productPrice.toString();
+                    productNumber.text = product.nbreProduit.toString();
+                  },
+                  optionsViewBuilder: (BuildContext context,
+                      AutocompleteOnSelected<Product> onSelected,
+                      Iterable<Product> options) {
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [kDefaultShadow],
+                          color: Colors.white,
+                        ),
+                        width: 250,
+                        constraints: const BoxConstraints(maxHeight: 200),
+                        child: Material(
+                          child: ListView.builder(
+                            padding: const EdgeInsets.all(10.0),
+                            itemCount: options.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final Product option = options.elementAt(index);
 
-                                  return GestureDetector(
-                                    onTap: () {
-                                      onSelected(option);
-                                    },
-                                    child: ListTile(
-                                      title: Text(option.libelle,
-                                          style: const TextStyle(
-                                              color: Colors.black)),
-                                    ),
-                                  );
+                              return GestureDetector(
+                                onTap: () {
+                                  onSelected(option);
                                 },
-                              ),
-                            ),
+                                child: ListTile(
+                                  title: Text(option.libelle,
+                                      style:
+                                          const TextStyle(color: Colors.black)),
+                                ),
+                              );
+                            },
                           ),
-                        );
-                      },
-                    ),
-                  ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             }
             return const CircularProgressIndicator();
           },
+        ),
+        const SizedBox(
+          width: 20,
+        ),
+        SizedBox(
+          width: 150,
+          child: TextFormField(
+            controller: productNumber,
+            readOnly: true,
+            decoration: InputDecoration(
+              hintText: '0',
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              border: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
         ),
         const SizedBox(
           width: 20,

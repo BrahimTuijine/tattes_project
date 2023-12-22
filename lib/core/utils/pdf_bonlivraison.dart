@@ -189,6 +189,7 @@ class BonLivraisonPdf {
     return TableHelper.fromTextArray(
       headerAlignment: Alignment.topLeft,
       data: data,
+      cellStyle: const TextStyle(fontSize: 10),
       headers: headers,
       border: null,
       headerStyle: TextStyle(fontWeight: FontWeight.bold),
