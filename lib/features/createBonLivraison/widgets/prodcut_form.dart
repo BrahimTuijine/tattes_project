@@ -80,6 +80,7 @@ class ProductForm extends HookWidget {
                     productModel.productId = product.id;
                     newPriceController.text = product.productPrice.toString();
                     productNumber.text = product.nbreProduit.toString();
+                    productModel.productNumber = product.nbreProduit;
                   },
                   optionsViewBuilder: (BuildContext context,
                       AutocompleteOnSelected<Product> onSelected,
@@ -181,6 +182,8 @@ class ProductForm extends HookWidget {
             validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return "ma yelzmouch ykoun fara4";
+              } else if (int.parse(value) > int.parse(productNumber.text)) {
+                return "ma tajjamch tzid akther men stock";
               }
               return null;
             },

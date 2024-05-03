@@ -157,6 +157,12 @@ class MyDatabase extends _$MyDatabase {
     );
   }
 
+  Future<int> updateNbreProduit(int productId, int newNbreProduit) async {
+    return (update(products)..where((tbl) => tbl.id.equals(productId))).write(
+      ProductsCompanion(nbreProduit: Value(newNbreProduit)),
+    );
+  }
+
   //! CRUD fournisseur
   Future<int> insertSupplier(FournissersCompanion fournissersCompanion) async {
     return await into(fournissers).insert(fournissersCompanion);

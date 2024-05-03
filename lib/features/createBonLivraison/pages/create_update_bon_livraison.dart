@@ -231,13 +231,20 @@ class CreateUpdateBonLivraison extends HookWidget {
                           );
 
                           for (var i = 0; i < productList.length; i++) {
+                            await getIt<MyDatabase>().updateNbreProduit(
+                              productList[i].productId,
+                              productList[i].productNumber -
+                                  productList[i].nbrCol,
+                            );
+
                             getIt<MyDatabase>().insertBonLisvraisonProduct(
-                                BonLivraisonsProdCompanion.insert(
-                              productId: productList[i].productId,
-                              bonLivraisonId: bonLivraisonId,
-                              nbrCol: productList[i].nbrCol,
-                              newProductPrice: productList[i].prix,
-                            ));
+                              BonLivraisonsProdCompanion.insert(
+                                productId: productList[i].productId,
+                                bonLivraisonId: bonLivraisonId,
+                                nbrCol: productList[i].nbrCol,
+                                newProductPrice: productList[i].prix,
+                              ),
+                            );
                           }
                           currentIndex.value = 4;
                         }

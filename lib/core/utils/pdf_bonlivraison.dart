@@ -191,7 +191,12 @@ class BonLivraisonPdf {
       data: data,
       cellStyle: const TextStyle(fontSize: 10),
       headers: headers,
-      border: null,
+      border: const TableBorder(
+        left: BorderSide(color: PdfColors.black, width: 1),
+        right: BorderSide(color: PdfColors.black, width: 1),
+        bottom: BorderSide(color: PdfColors.black, width: 1),
+        top: BorderSide(color: PdfColors.black, width: 1),
+      ),
       headerStyle: TextStyle(fontWeight: FontWeight.bold),
       headerDecoration: const BoxDecoration(color: PdfColors.grey300),
       cellHeight: 30,
